@@ -1,6 +1,6 @@
 export type Office = {
   id: string;
-  name: string;
+  name?: string;
   street: string;
   street_number: string;
   city: string;
