@@ -7,9 +7,11 @@
         class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
       />
       <input
-        class="w-[574px] h-[56px] pl-10 pr-4 rounded-lg bg-background border border-gray-300 text-text placeholder-gray-500"
+        class="input w-[574px] h-[56px] pl-10 pr-4 rounded-lg bg-background border border-gray-300 text-text placeholder-gray-500"
         type="text"
         placeholder="Search"
+        v-model="input"
+        v-on:input="inputSearchQuery(input)"
       />
     </div>
     <div class="relative">
@@ -17,11 +19,7 @@
         @click="toggleDropdown"
         class="w-[56px] h-[56px] px-4 rounded-lg bg-accent flex items-center justify-between"
       >
-        <img
-          :src="paginationCount"
-          alt="Pagination Count"
-          class="w-[56px] h-[56px]"
-        />
+        <img :src="paginationCount" alt="Pagination Count" class="w-[56px] h-[56px]" />
       </button>
       <div
         v-if="showDropdown"
@@ -30,7 +28,7 @@
         <div
           v-for="item in [5, 10, 25, 50, 100, 'ALL']"
           :key="item"
-          @click="selectItem(item)"
+          @click="selectItemCountPerPage(item)"
           class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
         >
           {{ item }}
@@ -39,31 +37,47 @@
     </div>
     <button
       class="w-[56px] h-[56px] bg-accent rounded-lg flex items-center justify-center hover:bg-accent-dark"
+      @click="toggleView"
     >
-      <img v-if="ToCard" :src="toCard" alt="Search" />
-      <img v-else-if="!ToCard" :src="toTable" alt="Search" />
+      <img v-if="isCard" :src="toCard" alt="Search" />
+      <img v-else-if="!isCard" :src="toTable" alt="Search" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import searchIcon from "../assets/Search.svg";
-import paginationCount from "../assets/PaginationCount.svg";
-import toCard from "../assets/ToCard.svg";
-import toTable from "../assets/ToTable.svg";
+import { ref } from 'vue'
+import debounce from 'debounce'
 
-const showDropdown = ref(false);
-const selectedItem = ref<number | string | null>(null);
-const ToCard = true;
+import searchIcon from '../assets/Search.svg'
+import paginationCount from '../assets/PaginationCount.svg'
+import toCard from '../assets/ToCard.svg'
+import toTable from '../assets/ToTable.svg'
+
+const showDropdown = ref(false)
+const selectedCount = ref<number | string | null>(null)
+const isCard = ref(true)
+const input = ref('')
+
+const emit = defineEmits(['changeView', 'changeCount', 'input-changed'])
+
+const inputSearchQuery = debounce((value: string) => {
+  input.value = value
+  emit('input-changed', value)
+}, 300)
 
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
 
-const selectItem = (item: number | string) => {
-  selectedItem.value = item;
-  showDropdown.value = false;
-  console.log("Selected item:", item);
-};
+const selectItemCountPerPage = (item: number | string) => {
+  selectedCount.value = item
+  showDropdown.value = false
+  emit('changeCount', item)
+}
+
+const toggleView = () => {
+  isCard.value = !isCard.value
+  emit('changeView')
+}
 </script>
