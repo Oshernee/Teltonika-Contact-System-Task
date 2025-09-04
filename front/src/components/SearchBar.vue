@@ -71,6 +71,12 @@ const toggleDropdown = () => {
 }
 
 const selectItemCountPerPage = (item: number | string) => {
+  if (item === 'ALL') {
+    selectedCount.value = 'ALL'
+    showDropdown.value = false
+    emit('changeCount', 9999999)
+    return
+  }
   selectedCount.value = item
   showDropdown.value = false
   emit('changeCount', item)
