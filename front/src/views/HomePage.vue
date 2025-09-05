@@ -49,16 +49,12 @@ onMounted(() => {
 
 const fetchEmployees = async () => {
   try {
-    console.log('Fetching employees with:', {
-      employeesPerPage: employeesPerPage.value,
-      currentPage: currentPage.value,
-      searchQuery: searchQuery.value,
-    })
     const response = await getEmployees(
       employeesPerPage.value,
       currentPage.value,
       searchQuery.value
     )
+    console.log(response)
     employees.value = response[0]
     totalEmployees.value = response[1]
   } catch (error) {

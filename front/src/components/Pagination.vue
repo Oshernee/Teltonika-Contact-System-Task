@@ -1,18 +1,20 @@
 <template>
   <div class="flex items-center justify-center w-full">
     <button
-      @click="emit('page-changed', props.currentPage - 1)"
-      class="flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium"
+      :class="{ 'opacity-75 cursor-not-allowed': props.currentPage <= 1 }"
+      @click="changePage(props.currentPage - 1)"
+      class="flex items-center px-4 py-2 bg-secondary text-white text-sm font-medium"
     >
       <img :src="Arrow" class="w-4 h-4 mr-2 rotate-180" alt="Previous" />
       PRAEITAS PUSLAPIS
     </button>
     <div class="px-4 py-2 text-xl font-bold text-gray-700">
-      {{ props.currentPage }}/{{ props.totalPages }}
+      {{ props.totalPages == 0 ? 0 : props.currentPage }}/{{ props.totalPages }}
     </div>
     <button
-      @click="emit('page-changed', props.currentPage + 1)"
-      class="flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium"
+      :class="{ 'opacity-75 cursor-not-allowed': props.currentPage >= props.totalPages }"
+      @click="changePage(props.currentPage + 1)"
+      class="flex items-center px-4 py-2 bg-secondary text-white text-sm font-medium"
     >
       KITAS PUSLAPIS
       <img :src="Arrow" class="w-4 h-4 ml-2" alt="Next" />
@@ -23,10 +25,15 @@
 <script lang="ts" setup>
 import Arrow from '../assets/Arrows.svg'
 
-const emit = defineEmits(['page-changed'])
+const emit = defineEmits(['page-changed', 'page-overflow'])
 
 const props = defineProps<{
   currentPage: number
   totalPages: number
 }>()
+
+const changePage = (newPage: number) => {
+  if (newPage < 1 || newPage > props.totalPages) return
+  emit('page-changed', newPage)
+}
 </script>

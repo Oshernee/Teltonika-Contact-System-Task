@@ -1,5 +1,9 @@
 <template>
-  <div class="relative">
+  <div
+    class="relative"
+    :disabled="props.isDisabled"
+    :class="{ 'opacity-75 pointer-events-none': props.isDisabled }"
+  >
     <label class="block text-sm font-medium text-gray-700 mb-2">{{ props.title }}</label>
     <button
       @click="toggleDropdown"
@@ -26,7 +30,7 @@
       class="absolute w-full top-full left-0 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 z-10 max-h-60 overflow-y-auto"
     >
       <div
-        v-for="item in options"
+        v-for="item in filteredOptions"
         :key="item"
         @click="selectItem(item)"
         class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 border-b border-gray-100 last:border-b-0"
@@ -39,12 +43,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps<{
+  isDisabled: boolean
   title: string
-  placeholder?: string
-  options?: (string | number)[]
+  placeholder: string
+  filterBy: string
+  items: string[]
 }>()
 
 const emit = defineEmits<{
@@ -54,13 +60,30 @@ const emit = defineEmits<{
 const showDropdown = ref(false)
 const selectedItem = ref<string | number | null>(null)
 
-const options = props.options || [5, 10, 25, 50, 100, 'ALL']
+watch(
+  () => props.isDisabled,
+  (newValue) => {
+    if (newValue) {
+      selectedItem.value = null
+      showDropdown.value = false
+    }
+  }
+)
+
+const filteredOptions = computed(() => {
+  if (!props.items || props.items.length === 0) {
+    return ['Nėra duomenų']
+  }
+  return props.items.filter((item) => item !== undefined && item !== null)
+})
 
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value
 }
 
 function selectItem(item: string | number) {
+  if (item === 'Nėra duomenų') return
+
   selectedItem.value = item
   showDropdown.value = false
   emit('item-selected', item)
