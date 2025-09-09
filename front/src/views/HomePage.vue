@@ -12,7 +12,7 @@
         >{{ totalEmployees }} {{ totalEmployees > 10 ? 'kontaktų' : 'kontaktai' }}</span
       ></text
     >
-    <Filtering :employees="employees" />
+    <Filtering :employees="employees" @filter-changed="updateFiltering" />
     <CardDisplayType :employees="employees" v-if="isCardView" />
     <TableDisplayType :employees="employees" v-if="!isCardView" />
     <Pagination
@@ -42,6 +42,7 @@ const employeesPerPage = ref(5)
 const currentPage = ref(1)
 const searchQuery = ref('')
 const isCardView = ref(true)
+const filterQuery = ref<{ type: string; value: string | number }[]>([])
 
 onMounted(() => {
   fetchEmployees()
@@ -52,9 +53,9 @@ const fetchEmployees = async () => {
     const response = await getEmployees(
       employeesPerPage.value,
       currentPage.value,
-      searchQuery.value
+      searchQuery.value,
+      filterQuery.value
     )
-    console.log(response)
     employees.value = response[0]
     totalEmployees.value = response[1]
   } catch (error) {
@@ -83,5 +84,19 @@ const updateCurrentPage = (page: number) => {
 
 const updateViewType = () => {
   isCardView.value = !isCardView.value
+}
+
+const updateFiltering = (filterType: string, value: string | number) => {
+  if (value === 'ALL' || value === '') {
+    filterQuery.value = filterQuery.value.filter((f) => f.type !== filterType)
+  } else {
+    const existingFilterIndex = filterQuery.value.findIndex((f) => f.type === filterType)
+    if (existingFilterIndex !== -1) {
+      filterQuery.value[existingFilterIndex].value = value
+    } else {
+      filterQuery.value.push({ type: filterType, value })
+    }
+  }
+  fetchEmployees()
 }
 </script>

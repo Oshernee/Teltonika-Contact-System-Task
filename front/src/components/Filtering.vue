@@ -5,7 +5,7 @@
       title="Įmonė:"
       :placeholder="companyPlaceholder"
       filterBy="company"
-      :items="companies"
+      :items="isCompanySelected ? prevCompanies : companies ?? []"
       class="flex-1"
       @item-selected="handleCompanySelected"
     />
@@ -14,7 +14,7 @@
       title="Ofisas:"
       :placeholder="officePlaceholder"
       filterBy="office"
-      :items="offices"
+      :items="isOfficeSelected ? prevOffices : offices ?? []"
       class="flex-1"
       @item-selected="handleOfficeSelected"
     />
@@ -23,7 +23,7 @@
       title="Padalinys:"
       :placeholder="divisionPlaceholder"
       filterBy="division"
-      :items="divisions"
+      :items="isDivisionSelected ? prevDivisions : divisions ?? []"
       class="flex-1"
       @item-selected="handleDivisionSelected"
     />
@@ -32,7 +32,7 @@
       title="Skyrius:"
       :placeholder="departmentPlaceholder"
       filterBy="department"
-      :items="departments"
+      :items="isDepartmentSelected ? prevDepartments : departments ?? []"
       class="flex-1"
       @item-selected="handleDepartmentSelected"
     />
@@ -41,7 +41,7 @@
       title="Grupė:"
       :placeholder="groupPlaceholder"
       filterBy="group"
-      :items="groups"
+      :items="isGroupSelected ? prevGroups : groups ?? []"
       class="flex-1"
       @item-selected="handleGroupSelected"
     />
@@ -52,17 +52,31 @@
 import { computed, ref } from 'vue'
 import type { Employee } from '../types/employees'
 import Dropdown from './Dropdown.vue'
+import { GetIDByName, getNamesByCollection } from '../services/universalService'
 
 const isCompanySelected = ref(false)
 const isOfficeSelected = ref(false)
 const isDivisionSelected = ref(false)
 const isDepartmentSelected = ref(false)
+const isGroupSelected = ref(false)
 
 const companyPlaceholder = ref('Pasirinkite įmonę')
 const officePlaceholder = ref('Pasirinkite ofisą')
 const divisionPlaceholder = ref('Pasirinkite padalinį')
 const departmentPlaceholder = ref('Pasirinkite skyrių')
 const groupPlaceholder = ref('Pasirinkite grupę')
+
+const prevCompanies = ref<string[]>([])
+const prevOffices = ref<string[]>([])
+const prevDivisions = ref<string[]>([])
+const prevDepartments = ref<string[]>([])
+const prevGroups = ref<string[]>([])
+
+const allCompanies = await getNamesByCollection('companies')
+const allOffices = await getNamesByCollection('offices')
+const allDivisions = await getNamesByCollection('divisions')
+const allDepartments = await getNamesByCollection('departments')
+const allGroups = await getNamesByCollection('groups')
 
 const props = defineProps<{
   employees: Employee[]
@@ -122,7 +136,11 @@ const groups = computed(() => {
   return Array.from(uniqueGroups)
 })
 
-function handleCompanySelected(value: string | number) {
+const handleCompanySelected = async (value: string | number) => {
+  if (!isCompanySelected.value) {
+    prevCompanies.value = companies.value
+  }
+
   isCompanySelected.value = true
   isOfficeSelected.value = false
   isDivisionSelected.value = false
@@ -131,36 +149,68 @@ function handleCompanySelected(value: string | number) {
   divisionPlaceholder.value = 'Pasirinkite padalinį'
   departmentPlaceholder.value = 'Pasirinkite skyrių'
   groupPlaceholder.value = 'Pasirinkite grupę'
-  emit('filter-changed', 'company', value)
+
+  const companyId = await GetIDByName('companies', value as string)
+
+  emit('filter-changed', 'company', companyId)
 }
 
-function handleOfficeSelected(value: string | number) {
+const handleOfficeSelected = async (value: string | number) => {
+  if (!isOfficeSelected.value) {
+    prevOffices.value = offices.value
+  }
+
   isOfficeSelected.value = true
   isDivisionSelected.value = false
   isDepartmentSelected.value = false
   divisionPlaceholder.value = 'Pasirinkite padalinį'
   departmentPlaceholder.value = 'Pasirinkite skyrių'
   groupPlaceholder.value = 'Pasirinkite grupę'
-  emit('filter-changed', 'office', value)
+
+  const officeId = await GetIDByName('offices', value as string)
+
+  emit('filter-changed', 'office', officeId)
 }
 
-function handleDivisionSelected(value: string | number) {
+const handleDivisionSelected = async (value: string | number) => {
+  if (!isDivisionSelected.value) {
+    prevDivisions.value = divisions.value
+  }
+
   isDivisionSelected.value = true
   isDepartmentSelected.value = false
   divisionPlaceholder.value = 'Pasirinkite padalinį'
   departmentPlaceholder.value = 'Pasirinkite skyrių'
   groupPlaceholder.value = 'Pasirinkite grupę'
-  emit('filter-changed', 'division', value)
+
+  const divisionId = await GetIDByName('divisions', value as string)
+
+  emit('filter-changed', 'division', divisionId)
 }
 
-function handleDepartmentSelected(value: string | number) {
+const handleDepartmentSelected = async (value: string | number) => {
+  if (!isDepartmentSelected.value) {
+    prevDepartments.value = departments.value
+  }
+
   isDepartmentSelected.value = true
   departmentPlaceholder.value = 'Pasirinkite skyrių'
   groupPlaceholder.value = 'Pasirinkite grupę'
-  emit('filter-changed', 'department', value)
+
+  const departmentId = await GetIDByName('departments', value as string)
+
+  emit('filter-changed', 'department', departmentId)
 }
 
-function handleGroupSelected(value: string | number) {
-  emit('filter-changed', 'group', value)
+const handleGroupSelected = async (value: string | number) => {
+  if (!isDepartmentSelected.value) {
+    prevGroups.value = groups.value
+  }
+
+  isGroupSelected.value = true
+
+  const groupId = await GetIDByName('groups', value as string)
+
+  emit('filter-changed', 'group', groupId)
 }
 </script>

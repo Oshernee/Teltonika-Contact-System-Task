@@ -6,10 +6,17 @@ const pb = new PocketBase('http://127.0.0.1:8090')
 export async function getEmployees(
   perPage: number,
   page: number,
-  searchQuery: string
+  searchQuery: string,
+  filterQuery: { type: string; value: string | number }[] | null = null
 ): Promise<[Employee[], number]> {
   try {
     const filterConditions: string[] = []
+
+    if (filterQuery && filterQuery.length > 0) {
+      filterQuery.forEach((f) => {
+        filterConditions.push(`${f.type}_id="${f.value}"`)
+      })
+    }
 
     if (searchQuery) {
       searchQuery = searchQuery.replace(/"/g, '\\"')
