@@ -5,7 +5,7 @@
       title="Įmonė:"
       :placeholder="companyPlaceholder"
       filterBy="company"
-      :items="isCompanySelected ? prevCompanies : companies ?? []"
+      :items="companies"
       class="flex-1"
       @item-selected="handleCompanySelected"
     />
@@ -14,7 +14,7 @@
       title="Ofisas:"
       :placeholder="officePlaceholder"
       filterBy="office"
-      :items="isOfficeSelected ? prevOffices : offices ?? []"
+      :items="offices"
       class="flex-1"
       @item-selected="handleOfficeSelected"
     />
@@ -23,7 +23,7 @@
       title="Padalinys:"
       :placeholder="divisionPlaceholder"
       filterBy="division"
-      :items="isDivisionSelected ? prevDivisions : divisions ?? []"
+      :items="divisions"
       class="flex-1"
       @item-selected="handleDivisionSelected"
     />
@@ -32,7 +32,7 @@
       title="Skyrius:"
       :placeholder="departmentPlaceholder"
       filterBy="department"
-      :items="isDepartmentSelected ? prevDepartments : departments ?? []"
+      :items="departments"
       class="flex-1"
       @item-selected="handleDepartmentSelected"
     />
@@ -41,7 +41,7 @@
       title="Grupė:"
       :placeholder="groupPlaceholder"
       filterBy="group"
-      :items="isGroupSelected ? prevGroups : groups ?? []"
+      :items="groups"
       class="flex-1"
       @item-selected="handleGroupSelected"
     />
@@ -49,16 +49,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import type { Employee } from '../types/employees'
+import { onMounted, ref } from 'vue'
+
+import { getIdByName } from '../services/universalService'
+import { getCompanies } from '../services/companiesService'
+import { getFilteredOffices } from '../services/officesService'
+
 import Dropdown from './Dropdown.vue'
-import { GetIDByName, getNamesByCollection } from '../services/universalService'
 
 const isCompanySelected = ref(false)
 const isOfficeSelected = ref(false)
 const isDivisionSelected = ref(false)
 const isDepartmentSelected = ref(false)
-const isGroupSelected = ref(false)
 
 const companyPlaceholder = ref('Pasirinkite įmonę')
 const officePlaceholder = ref('Pasirinkite ofisą')
@@ -66,151 +68,103 @@ const divisionPlaceholder = ref('Pasirinkite padalinį')
 const departmentPlaceholder = ref('Pasirinkite skyrių')
 const groupPlaceholder = ref('Pasirinkite grupę')
 
-const prevCompanies = ref<string[]>([])
-const prevOffices = ref<string[]>([])
-const prevDivisions = ref<string[]>([])
-const prevDepartments = ref<string[]>([])
-const prevGroups = ref<string[]>([])
-
-const allCompanies = await getNamesByCollection('companies')
-const allOffices = await getNamesByCollection('offices')
-const allDivisions = await getNamesByCollection('divisions')
-const allDepartments = await getNamesByCollection('departments')
-const allGroups = await getNamesByCollection('groups')
-
-const props = defineProps<{
-  employees: Employee[]
-}>()
+const companies = ref<{ id: number | string; name: string }[]>([])
+const offices = ref<{ id: number | string; name: string }[]>([])
+const divisions = ref<{ id: number | string; name: string }[]>([])
+const departments = ref<{ id: number | string; name: string }[]>([])
+const groups = ref<{ id: number | string; name: string }[]>([])
 
 const emit = defineEmits<{
   'filter-changed': [filterType: string, value: string | number]
 }>()
 
-const companies = computed(() => {
-  const uniqueCompanies = new Set<string>()
-  props.employees.forEach((employee) => {
-    if (employee.expand?.company_id?.name) {
-      uniqueCompanies.add(employee.expand.company_id.name)
-    }
-  })
-  return Array.from(uniqueCompanies)
+onMounted(() => {
+  fetchCompanies()
 })
 
-const offices = computed(() => {
-  const uniqueOffices = new Set<string>()
-  props.employees.forEach((employee) => {
-    if (employee.expand?.office_id?.name) {
-      uniqueOffices.add(employee.expand.office_id.name)
-    }
-  })
-  return Array.from(uniqueOffices)
-})
-
-const divisions = computed(() => {
-  const uniqueDivisions = new Set<string>()
-  props.employees.forEach((employee) => {
-    if (employee.expand?.division_id?.name) {
-      uniqueDivisions.add(employee.expand.division_id.name)
-    }
-  })
-  return Array.from(uniqueDivisions)
-})
-
-const departments = computed(() => {
-  const uniqueDepartments = new Set<string>()
-  props.employees.forEach((employee) => {
-    if (employee.expand?.department_id?.name) {
-      uniqueDepartments.add(employee.expand.department_id.name)
-    }
-  })
-  return Array.from(uniqueDepartments)
-})
-
-const groups = computed(() => {
-  const uniqueGroups = new Set<string>()
-  props.employees.forEach((employee) => {
-    if (employee.expand?.group_id?.name) {
-      uniqueGroups.add(employee.expand.group_id.name)
-    }
-  })
-  return Array.from(uniqueGroups)
-})
-
-const handleCompanySelected = async (value: string | number) => {
-  if (!isCompanySelected.value) {
-    prevCompanies.value = companies.value
+const fetchCompanies = async () => {
+  try {
+    const companiesData = await getCompanies()
+    companies.value = companiesData
+      .map((company) => ({ id: company.id, name: company.name }))
+      .filter((item): item is { id: string; name: string } => item !== undefined)
+  } catch (error) {
+    console.error('Klaida gaunant įmones:', error)
   }
+}
 
+const fetchOffices = async (companyId: string) => {
+  try {
+    const officesData = await getFilteredOffices(companyId)
+    offices.value = officesData.offices
+      .map((office) => ({ id: office.id, name: office.name }))
+      .filter((item): item is { id: string; name: string } => item !== undefined)
+  } catch (error) {
+    console.error('Klaida gaunant ofisus:', error)
+  }
+}
+
+const handleCompanySelected = (selectedCompany: { id: number | string; name: string }) => {
   isCompanySelected.value = true
   isOfficeSelected.value = false
   isDivisionSelected.value = false
   isDepartmentSelected.value = false
+
   officePlaceholder.value = 'Pasirinkite ofisą'
   divisionPlaceholder.value = 'Pasirinkite padalinį'
   departmentPlaceholder.value = 'Pasirinkite skyrių'
   groupPlaceholder.value = 'Pasirinkite grupę'
 
-  const companyId = await GetIDByName('companies', value as string)
+  offices.value = []
+  divisions.value = []
+  departments.value = []
+  groups.value = []
 
-  emit('filter-changed', 'company', companyId)
+  fetchOffices(selectedCompany.id.toString())
+
+  emit('filter-changed', 'company', selectedCompany.id)
 }
 
-const handleOfficeSelected = async (value: string | number) => {
-  if (!isOfficeSelected.value) {
-    prevOffices.value = offices.value
-  }
-
+const handleOfficeSelected = (selectedOffice: { id: number | string; name: string }) => {
   isOfficeSelected.value = true
   isDivisionSelected.value = false
   isDepartmentSelected.value = false
+
   divisionPlaceholder.value = 'Pasirinkite padalinį'
   departmentPlaceholder.value = 'Pasirinkite skyrių'
   groupPlaceholder.value = 'Pasirinkite grupę'
 
-  const officeId = await GetIDByName('offices', value as string)
+  divisions.value = []
+  departments.value = []
+  groups.value = []
 
-  emit('filter-changed', 'office', officeId)
+  emit('filter-changed', 'office', selectedOffice.id)
 }
 
-const handleDivisionSelected = async (value: string | number) => {
-  if (!isDivisionSelected.value) {
-    prevDivisions.value = divisions.value
-  }
-
+const handleDivisionSelected = (selectedDivision: { id: number | string; name: string }) => {
   isDivisionSelected.value = true
   isDepartmentSelected.value = false
-  divisionPlaceholder.value = 'Pasirinkite padalinį'
+
   departmentPlaceholder.value = 'Pasirinkite skyrių'
   groupPlaceholder.value = 'Pasirinkite grupę'
 
-  const divisionId = await GetIDByName('divisions', value as string)
+  departments.value = []
+  groups.value = []
 
-  emit('filter-changed', 'division', divisionId)
+  emit('filter-changed', 'division', selectedDivision.id)
 }
 
-const handleDepartmentSelected = async (value: string | number) => {
-  if (!isDepartmentSelected.value) {
-    prevDepartments.value = departments.value
-  }
-
+const handleDepartmentSelected = (selectedDepartment: { id: number | string; name: string }) => {
   isDepartmentSelected.value = true
-  departmentPlaceholder.value = 'Pasirinkite skyrių'
+
   groupPlaceholder.value = 'Pasirinkite grupę'
 
-  const departmentId = await GetIDByName('departments', value as string)
+  groups.value = []
 
-  emit('filter-changed', 'department', departmentId)
+  emit('filter-changed', 'department', selectedDepartment.name)
 }
 
-const handleGroupSelected = async (value: string | number) => {
-  if (!isDepartmentSelected.value) {
-    prevGroups.value = groups.value
-  }
-
-  isGroupSelected.value = true
-
-  const groupId = await GetIDByName('groups', value as string)
-
-  emit('filter-changed', 'group', groupId)
+const handleGroupSelected = (selectedGroup: { id: number | string; name: string }) => {
+  emit('filter-changed', 'group', selectedGroup.id)
 }
 </script>

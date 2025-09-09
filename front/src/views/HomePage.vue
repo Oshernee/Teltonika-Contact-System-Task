@@ -12,7 +12,7 @@
         >{{ totalEmployees }} {{ totalEmployees > 10 ? 'kontaktų' : 'kontaktai' }}</span
       ></text
     >
-    <Filtering :employees="employees" @filter-changed="updateFiltering" />
+    <Filtering @filter-changed="updateFiltering" />
     <CardDisplayType :employees="employees" v-if="isCardView" />
     <TableDisplayType :employees="employees" v-if="!isCardView" />
     <Pagination

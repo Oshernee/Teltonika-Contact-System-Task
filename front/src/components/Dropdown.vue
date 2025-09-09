@@ -30,35 +30,37 @@
       class="absolute w-full top-full left-0 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 z-10 max-h-60 overflow-y-auto"
     >
       <div
-        v-for="item in filteredOptions"
-        :key="item"
+        v-for="item in props.items"
+        :key="item.id"
         @click="selectItem(item)"
         class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 border-b border-gray-100 last:border-b-0"
-        :class="{ 'bg-blue-50 text-blue-700': selectedItem === item }"
       >
-        {{ item }}
+        {{ item.name }}
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
   isDisabled: boolean
   title: string
   placeholder: string
   filterBy: string
-  items: string[]
+  items: {
+    id: number | string
+    name: string
+  }[]
 }>()
 
 const emit = defineEmits<{
-  'item-selected': [value: string | number]
+  'item-selected': [{ id: number | string; name: string }]
 }>()
 
 const showDropdown = ref(false)
-const selectedItem = ref<string | number | null>(null)
+const selectedItem = ref<{ id: number | string; name: string } | null>(null)
 
 watch(
   () => props.isDisabled,
@@ -70,19 +72,12 @@ watch(
   }
 )
 
-const filteredOptions = computed(() => {
-  if (!props.items || props.items.length === 0) {
-    return ['Nėra duomenų']
-  }
-  return props.items.filter((item) => item !== undefined && item !== null)
-})
-
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value
 }
 
-function selectItem(item: string | number) {
-  if (item === 'Nėra duomenų') return
+function selectItem(item: { id: number | string; name: string }) {
+  if (item.name === 'Nėra duomenų') return
 
   selectedItem.value = item
   showDropdown.value = false
