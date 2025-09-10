@@ -4,27 +4,27 @@
       <thead class="bg-gray-50">
         <tr>
           <th
-            class="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+            class="px-6 py-3 text-left text-md font-medium text-black uppercase tracking-wider border-b border-gray-200"
           >
             Vardas ir pavardė
           </th>
           <th
-            class="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+            class="px-6 py-3 text-left text-md font-medium text-black uppercase tracking-wider border-b border-gray-200"
           >
             Pozicija
           </th>
           <th
-            class="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+            class="px-6 py-3 text-left text-md font-medium text-black uppercase tracking-wider border-b border-gray-200"
           >
             Telefono numeris
           </th>
           <th
-            class="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+            class="px-6 py-3 text-left text-md font-medium text-black uppercase tracking-wider border-b border-gray-200"
           >
             Elektroninis paštas
           </th>
           <th
-            class="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+            class="px-6 py-3 text-left text-md font-medium text-black uppercase tracking-wider border-b border-gray-200"
           >
             Adresas
           </th>

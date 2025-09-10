@@ -10,7 +10,6 @@ export async function getCompanies(): Promise<Company[]> {
     })
     return records
   } catch (error) {
-    console.log('Error in getCompanies:', error)
     throw error
   }
 }

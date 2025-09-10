@@ -12,7 +12,6 @@ export async function getIdByName(collectionName: string, name: string): Promise
     }
     return ''
   } catch (error) {
-    console.log(`Error in getIdByName for ${collectionName}:`, error)
     throw error
   }
 }
@@ -34,10 +33,6 @@ export async function getLowerFilteredItems(
     )
     return filteredItems
   } catch (error) {
-    console.log(
-      `Error in getLowerFilteredItems for ${linkCollection} to ${targetCollection}:`,
-      error
-    )
     throw error
   }
 }

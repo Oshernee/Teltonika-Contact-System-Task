@@ -59,6 +59,8 @@ import { onMounted, ref, reactive } from 'vue'
 import { getCompanies } from '../services/companiesService'
 import { getLowerFilteredItems } from '../services/universalService'
 
+import { useNotificationStore } from '../stores/Notification'
+
 import Dropdown from './Dropdown.vue'
 
 const isCompanySelected = ref(false)
@@ -85,6 +87,8 @@ const divisions = ref<{ id: string; name: string }[]>([])
 const departments = ref<{ id: string; name: string }[]>([])
 const groups = ref<{ id: string; name: string }[]>([])
 
+const notificationStore = useNotificationStore()
+
 const filters = reactive({
   company: '',
   office: '',
@@ -108,7 +112,7 @@ const fetchCompanies = async () => {
       .map((company) => ({ id: company.id, name: company.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    console.error('Klaida gaunant įmones:', error)
+    notificationStore.addErrorNotification('Klaida gaunant įmones')
   }
 }
 
@@ -125,7 +129,7 @@ const fetchOffices = async (companyId: string) => {
       .map((office) => ({ id: office.id, name: office.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    console.error('Klaida gaunant ofisus:', error)
+    notificationStore.addErrorNotification('Klaida gaunant ofisus')
   }
 }
 
@@ -142,7 +146,7 @@ const fetchDivisions = async (officeId: string) => {
       .map((division) => ({ id: division.id, name: division.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    console.error('Klaida gaunant padalinius:', error)
+    notificationStore.addErrorNotification('Klaida gaunant padalinius:')
   }
 }
 
@@ -159,7 +163,7 @@ const fetchDepartments = async (divisionId: string) => {
       .map((department) => ({ id: department.id, name: department.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    console.error('Klaida gaunant skyrius:', error)
+    notificationStore.addErrorNotification('Klaida gaunant skyrius:')
   }
 }
 
@@ -176,7 +180,7 @@ const fetchGroups = async (departmentId: string) => {
       .map((group) => ({ id: group.id, name: group.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    console.error('Klaida gaunant grupes:', error)
+    notificationStore.addErrorNotification('Klaida gaunant grupes:')
   }
 }
 

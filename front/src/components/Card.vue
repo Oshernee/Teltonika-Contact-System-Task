@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+  <div class="rounded-lg border border-gray-200 p-4 shadow-sm">
     <div class="flex items-center mb-3">
       <div class="w-16 h-16 rounded-full flex items-center justify-center mr-3">
         <img
@@ -11,7 +11,7 @@
         <img v-else :src="Profile" class="w-16 h-16" alt="Profile" />
       </div>
       <div>
-        <h3 class="font-semibold text-gray-900">
+        <h3 class="font-semibold text-black">
           {{ props.employee.name + ' ' + props.employee.surname || 'Vardas ir pavardė' }}
         </h3>
         <p class="text-sm text-gray-500">
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div class="space-y-1 text-sm text-gray-600">
+    <div class="space-y-1 text-sm text-text">
       <p>Telefono nr: {{ props.employee.phone_number || 'Nėra duomenų' }}</p>
       <p>El. paštas: {{ props.employee.email || 'Nėra duomenų' }}</p>
       <p>

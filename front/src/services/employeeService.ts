@@ -40,7 +40,6 @@ export async function getEmployees(
 
     return [records.items, records.totalItems, currentPage.value]
   } catch (error) {
-    console.log('Error in getEmployees:', error)
     throw error
   }
 }

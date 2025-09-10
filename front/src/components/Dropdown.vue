@@ -4,12 +4,12 @@
     :disabled="props.isDisabled"
     :class="{ 'opacity-75 pointer-events-none': props.isDisabled }"
   >
-    <label class="block text-sm font-medium text-gray-700 mb-2">{{ props.title }}</label>
+    <label class="block text-sm font-medium text-text mb-2">{{ props.title }}</label>
     <button
       @click="toggleDropdown"
       class="h-[36px] w-full px-4 rounded-lg bg-white border border-gray-300 flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
-      <span class="text-gray-700">{{ props.selected }}</span>
+      <span class="text-text">{{ props.selected }}</span>
       <svg
         class="w-4 h-4 text-gray-500 transition-transform"
         :class="{ 'rotate-180': showDropdown }"
