@@ -1,5 +1,6 @@
 import type { Employee } from '../types/employees'
 import PocketBase from 'pocketbase'
+import { ref } from 'vue'
 
 const pb = new PocketBase('http://127.0.0.1:8090')
 
@@ -8,9 +9,10 @@ export async function getEmployees(
   page: number,
   searchQuery: string,
   filterQuery: { type: string; value: string | number }[] | null = null
-): Promise<[Employee[], number]> {
+): Promise<[Employee[], number, number]> {
   try {
     const filterConditions: string[] = []
+    const currentPage = ref(page)
 
     if (filterQuery && filterQuery.length > 0) {
       filterQuery.forEach((f) => {
@@ -20,7 +22,7 @@ export async function getEmployees(
 
     if (searchQuery) {
       searchQuery = searchQuery.replace(/"/g, '\\"')
-      const searchCondition = `name~"${searchQuery}" || surname~"${searchQuery}" || email~"${searchQuery}" || position~"${searchQuery}" || phone_number~"${searchQuery}"`
+      const searchCondition = `(name~"${searchQuery}" || surname~"${searchQuery}" || email~"${searchQuery}" || position~"${searchQuery}" || phone_number~"${searchQuery}")`
       filterConditions.push(searchCondition)
     }
 
@@ -31,7 +33,12 @@ export async function getEmployees(
       filter: filter,
     })
 
-    return [records.items, records.totalItems]
+    if (page > records.totalPages && records.totalPages > 0) {
+      currentPage.value = records.totalPages
+      return getEmployees(perPage, currentPage.value, searchQuery, filterQuery)
+    }
+
+    return [records.items, records.totalItems, currentPage.value]
   } catch (error) {
     console.log('Error in getEmployees:', error)
     throw error

@@ -4,6 +4,7 @@
       :isDisabled="false"
       title="Įmonė:"
       :placeholder="companyPlaceholder"
+      :selected="selectedCompany"
       filterBy="company"
       :items="companies"
       class="flex-1"
@@ -13,6 +14,7 @@
       :isDisabled="!isCompanySelected"
       title="Ofisas:"
       :placeholder="officePlaceholder"
+      :selected="selectedOffice"
       filterBy="office"
       :items="offices"
       class="flex-1"
@@ -22,6 +24,7 @@
       :isDisabled="!isOfficeSelected"
       title="Padalinys:"
       :placeholder="divisionPlaceholder"
+      :selected="selectedDivision"
       filterBy="division"
       :items="divisions"
       class="flex-1"
@@ -31,6 +34,7 @@
       :isDisabled="!isDivisionSelected"
       title="Skyrius:"
       :placeholder="departmentPlaceholder"
+      :selected="selectedDepartment"
       filterBy="department"
       :items="departments"
       class="flex-1"
@@ -40,6 +44,7 @@
       :isDisabled="!isDepartmentSelected"
       title="Grupė:"
       :placeholder="groupPlaceholder"
+      :selected="selectedGroup"
       filterBy="group"
       :items="groups"
       class="flex-1"
@@ -49,11 +54,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 
-import { getIdByName } from '../services/universalService'
 import { getCompanies } from '../services/companiesService'
-import { getFilteredOffices } from '../services/officesService'
+import { getLowerFilteredItems } from '../services/universalService'
 
 import Dropdown from './Dropdown.vue'
 
@@ -61,21 +65,36 @@ const isCompanySelected = ref(false)
 const isOfficeSelected = ref(false)
 const isDivisionSelected = ref(false)
 const isDepartmentSelected = ref(false)
+const isGroupSelected = ref(false)
 
-const companyPlaceholder = ref('Pasirinkite įmonę')
-const officePlaceholder = ref('Pasirinkite ofisą')
-const divisionPlaceholder = ref('Pasirinkite padalinį')
-const departmentPlaceholder = ref('Pasirinkite skyrių')
-const groupPlaceholder = ref('Pasirinkite grupę')
+const companyPlaceholder = 'Pasirinkite įmonę'
+const officePlaceholder = 'Pasirinkite ofisą'
+const divisionPlaceholder = 'Pasirinkite padalinį'
+const departmentPlaceholder = 'Pasirinkite skyrių'
+const groupPlaceholder = 'Pasirinkite grupę'
 
-const companies = ref<{ id: number | string; name: string }[]>([])
-const offices = ref<{ id: number | string; name: string }[]>([])
-const divisions = ref<{ id: number | string; name: string }[]>([])
-const departments = ref<{ id: number | string; name: string }[]>([])
-const groups = ref<{ id: number | string; name: string }[]>([])
+const selectedCompany = ref<string>(companyPlaceholder)
+const selectedOffice = ref<string>(officePlaceholder)
+const selectedDivision = ref<string>(divisionPlaceholder)
+const selectedDepartment = ref<string>(departmentPlaceholder)
+const selectedGroup = ref<string>(groupPlaceholder)
+
+const companies = ref<{ id: string; name: string }[]>([])
+const offices = ref<{ id: string; name: string }[]>([])
+const divisions = ref<{ id: string; name: string }[]>([])
+const departments = ref<{ id: string; name: string }[]>([])
+const groups = ref<{ id: string; name: string }[]>([])
+
+const filters = reactive({
+  company: '',
+  office: '',
+  division: '',
+  department: '',
+  group: '',
+})
 
 const emit = defineEmits<{
-  'filter-changed': [filterType: string, value: string | number]
+  'filter-changed': [filters: typeof filters]
 }>()
 
 onMounted(() => {
@@ -95,8 +114,14 @@ const fetchCompanies = async () => {
 
 const fetchOffices = async (companyId: string) => {
   try {
-    const officesData = await getFilteredOffices(companyId)
-    offices.value = officesData.offices
+    const officesData = await getLowerFilteredItems(
+      'companies_offices',
+      'offices',
+      'company_id',
+      'office_id',
+      companyId
+    )
+    offices.value = officesData
       .map((office) => ({ id: office.id, name: office.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
@@ -104,67 +129,137 @@ const fetchOffices = async (companyId: string) => {
   }
 }
 
-const handleCompanySelected = (selectedCompany: { id: number | string; name: string }) => {
-  isCompanySelected.value = true
+const fetchDivisions = async (officeId: string) => {
+  try {
+    const divisionsData = await getLowerFilteredItems(
+      'offices_divisions',
+      'divisions',
+      'office_id',
+      'division_id',
+      officeId
+    )
+    divisions.value = divisionsData
+      .map((division) => ({ id: division.id, name: division.name }))
+      .filter((item): item is { id: string; name: string } => item !== undefined)
+  } catch (error) {
+    console.error('Klaida gaunant padalinius:', error)
+  }
+}
+
+const fetchDepartments = async (divisionId: string) => {
+  try {
+    const departmentsData = await getLowerFilteredItems(
+      'divisions_departments',
+      'departments',
+      'division_id',
+      'department_id',
+      divisionId
+    )
+    departments.value = departmentsData
+      .map((department) => ({ id: department.id, name: department.name }))
+      .filter((item): item is { id: string; name: string } => item !== undefined)
+  } catch (error) {
+    console.error('Klaida gaunant skyrius:', error)
+  }
+}
+
+const fetchGroups = async (departmentId: string) => {
+  try {
+    const groupsData = await getLowerFilteredItems(
+      'departments_groups',
+      'groups',
+      'department_id',
+      'group_id',
+      departmentId
+    )
+    groups.value = groupsData
+      .map((group) => ({ id: group.id, name: group.name }))
+      .filter((item): item is { id: string; name: string } => item !== undefined)
+  } catch (error) {
+    console.error('Klaida gaunant grupes:', error)
+  }
+}
+
+const handleCompanySelected = (id: string, name: string) => {
+  selectedCompany.value = name
   isOfficeSelected.value = false
-  isDivisionSelected.value = false
-  isDepartmentSelected.value = false
-
-  officePlaceholder.value = 'Pasirinkite ofisą'
-  divisionPlaceholder.value = 'Pasirinkite padalinį'
-  departmentPlaceholder.value = 'Pasirinkite skyrių'
-  groupPlaceholder.value = 'Pasirinkite grupę'
-
   offices.value = []
-  divisions.value = []
-  departments.value = []
-  groups.value = []
 
-  fetchOffices(selectedCompany.id.toString())
+  if (id !== '') {
+    isCompanySelected.value = true
+    fetchOffices(id)
+    filters.company = id
+  } else {
+    filters.company = ''
+    isCompanySelected.value = false
+  }
 
-  emit('filter-changed', 'company', selectedCompany.id)
+  handleOfficeSelected('', officePlaceholder)
 }
 
-const handleOfficeSelected = (selectedOffice: { id: number | string; name: string }) => {
-  isOfficeSelected.value = true
+const handleOfficeSelected = (id: string, name: string) => {
+  selectedOffice.value = name
   isDivisionSelected.value = false
-  isDepartmentSelected.value = false
-
-  divisionPlaceholder.value = 'Pasirinkite padalinį'
-  departmentPlaceholder.value = 'Pasirinkite skyrių'
-  groupPlaceholder.value = 'Pasirinkite grupę'
-
   divisions.value = []
-  departments.value = []
-  groups.value = []
 
-  emit('filter-changed', 'office', selectedOffice.id)
+  if (id !== '') {
+    isOfficeSelected.value = true
+    fetchDivisions(id)
+    filters.office = id
+  } else {
+    filters.office = ''
+    isOfficeSelected.value = false
+  }
+
+  handleDivisionSelected('', divisionPlaceholder)
 }
 
-const handleDivisionSelected = (selectedDivision: { id: number | string; name: string }) => {
-  isDivisionSelected.value = true
+const handleDivisionSelected = (id: string, name: string) => {
+  selectedDivision.value = name
   isDepartmentSelected.value = false
-
-  departmentPlaceholder.value = 'Pasirinkite skyrių'
-  groupPlaceholder.value = 'Pasirinkite grupę'
-
   departments.value = []
-  groups.value = []
 
-  emit('filter-changed', 'division', selectedDivision.id)
+  if (id !== '') {
+    isDivisionSelected.value = true
+    fetchDepartments(id)
+    filters.division = id
+  } else {
+    filters.division = ''
+    isDivisionSelected.value = false
+  }
+
+  handleDepartmentSelected('', departmentPlaceholder)
 }
 
-const handleDepartmentSelected = (selectedDepartment: { id: number | string; name: string }) => {
-  isDepartmentSelected.value = true
-
-  groupPlaceholder.value = 'Pasirinkite grupę'
-
+const handleDepartmentSelected = (id: string, name: string) => {
+  selectedDepartment.value = name
+  isGroupSelected.value = false
   groups.value = []
 
-  emit('filter-changed', 'department', selectedDepartment.name)
+  if (id !== '') {
+    isDepartmentSelected.value = true
+    fetchGroups(id)
+    filters.department = id
+  } else {
+    filters.department = ''
+    isDepartmentSelected.value = false
+  }
+
+  handleGroupSelected('', groupPlaceholder)
 }
 
-const handleGroupSelected = (selectedGroup: { id: number | string; name: string }) => {
-  emit('filter-changed', 'group', selectedGroup.id)
+const handleGroupSelected = (id: string, name: string) => {
+  selectedGroup.value = name
+  isGroupSelected.value = false
+
+  if (id !== '') {
+    isGroupSelected.value = true
+    filters.group = id
+  } else {
+    filters.group = ''
+    isGroupSelected.value = false
+  }
+
+  emit('filter-changed', { ...filters })
 }
 </script>

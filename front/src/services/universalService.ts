@@ -16,3 +16,28 @@ export async function getIdByName(collectionName: string, name: string): Promise
     throw error
   }
 }
+
+export async function getLowerFilteredItems(
+  linkCollection: string,
+  targetCollection: string,
+  linkField: string,
+  targetField: string,
+  id: string
+): Promise<any[]> {
+  try {
+    const links = await pb
+      .collection(linkCollection)
+      .getFullList(200, { filter: `${linkField}="${id}"`, sort: '-created' })
+    const targetData = await pb.collection(targetCollection).getFullList(200, { sort: '-created' })
+    const filteredItems = targetData.filter((item) =>
+      links.some((link) => link[targetField] === item.id)
+    )
+    return filteredItems
+  } catch (error) {
+    console.log(
+      `Error in getLowerFilteredItems for ${linkCollection} to ${targetCollection}:`,
+      error
+    )
+    throw error
+  }
+}

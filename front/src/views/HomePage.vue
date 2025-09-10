@@ -58,6 +58,7 @@ const fetchEmployees = async () => {
     )
     employees.value = response[0]
     totalEmployees.value = response[1]
+    currentPage.value = response[2]
   } catch (error) {
     console.error('Klaida gaunant darbuotojus:', error)
   }
@@ -86,17 +87,10 @@ const updateViewType = () => {
   isCardView.value = !isCardView.value
 }
 
-const updateFiltering = (filterType: string, value: string | number) => {
-  if (value === 'ALL' || value === '') {
-    filterQuery.value = filterQuery.value.filter((f) => f.type !== filterType)
-  } else {
-    const existingFilterIndex = filterQuery.value.findIndex((f) => f.type === filterType)
-    if (existingFilterIndex !== -1) {
-      filterQuery.value[existingFilterIndex].value = value
-    } else {
-      filterQuery.value.push({ type: filterType, value })
-    }
-  }
+const updateFiltering = (filters: Record<string, string>) => {
+  filterQuery.value = Object.entries(filters)
+    .filter(([_, value]) => value !== '' && value !== 'ALL')
+    .map(([type, value]) => ({ type, value }))
   fetchEmployees()
 }
 </script>
