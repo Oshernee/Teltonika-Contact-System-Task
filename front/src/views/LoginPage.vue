@@ -1,8 +1,3 @@
-<template>
-  Login Page
-  <button @click="createEmployee()">KURK</button>
-</template>
+<template>Login Page</template>
 
-<script setup lang="ts">
-import createEmployee from '../extras/createNewEmployees'
-</script>
+<script setup lang="ts"></script>

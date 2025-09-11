@@ -46,6 +46,8 @@ import type { Employee } from '../types/employees'
 import Profile from '../assets/Profile.svg'
 import { useRouter } from 'vue-router'
 
+import { getPhotoUrl } from '../utils/photoUtils'
+
 const router = useRouter()
 
 const props = defineProps<{
@@ -54,11 +56,5 @@ const props = defineProps<{
 
 const pushToDetailedView = () => {
   router.push({ name: 'SingleContact', params: { id: props.employee.id } })
-}
-
-function getPhotoUrl(photo: string | File | undefined): string | undefined {
-  if (!photo) return undefined
-  if (typeof photo === 'string') return photo
-  return URL.createObjectURL(photo)
 }
 </script>
