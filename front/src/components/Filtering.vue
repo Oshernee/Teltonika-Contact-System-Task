@@ -3,50 +3,50 @@
     <Dropdown
       :isDisabled="false"
       title="Įmonė:"
-      :placeholder="companyPlaceholder"
-      :selected="selectedCompany"
+      :placeholder="PLACEHOLDERS.company"
+      :selected="selectedTargets.company"
       filterBy="company"
-      :items="companies"
+      :items="items.company"
       class="flex-1"
       @item-selected="handleCompanySelected"
     />
     <Dropdown
-      :isDisabled="!isCompanySelected"
+      :isDisabled="!isSelected.company"
       title="Ofisas:"
-      :placeholder="officePlaceholder"
-      :selected="selectedOffice"
+      :placeholder="PLACEHOLDERS.office"
+      :selected="selectedTargets.office"
       filterBy="office"
-      :items="offices"
+      :items="items.office"
       class="flex-1"
       @item-selected="handleOfficeSelected"
     />
     <Dropdown
-      :isDisabled="!isOfficeSelected"
+      :isDisabled="!isSelected.office"
       title="Padalinys:"
-      :placeholder="divisionPlaceholder"
-      :selected="selectedDivision"
+      :placeholder="PLACEHOLDERS.division"
+      :selected="selectedTargets.division"
       filterBy="division"
-      :items="divisions"
+      :items="items.division"
       class="flex-1"
       @item-selected="handleDivisionSelected"
     />
     <Dropdown
-      :isDisabled="!isDivisionSelected"
+      :isDisabled="!isSelected.division"
       title="Skyrius:"
-      :placeholder="departmentPlaceholder"
-      :selected="selectedDepartment"
+      :placeholder="PLACEHOLDERS.department"
+      :selected="selectedTargets.department"
       filterBy="department"
-      :items="departments"
+      :items="items.department"
       class="flex-1"
       @item-selected="handleDepartmentSelected"
     />
     <Dropdown
-      :isDisabled="!isDepartmentSelected"
+      :isDisabled="!isSelected.department"
       title="Grupė:"
-      :placeholder="groupPlaceholder"
-      :selected="selectedGroup"
+      :placeholder="PLACEHOLDERS.group"
+      :selected="selectedTargets.group"
       filterBy="group"
-      :items="groups"
+      :items="items.group"
       class="flex-1"
       @item-selected="handleGroupSelected"
     />
@@ -54,40 +54,42 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 
 import { getCompanies } from '../services/companiesService'
 import { getLowerFilteredItems } from '../services/universalService'
+
+import { PLACEHOLDERS, ERROR_MESSAGES, FILTER_LEVELS } from '../constants/filteringConstants'
 
 import { useNotificationStore } from '../stores/Notification'
 
 import Dropdown from './Dropdown.vue'
 
-const isCompanySelected = ref(false)
-const isOfficeSelected = ref(false)
-const isDivisionSelected = ref(false)
-const isDepartmentSelected = ref(false)
-const isGroupSelected = ref(false)
+type TargetKey = 'company' | 'office' | 'division' | 'department' | 'group'
 
-const companyPlaceholder = 'Pasirinkite įmonę'
-const officePlaceholder = 'Pasirinkite ofisą'
-const divisionPlaceholder = 'Pasirinkite padalinį'
-const departmentPlaceholder = 'Pasirinkite skyrių'
-const groupPlaceholder = 'Pasirinkite grupę'
+const items = reactive<Record<TargetKey, { id: string; name: string }[]>>({
+  company: [],
+  office: [],
+  division: [],
+  department: [],
+  group: [],
+})
 
-const selectedCompany = ref<string>(companyPlaceholder)
-const selectedOffice = ref<string>(officePlaceholder)
-const selectedDivision = ref<string>(divisionPlaceholder)
-const selectedDepartment = ref<string>(departmentPlaceholder)
-const selectedGroup = ref<string>(groupPlaceholder)
+const isSelected = reactive<Record<TargetKey, boolean>>({
+  company: false,
+  office: false,
+  division: false,
+  department: false,
+  group: false,
+})
 
-const companies = ref<{ id: string; name: string }[]>([])
-const offices = ref<{ id: string; name: string }[]>([])
-const divisions = ref<{ id: string; name: string }[]>([])
-const departments = ref<{ id: string; name: string }[]>([])
-const groups = ref<{ id: string; name: string }[]>([])
-
-const notificationStore = useNotificationStore()
+const selectedTargets = reactive<Record<TargetKey, string>>({
+  company: PLACEHOLDERS.company,
+  office: PLACEHOLDERS.office,
+  division: PLACEHOLDERS.division,
+  department: PLACEHOLDERS.department,
+  group: PLACEHOLDERS.group,
+})
 
 const filters = reactive({
   company: '',
@@ -96,6 +98,8 @@ const filters = reactive({
   department: '',
   group: '',
 })
+
+const notificationStore = useNotificationStore()
 
 const emit = defineEmits<{
   'filter-changed': [filters: typeof filters]
@@ -108,161 +112,109 @@ onMounted(() => {
 const fetchCompanies = async () => {
   try {
     const companiesData = await getCompanies()
-    companies.value = companiesData
-      .map((company) => ({ id: company.id, name: company.name }))
-      .filter((item): item is { id: string; name: string } => item !== undefined)
+    items.company = companiesData
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant įmones', error)
+    notificationStore.addErrorNotification(ERROR_MESSAGES.company, error)
   }
 }
 
 const fetchOffices = async (companyId: string) => {
   try {
-    const officesData = await getLowerFilteredItems(
-      'companies_offices',
-      'offices',
-      'company_id',
-      'office_id',
-      companyId
-    )
-    offices.value = officesData
-      .map((office) => ({ id: office.id, name: office.name }))
-      .filter((item): item is { id: string; name: string } => item !== undefined)
+    const officesData = await getLowerFilteredItems(FILTER_LEVELS.offices, companyId)
+    items.office = officesData
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant ofisus', error)
+    notificationStore.addErrorNotification(ERROR_MESSAGES.office, error)
   }
 }
 
 const fetchDivisions = async (officeId: string) => {
   try {
-    const divisionsData = await getLowerFilteredItems(
-      'offices_divisions',
-      'divisions',
-      'office_id',
-      'division_id',
-      officeId
-    )
-    divisions.value = divisionsData
-      .map((division) => ({ id: division.id, name: division.name }))
-      .filter((item): item is { id: string; name: string } => item !== undefined)
+    const divisionsData = await getLowerFilteredItems(FILTER_LEVELS.divisions, officeId)
+    items.division = divisionsData
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant padalinius', error)
+    notificationStore.addErrorNotification(ERROR_MESSAGES.division, error)
   }
 }
 
 const fetchDepartments = async (divisionId: string) => {
   try {
-    const departmentsData = await getLowerFilteredItems(
-      'divisions_departments',
-      'departments',
-      'division_id',
-      'department_id',
-      divisionId
-    )
-    departments.value = departmentsData
-      .map((department) => ({ id: department.id, name: department.name }))
-      .filter((item): item is { id: string; name: string } => item !== undefined)
+    const departmentsData = await getLowerFilteredItems(FILTER_LEVELS.departments, divisionId)
+    items.department = departmentsData
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant skyrius', error)
+    notificationStore.addErrorNotification(ERROR_MESSAGES.department, error)
   }
 }
 
 const fetchGroups = async (departmentId: string) => {
   try {
-    const groupsData = await getLowerFilteredItems(
-      'departments_groups',
-      'groups',
-      'department_id',
-      'group_id',
-      departmentId
-    )
-    groups.value = groupsData
-      .map((group) => ({ id: group.id, name: group.name }))
-      .filter((item): item is { id: string; name: string } => item !== undefined)
+    const groupsData = await getLowerFilteredItems(FILTER_LEVELS.groups, departmentId)
+    items.group = groupsData
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant grupes', error)
+    notificationStore.addErrorNotification(ERROR_MESSAGES.group, error)
   }
+}
+
+const handleFilterSelection = (
+  id: string,
+  name: string,
+  selectedRef: TargetKey,
+  targetRef: TargetKey
+) => {
+  selectedTargets[selectedRef] = name
+  isSelected[targetRef] = false
+  if (targetRef !== selectedRef) {
+    items[targetRef] = []
+  }
+
+  if (id !== '') {
+    isSelected[selectedRef] = true
+    filters[selectedRef] = id
+  } else {
+    filters[selectedRef] = ''
+    isSelected[selectedRef] = false
+  }
+
+  return true
 }
 
 const handleCompanySelected = (id: string, name: string) => {
-  selectedCompany.value = name
-  isOfficeSelected.value = false
-  offices.value = []
-
-  if (id !== '') {
-    isCompanySelected.value = true
+  const success = handleFilterSelection(id, name, 'company', 'office')
+  if (success && id !== '') {
     fetchOffices(id)
-    filters.company = id
-  } else {
-    filters.company = ''
-    isCompanySelected.value = false
   }
 
-  handleOfficeSelected('', officePlaceholder)
+  handleOfficeSelected('', PLACEHOLDERS.office)
 }
 
 const handleOfficeSelected = (id: string, name: string) => {
-  selectedOffice.value = name
-  isDivisionSelected.value = false
-  divisions.value = []
-
-  if (id !== '') {
-    isOfficeSelected.value = true
+  const success = handleFilterSelection(id, name, 'office', 'division')
+  if (success && id !== '') {
     fetchDivisions(id)
-    filters.office = id
-  } else {
-    filters.office = ''
-    isOfficeSelected.value = false
   }
 
-  handleDivisionSelected('', divisionPlaceholder)
+  handleDivisionSelected('', PLACEHOLDERS.division)
 }
 
 const handleDivisionSelected = (id: string, name: string) => {
-  selectedDivision.value = name
-  isDepartmentSelected.value = false
-  departments.value = []
-
-  if (id !== '') {
-    isDivisionSelected.value = true
+  const success = handleFilterSelection(id, name, 'division', 'department')
+  if (success && id !== '') {
     fetchDepartments(id)
-    filters.division = id
-  } else {
-    filters.division = ''
-    isDivisionSelected.value = false
   }
 
-  handleDepartmentSelected('', departmentPlaceholder)
+  handleDepartmentSelected('', PLACEHOLDERS.department)
 }
 
 const handleDepartmentSelected = (id: string, name: string) => {
-  selectedDepartment.value = name
-  isGroupSelected.value = false
-  groups.value = []
-
-  if (id !== '') {
-    isDepartmentSelected.value = true
+  const success = handleFilterSelection(id, name, 'department', 'group')
+  if (success && id !== '') {
     fetchGroups(id)
-    filters.department = id
-  } else {
-    filters.department = ''
-    isDepartmentSelected.value = false
   }
 
-  handleGroupSelected('', groupPlaceholder)
+  handleGroupSelected('', PLACEHOLDERS.group)
 }
 
 const handleGroupSelected = (id: string, name: string) => {
-  selectedGroup.value = name
-  isGroupSelected.value = false
-
-  if (id !== '') {
-    isGroupSelected.value = true
-    filters.group = id
-  } else {
-    filters.group = ''
-    isGroupSelected.value = false
-  }
+  handleFilterSelection(id, name, 'group', 'group')
 
   emit('filter-changed', { ...filters })
 }

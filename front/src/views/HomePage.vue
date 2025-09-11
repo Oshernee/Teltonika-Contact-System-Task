@@ -19,7 +19,7 @@
     <CardDisplayType :employees="employees" v-if="isCardView && employees.length > 0" />
     <TableDisplayType :employees="employees" v-if="!isCardView && employees.length > 0" />
     <Pagination
-      v-if="employeesPerPage !== 9999999"
+      v-if="employeesPerPage !== DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES"
       @page-changed="updateCurrentPage"
       :current-page="currentPage"
       :total-pages="Math.ceil(totalEmployees / employeesPerPage)"
@@ -31,6 +31,7 @@
 import { ref, onMounted } from 'vue'
 
 import { getEmployees } from '../services/employeeService'
+import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
 
 import SearchBar from '../components/SearchBar.vue'
 import Filtering from '../components/Filtering.vue'
@@ -44,8 +45,8 @@ import type { Employee } from '../types/employees'
 
 const employees = ref<Employee[]>([])
 const totalEmployees = ref(0)
-const employeesPerPage = ref(5)
-const currentPage = ref(1)
+const employeesPerPage = ref(DEFAULT_CONSTANTS.DEFAULT_EMPLOYEES_PER_PAGE)
+const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
 const searchQuery = ref('')
 const isCardView = ref(true)
 const filterQuery = ref<{ type: string; value: string | number }[]>([])

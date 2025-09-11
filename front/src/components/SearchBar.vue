@@ -49,6 +49,8 @@
 import { ref } from 'vue'
 import debounce from 'debounce'
 
+import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
+
 import searchIcon from '../assets/Search.svg'
 import paginationCount from '../assets/PaginationCount.svg'
 import toCard from '../assets/ToCard.svg'
@@ -74,7 +76,7 @@ const selectItemCountPerPage = (item: number | string) => {
   if (item === 'ALL') {
     selectedCount.value = 'ALL'
     showDropdown.value = false
-    emit('changeCount', 9999999)
+    emit('changeCount', DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES)
     return
   }
   selectedCount.value = item

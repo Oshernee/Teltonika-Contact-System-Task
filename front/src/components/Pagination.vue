@@ -36,8 +36,8 @@ const props = defineProps<{
 }>()
 
 const currentPage = ref(
-  props.currentPage > props.totalPages && props.currentPage > props.totalPages
-    ? props.totalPages
+  props.currentPage < 1 || props.currentPage > props.totalPages
+    ? Math.max(1, props.totalPages)
     : props.currentPage
 )
 

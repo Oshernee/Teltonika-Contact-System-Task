@@ -1,3 +1,5 @@
+import type { FilterLevel } from '../types/filter'
+
 import PocketBase from 'pocketbase'
 
 const pb = new PocketBase('http://127.0.0.1:8090')
@@ -16,20 +18,16 @@ export async function getIdByName(collectionName: string, name: string): Promise
   }
 }
 
-export async function getLowerFilteredItems(
-  linkCollection: string,
-  targetCollection: string,
-  linkField: string,
-  targetField: string,
-  id: string
-): Promise<any[]> {
+export async function getLowerFilteredItems(filterLevel: FilterLevel, id: string): Promise<any[]> {
   try {
     const links = await pb
-      .collection(linkCollection)
-      .getFullList(200, { filter: `${linkField}="${id}"`, sort: '-created' })
-    const targetData = await pb.collection(targetCollection).getFullList(200, { sort: '-created' })
+      .collection(filterLevel.linkCollection)
+      .getFullList(200, { filter: `${filterLevel.linkField}="${id}"`, sort: '-created' })
+    const targetData = await pb
+      .collection(filterLevel.targetCollection)
+      .getFullList(200, { sort: '-created' })
     const filteredItems = targetData.filter((item) =>
-      links.some((link) => link[targetField] === item.id)
+      links.some((link) => link[filterLevel.targetField] === item.id)
     )
     return filteredItems
   } catch (error) {
