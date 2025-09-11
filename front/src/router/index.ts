@@ -51,6 +51,7 @@ const routes = [
   {
     path: '/contacts/:id',
     name: 'SingleContact',
+    props: true,
     component: SingleContactPage,
   },
   {

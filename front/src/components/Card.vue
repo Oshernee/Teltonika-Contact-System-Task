@@ -1,5 +1,8 @@
 <template>
-  <div class="rounded-lg border border-gray-200 p-4 shadow-sm" @click="$emit('card-clicked')">
+  <div
+    class="rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-xl hover:border-gray-300 transition-all duration-200 cursor-pointer"
+    @click="pushToDetailedView"
+  >
     <div class="flex items-center mb-3">
       <div class="w-16 h-16 rounded-full flex items-center justify-center mr-3">
         <img
@@ -41,12 +44,17 @@
 import type { Employee } from '../types/employees'
 
 import Profile from '../assets/Profile.svg'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps<{
   employee: Employee
 }>()
 
-const emit = defineEmits(['card-clicked'])
+const pushToDetailedView = () => {
+  router.push({ name: 'SingleContact', params: { id: props.employee.id } })
+}
 
 function getPhotoUrl(photo: string | File | undefined): string | undefined {
   if (!photo) return undefined
