@@ -19,8 +19,17 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
 
-  const addErrorNotification = (message: string) => {
+  const addErrorNotification = (message: string, error: any) => {
     if (checkForDuplicate(message)) {
+      return
+    }
+
+    if (
+      error.message?.includes('autocancelled') ||
+      error.cause?.name === 'AbortError' ||
+      error.name === 'AbortError'
+    ) {
+      console.log('Request was auto-cancelled, ignoring error')
       return
     }
 

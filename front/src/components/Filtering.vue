@@ -112,7 +112,7 @@ const fetchCompanies = async () => {
       .map((company) => ({ id: company.id, name: company.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant įmones')
+    notificationStore.addErrorNotification('Klaida gaunant įmones', error)
   }
 }
 
@@ -129,7 +129,7 @@ const fetchOffices = async (companyId: string) => {
       .map((office) => ({ id: office.id, name: office.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant ofisus')
+    notificationStore.addErrorNotification('Klaida gaunant ofisus', error)
   }
 }
 
@@ -146,7 +146,7 @@ const fetchDivisions = async (officeId: string) => {
       .map((division) => ({ id: division.id, name: division.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant padalinius:')
+    notificationStore.addErrorNotification('Klaida gaunant padalinius', error)
   }
 }
 
@@ -163,7 +163,7 @@ const fetchDepartments = async (divisionId: string) => {
       .map((department) => ({ id: department.id, name: department.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant skyrius:')
+    notificationStore.addErrorNotification('Klaida gaunant skyrius', error)
   }
 }
 
@@ -180,7 +180,7 @@ const fetchGroups = async (departmentId: string) => {
       .map((group) => ({ id: group.id, name: group.name }))
       .filter((item): item is { id: string; name: string } => item !== undefined)
   } catch (error) {
-    notificationStore.addErrorNotification('Klaida gaunant grupes:')
+    notificationStore.addErrorNotification('Klaida gaunant grupes', error)
   }
 }
 
