@@ -10,8 +10,7 @@
         class="input w-[574px] h-[56px] pl-10 pr-4 rounded-lg bg-background border border-gray-300 text-text placeholder-gray-500"
         type="text"
         placeholder="Search"
-        v-model="input"
-        v-on:input="inputSearchQuery(input)"
+        v-on:input="handleInput"
       />
     </div>
     <div class="relative">
@@ -50,6 +49,7 @@ import { ref } from 'vue'
 import debounce from 'debounce'
 
 import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
+import { UNALLOWED_CHARACTERS } from '../constants/unallowedCharacters'
 
 import searchIcon from '../assets/Search.svg'
 import paginationCount from '../assets/PaginationCount.svg'
@@ -59,20 +59,34 @@ import toTable from '../assets/ToTable.svg'
 const showDropdown = ref(false)
 const selectedCount = ref<number | string | null>(null)
 const isCard = ref(true)
-const input = ref('')
 
 const emit = defineEmits(['changeView', 'changeCount', 'input-changed'])
 
-const inputSearchQuery = debounce((value: string) => {
-  input.value = value
+const debouncedEmit = debounce((value: string) => {
   emit('input-changed', value)
 }, 300)
+
+const validateSearchInput = (value: string) => {
+  for (const char in UNALLOWED_CHARACTERS) {
+    if (value.includes(char)) {
+      return false
+    }
+  }
+  return true
+}
+
+const handleInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const value = target.value
+  if (validateSearchInput(value)) {
+    debouncedEmit(value)
+  }
+}
 
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value
 }
 
-// Handle selection of employee count per page
 const selectItemCountPerPage = (item: number | string) => {
   if (item === 'ALL') {
     selectedCount.value = 'ALL'

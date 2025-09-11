@@ -21,7 +21,6 @@ export async function getEmployees(
     }
 
     if (searchQuery) {
-      searchQuery = searchQuery.replace(/"/g, '\\"')
       const searchCondition = `(name~"${searchQuery}" || surname~"${searchQuery}" || email~"${searchQuery}" || position~"${searchQuery}" || phone_number~"${searchQuery}")`
       filterConditions.push(searchCondition)
     }
