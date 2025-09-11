@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg border border-gray-200 p-4 shadow-sm">
+  <div class="rounded-lg border border-gray-200 p-4 shadow-sm" @click="$emit('card-clicked')">
     <div class="flex items-center mb-3">
       <div class="w-16 h-16 rounded-full flex items-center justify-center mr-3">
         <img
@@ -45,6 +45,8 @@ import Profile from '../assets/Profile.svg'
 const props = defineProps<{
   employee: Employee
 }>()
+
+const emit = defineEmits(['card-clicked'])
 
 function getPhotoUrl(photo: string | File | undefined): string | undefined {
   if (!photo) return undefined

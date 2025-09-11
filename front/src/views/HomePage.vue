@@ -16,8 +16,16 @@
     <div v-if="employees.length === 0" class="w-full text-center text-2xl text-text font-bold">
       Nėra kontaktų
     </div>
-    <CardDisplayType :employees="employees" v-if="isCardView && employees.length > 0" />
-    <TableDisplayType :employees="employees" v-if="!isCardView && employees.length > 0" />
+    <CardDisplayType
+      :employees="employees"
+      v-if="isCardView && employees.length > 0"
+      @card-clicked="redirectToDetailedView"
+    />
+    <TableDisplayType
+      :employees="employees"
+      v-if="!isCardView && employees.length > 0"
+      @card-clicked="redirectToDetailedView"
+    />
     <Pagination
       v-if="employeesPerPage !== DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES"
       @page-changed="updateCurrentPage"
@@ -93,6 +101,10 @@ const updateCurrentPage = (page: number) => {
 
 const updateViewType = () => {
   isCardView.value = !isCardView.value
+}
+
+const redirectToDetailedView = (employeeId: number) => {
+  console.log(`Redirect to detailed view of employee with ID: ${employeeId}`)
 }
 
 const updateFiltering = (filters: Record<string, string>) => {
