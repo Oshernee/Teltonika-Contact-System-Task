@@ -65,8 +65,10 @@ import { useNotificationStore } from '../stores/Notification'
 
 import Dropdown from './Dropdown.vue'
 
+// Define the keys used for filtering
 type TargetKey = 'company' | 'office' | 'division' | 'department' | 'group'
 
+// Reactive states for items, selection status, selected targets and filters
 const items = reactive<Record<TargetKey, { id: string; name: string }[]>>({
   company: [],
   office: [],
@@ -109,6 +111,7 @@ onMounted(() => {
   fetchCompanies()
 })
 
+// Fetch functions for each filter level
 const fetchCompanies = async () => {
   try {
     const companiesData = await getCompanies()
@@ -154,6 +157,7 @@ const fetchGroups = async (departmentId: string) => {
   }
 }
 
+// Universal handler function for each filter selection
 const handleFilterSelection = (
   id: string,
   name: string,
@@ -177,6 +181,7 @@ const handleFilterSelection = (
   return true
 }
 
+// Specific handlers for each filter level
 const handleCompanySelected = (id: string, name: string) => {
   const success = handleFilterSelection(id, name, 'company', 'office')
   if (success && id !== '') {

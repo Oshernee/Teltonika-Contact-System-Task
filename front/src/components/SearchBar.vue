@@ -72,6 +72,7 @@ const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value
 }
 
+// Handle selection of employee count per page
 const selectItemCountPerPage = (item: number | string) => {
   if (item === 'ALL') {
     selectedCount.value = 'ALL'

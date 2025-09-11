@@ -46,6 +46,7 @@ const props = defineProps<{
   employee: Employee
 }>()
 
+// Function to get the photo URL from string
 function getPhotoUrl(photo: string | File | undefined): string | undefined {
   if (!photo) return undefined
   if (typeof photo === 'string') return photo

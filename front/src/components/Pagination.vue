@@ -35,6 +35,7 @@ const props = defineProps<{
   totalPages: number
 }>()
 
+// Local state for current page, to manage edge cases
 const currentPage = ref(
   props.currentPage < 1 || props.currentPage > props.totalPages
     ? Math.max(1, props.totalPages)

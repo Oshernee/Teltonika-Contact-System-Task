@@ -69,6 +69,7 @@ const choices = computed(() => {
 const showDropdown = ref(false)
 const selectedItem = ref<{ id: number | string; name: string } | null>(null)
 
+// Watch for changes in isDisabled prop to reset selection and close dropdown
 watch(
   () => props.isDisabled,
   (newValue) => {
