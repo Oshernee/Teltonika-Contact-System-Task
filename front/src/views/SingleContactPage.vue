@@ -4,7 +4,7 @@
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start gap-4"
   >
     <text class="text-[56px] text-text font-thin">Detalesnė kontaktų informacija</text>
-    <div class="flex flex-row items-center">
+    <div class="flex flex-row items-center pb-8 pt-4">
       <div class="w-24 h-24 rounded-full flex items-center justify-center mr-3">
         <img
           v-if="employee.photo"
