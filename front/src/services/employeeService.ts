@@ -2,7 +2,7 @@ import type { Employee } from '../types/employees'
 import PocketBase from 'pocketbase'
 import { ref } from 'vue'
 
-const pb = new PocketBase('http://127.0.0.1:8090')
+const pb = new PocketBase('/base_url')
 
 export async function getEmployees(
   perPage: number,
