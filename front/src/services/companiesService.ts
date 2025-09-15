@@ -1,7 +1,5 @@
 import type { Company } from '../types/companies'
-import PocketBase from 'pocketbase'
-
-const pb = new PocketBase('/base_url')
+import pb from '../utils/globalInstance'
 
 export async function getCompanies(): Promise<Company[]> {
   try {

@@ -1,8 +1,5 @@
 import type { FilterLevel } from '../types/filter'
-
-import PocketBase from 'pocketbase'
-
-const pb = new PocketBase('/base_url')
+import pb from '../utils/globalInstance'
 
 export async function getIdByName(collectionName: string, name: string): Promise<string> {
   try {

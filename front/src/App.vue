@@ -11,6 +11,17 @@
 import Navbar from './components/Navbar.vue'
 import Modal from './components/Modal.vue'
 import Notifications from './components/Notifications.vue'
+import { useUserStore } from './stores/Auth'
+import { onMounted } from 'vue'
+import { subscribeToPermissionChanges } from './services/pocketbaseSubscriptionService'
+
+const userStore = useUserStore()
+
+onMounted(() => {
+  if (userStore.refreshUser() && userStore.user) {
+    subscribeToPermissionChanges(userStore.user.permissions_id)
+  }
+})
 </script>
 
 <style>

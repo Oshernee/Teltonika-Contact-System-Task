@@ -6,6 +6,7 @@ import AdminManagementPage from '../views/AdminManagementPage.vue'
 import CompanieManagementPage from '../views/CompanieManagementPage.vue'
 import StructureManagementPage from '../views/StructureManagementPage.vue'
 import SingleContactPage from '../views/SingleContactPage.vue'
+import RecoveryPage from '../views/RecoveryPage.vue'
 
 const routes = [
   {
@@ -32,6 +33,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: LoginPage,
+  },
+  {
+    path: '/password-recovery',
+    name: 'PasswordRecovery',
+    component: RecoveryPage,
   },
   {
     path: '/admin',

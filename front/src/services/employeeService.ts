@@ -1,8 +1,6 @@
 import type { Employee } from '../types/employees'
-import PocketBase from 'pocketbase'
 import { ref } from 'vue'
-
-const pb = new PocketBase('/base_url')
+import pb from '../utils/globalInstance'
 
 export async function getEmployees(
   perPage: number,
