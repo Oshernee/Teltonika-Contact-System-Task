@@ -1,10 +1,11 @@
 import pb from '../utils/globalInstance'
+import type { User } from '../types/users'
 
 export const login = async (email: string, password: string) => {
   try {
-    const authData = await pb.collection('users').authWithPassword(email, password)
+    const authData = await pb.collection('users').authWithPassword<User>(email, password)
 
-    return authData
+    return { user: authData.record, token: authData.token }
   } catch (error) {
     throw error
   }

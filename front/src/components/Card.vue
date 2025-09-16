@@ -7,9 +7,9 @@
       <div class="w-16 h-16 rounded-full flex items-center justify-center mr-3">
         <img
           v-if="props.employee.photo"
-          :src="getPhotoUrl(props.employee.photo)"
+          :src="getPhotoUrl(props.employee.photo, imageAPI)"
           :alt="props.employee.name + ' ' + props.employee.surname"
-          class="w-16 h-16 rounded-full object-cover"
+          class="w-12 h-12 rounded-full object-cover"
         />
         <img v-else :src="Profile" class="w-16 h-16" alt="Profile" />
       </div>
@@ -42,13 +42,19 @@
 
 <script lang="ts" setup>
 import type { Employee } from '../types/employees'
+import { computed } from 'vue'
 
 import Profile from '../assets/Profile.svg'
 import { useRouter } from 'vue-router'
 
 import { getPhotoUrl } from '../utils/photoUtils'
+import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
 
 const router = useRouter()
+
+const imageAPI = computed(() => {
+  return DEFAULT_CONSTANTS.EMPLOYEE_IMAGE_API + props.employee.id
+})
 
 const props = defineProps<{
   employee: Employee

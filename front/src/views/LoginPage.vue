@@ -114,37 +114,11 @@ const Login = async (email: string, password: string) => {
       return
     }
 
-    const user = await login(email, password)
-    const permissions = await getUserPermissions(user.record.permissions_id)
-    userStore.setUser(
-      {
-        id: user.record.id,
-        email: user.record.email,
-        permissions_id: user.record.permissions_id,
-        username: user.record.username,
-        name: user.record.name,
-        created_at: user.record.created_at,
-        updated_at: user.record.updated_at,
-      },
-      user.token
-    )
-    userStore.savePermissions({
-      id: permissions.id,
-      edit_employees: permissions.edit_employees,
-      delete_employees: permissions.delete_employees,
-      edit_offices: permissions.edit_offices,
-      delete_offices: permissions.delete_offices,
-      edit_structure: permissions.edit_structure,
-      delete_structure: permissions.delete_structure,
-      read_permissions: permissions.read_permissions,
-      edit_permissions: permissions.edit_permissions,
-      delete_permissions: permissions.delete_permissions,
-      edit_companies: permissions.edit_companies,
-      delete_companies: permissions.delete_companies,
-      updated_at: permissions.updated_at,
-      created_at: permissions.created_at,
-    })
-    subscribeToPermissionChanges(user.record.permissions_id)
+    const { user, token } = await login(email, password)
+    const permissions = await getUserPermissions(user.permissions_id)
+    userStore.setUser(user, token)
+    userStore.savePermissions(permissions)
+    subscribeToPermissionChanges(user.permissions_id)
     notificationStore.addSuccessNotification('Sėkmingai prisijungta')
     router.push('/')
   } catch (error) {
