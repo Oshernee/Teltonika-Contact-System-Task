@@ -3,7 +3,10 @@
     <ReturnButton side="left" />
     <div class="flex min-h-screen min-w-full justify-center items-center pt-10">
       <form class="bg-white p-8 rounded shadow-md w-[500px] flex flex-col items-center">
-        <h1 class="text-4xl mb-24 text-gray-800 font-medium">Slaptažodžio atkūrimas:</h1>
+        <h1 v-if="!isLoggedIn" class="text-4xl mb-24 text-gray-800 font-medium">
+          Slaptažodžio atkūrimas:
+        </h1>
+        <h1 v-else class="text-4xl mb-24 text-gray-800 font-medium">Slaptažodžio pakeitimas:</h1>
 
         <div class="mb-24 w-full max-w-[400px]">
           <label class="block text-gray-600 text-sm mb-2"> Elektroninis paštas: </label>
@@ -36,23 +39,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import ReturnButton from '../components/ReturnButton.vue'
 
+import { requestPasswordReset } from '../services/emailService'
+
 import Email from '../assets/Email.svg'
+
 import { validateEmail } from '../utils/validateInputs'
+import { useUserStore } from '../stores/Auth'
 
 const email = ref('')
-
 const emailError = ref('')
 
-const RecoverPassword = (email: string) => {
+const userStore = useUserStore()
+const isLoggedIn = computed(() => userStore.isLoggedIn())
+
+if (isLoggedIn) {
+  console.log('User is logged in')
+}
+
+const RecoverPassword = async (email: string) => {
   emailError.value = validateEmail(email)
   if (emailError.value) {
     return
   }
-
-  // Password recovery logic here
+  try {
+    await requestPasswordReset(email)
+  } catch (error) {
+    emailError.value = 'Nepavyko atsiųsti slaptažodžio atkūrimo nuorodos'
+  }
 }
 </script>
