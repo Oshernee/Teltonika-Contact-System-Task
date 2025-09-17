@@ -22,7 +22,6 @@
               type="email"
               placeholder="Įveskite el. pašto adresą..."
               v-model="email"
-              @keyup.enter="RecoverPassword(email)"
             />
           </div>
           <div class="text-red-500 text-sm mt-1 absolute" v-if="emailError">

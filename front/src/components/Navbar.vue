@@ -101,7 +101,12 @@ const userStore = useUserStore()
 
 const route = useRoute()
 
-const isInLogin = computed(() => route.path === '/login' || route.path === '/password-recovery')
+const isInLogin = computed(
+  () =>
+    route.path === '/login' ||
+    route.path === '/password-recovery' ||
+    route.path.startsWith('/confirm-password-reset/')
+)
 
 const isLoggedIn = computed(() => userStore.isLoggedIn())
 

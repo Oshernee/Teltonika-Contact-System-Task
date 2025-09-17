@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
 import HomePage from '../views/HomePage.vue'
 import NotFound from '../views/NotFound.vue'
 import LoginPage from '../views/LoginPage.vue'
@@ -7,6 +8,8 @@ import CompanieManagementPage from '../views/CompanieManagementPage.vue'
 import StructureManagementPage from '../views/StructureManagementPage.vue'
 import SingleContactPage from '../views/SingleContactPage.vue'
 import RecoveryPage from '../views/RecoveryPage.vue'
+import PasswordResetPage from '../views/PasswordResetPage.vue'
+
 import { useUserStore } from '../stores/Auth'
 
 const routes = [
@@ -39,6 +42,11 @@ const routes = [
     path: '/password-recovery',
     name: 'PasswordRecovery',
     component: RecoveryPage,
+  },
+  {
+    path: '/confirm-password-reset/:token',
+    name: 'ConfirmPasswordReset',
+    component: PasswordResetPage,
   },
   {
     path: '/admin',
@@ -77,7 +85,20 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   const isAuthenticated = userStore.isLoggedIn()
 
-  const publicRoutes = ['Login', 'PasswordRecovery', 'Home', 'HomeAlias', 'Contacts']
+  const publicRoutes = [
+    'Login',
+    'PasswordRecovery',
+    'Home',
+    'HomeAlias',
+    'Contacts',
+    'ConfirmPasswordReset',
+    'NotFound',
+  ]
+
+  if (to.name === 'ConfirmPasswordReset' && from.name !== undefined) {
+    next({ name: 'Home' })
+    return
+  }
 
   if (!isAuthenticated && !publicRoutes.includes(to.name as string)) {
     next({ name: 'Login' })
