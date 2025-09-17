@@ -7,6 +7,7 @@ import CompanieManagementPage from '../views/CompanieManagementPage.vue'
 import StructureManagementPage from '../views/StructureManagementPage.vue'
 import SingleContactPage from '../views/SingleContactPage.vue'
 import RecoveryPage from '../views/RecoveryPage.vue'
+import { useUserStore } from '../stores/Auth'
 
 const routes = [
   {
@@ -70,6 +71,33 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+  const isAuthenticated = userStore.isLoggedIn()
+
+  const publicRoutes = ['Login', 'PasswordRecovery', 'Home', 'HomeAlias', 'Contacts']
+
+  if (!isAuthenticated && !publicRoutes.includes(to.name as string)) {
+    next({ name: 'Login' })
+    return
+  }
+
+  if (to.name === 'Admin' && isAuthenticated) {
+    try {
+      const userStore = useUserStore()
+      if (userStore.user?.name !== 'admin') {
+        next({ name: 'Home' })
+        return
+      }
+    } catch (error) {
+      next({ name: 'Login' })
+      return
+    }
+  }
+
+  next()
 })
 
 export default router
