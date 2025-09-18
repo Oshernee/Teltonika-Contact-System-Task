@@ -55,7 +55,7 @@
                 @click="showPassword[1] = !showPassword[1]"
               >
                 <img
-                  v-if="!showPassword"
+                  v-if="!showPassword[1]"
                   :src="SeePassword"
                   class="w-6 h-6 text-gray-400"
                   alt="Show password"
@@ -90,6 +90,8 @@ import Password from '@/assets/Password.svg'
 import { validatePassword } from '@/utils/validateInputs'
 
 import { useNotificationStore } from '@/stores/Notification'
+import { useUserStore } from '@/stores/Auth'
+
 import { useRoute, useRouter } from 'vue-router'
 
 const password = ref(['', ''])
@@ -101,6 +103,7 @@ const notificationStore = useNotificationStore()
 
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
 const token = route.params.token as string
 
 const submitPasswordChange = async (newPassword: string, token: string) => {
@@ -117,6 +120,7 @@ const submitPasswordChange = async (newPassword: string, token: string) => {
   try {
     await ChangePassword(newPassword, token)
     notificationStore.addSuccessNotification('Slaptažodis sėkmingai pakeistas!')
+    userStore.clearUser()
     router.push('/login')
   } catch (error) {
     notificationStore.addErrorNotification('Nepavyko pakeisti slaptažodžio.', error)
