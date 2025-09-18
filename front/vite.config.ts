@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/base_url': {
-        target: 'http://127.0.0.1:8090',
+        target: 'http://localhost:8090',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/base_url/, ''),
       },

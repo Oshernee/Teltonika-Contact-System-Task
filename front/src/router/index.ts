@@ -64,22 +64,22 @@ const routes = [
     //component: StructureManagementPage,
     children: [
       {
-        path: 'office/:id',
+        path: 'offices',
         name: 'OfficeStructureDetail',
         component: StructureManagementPage,
       },
       {
-        path: 'division/:id',
+        path: 'divisions',
         name: 'DivisionStructureDetail',
         component: StructureManagementPage,
       },
       {
-        path: 'department/:id',
+        path: 'departments',
         name: 'DepartmentStructureDetail',
         component: StructureManagementPage,
       },
       {
-        path: 'group/:id',
+        path: 'groups',
         name: 'GroupStructureDetail',
         component: StructureManagementPage,
       },
@@ -113,11 +113,22 @@ router.beforeEach((to, from, next) => {
     'Home',
     'HomeAlias',
     'Contacts',
+    'SingleContact',
     'ConfirmPasswordReset',
     'NotFound',
   ]
 
   if (to.name === 'ConfirmPasswordReset' && from.name !== undefined) {
+    next({ name: 'Home' })
+    return
+  }
+
+  if (to.name === 'Login' && isAuthenticated) {
+    next({ name: 'Home' })
+    return
+  }
+
+  if (from.name === 'Login' && !publicRoutes.includes(to.name as string)) {
     next({ name: 'Home' })
     return
   }

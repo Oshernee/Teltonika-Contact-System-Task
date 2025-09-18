@@ -2,7 +2,10 @@
   <div class="min-h-screen min-w-full bg-secondary flex flex-col">
     <ReturnButton side="left" />
     <div class="flex min-h-screen min-w-full justify-center items-center pt-10">
-      <form class="bg-white p-8 rounded shadow-md w-[500px] flex flex-col items-center">
+      <form
+        class="bg-white p-8 rounded shadow-md w-[500px] flex flex-col items-center"
+        @submit.prevent="Login(email, password)"
+      >
         <h1 class="text-4xl mb-8 text-gray-800 font-medium">Admin prisijungimas:</h1>
 
         <div class="mb-10 w-full max-w-[400px]">
@@ -62,8 +65,7 @@
 
         <button
           class="w-full max-w-[400px] bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          type="button"
-          @click="Login(email, password)"
+          type="submit"
         >
           PRISIJUNGTI
         </button>
@@ -98,6 +100,7 @@ const password = ref('')
 
 const emailError = ref('')
 const passwordError = ref('')
+const showPassword = ref(false)
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
@@ -120,7 +123,6 @@ const Login = async (email: string, password: string) => {
     notificationStore.addSuccessNotification('Sėkmingai prisijungta')
     router.push('/')
   } catch (error) {
-    console.log(error)
     notificationStore.addErrorNotification('Prisijungti nepavyko, bandykite dar kartą', error)
     password = ''
     return null

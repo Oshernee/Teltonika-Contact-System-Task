@@ -24,7 +24,7 @@
           Įmonės
         </button>
       </RouterLink>
-      <RouterLink to="/structures" class="no-underline">
+      <RouterLink to="/structures/offices" class="no-underline">
         <button
           class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
         >

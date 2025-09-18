@@ -10,3 +10,13 @@ export const login = async (email: string, password: string) => {
     throw error
   }
 }
+
+export const refreshUserInformation = async () => {
+  try {
+    const authData = await pb.collection('users').authRefresh<User>()
+
+    return { user: authData.record, token: authData.token }
+  } catch (error) {
+    throw error
+  }
+}

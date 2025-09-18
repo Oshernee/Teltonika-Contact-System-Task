@@ -15,17 +15,18 @@
               </div>
               <input
                 class="w-full pl-10 pr-10 py-3 bg-gray-100 border-0 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500"
-                :type="passwordVisible[0] ? 'text' : 'password'"
+                :type="showPassword[0] ? 'text' : 'password'"
                 id="password-0"
                 placeholder="Įveskite slaptažodį..."
                 v-model="password[0]"
               />
               <div
                 class="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer"
-                @click="switchPasswordVisibility(0)"
+                tabindex="0"
+                @click="showPassword[0] = !showPassword[0]"
               >
                 <img
-                  v-if="!passwordVisible[0]"
+                  v-if="!showPassword[0]"
                   :src="SeePassword"
                   class="w-6 h-6 text-gray-400"
                   alt="Show password"
@@ -44,17 +45,17 @@
               </div>
               <input
                 class="w-full pl-10 pr-10 py-3 bg-gray-100 border-0 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500"
-                :type="passwordVisible[1] ? 'text' : 'password'"
+                :type="showPassword[1] ? 'text' : 'password'"
                 id="password-1"
                 placeholder="Pakartokite slaptažodį..."
                 v-model="password[1]"
               />
               <div
                 class="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer"
-                @click="switchPasswordVisibility(1)"
+                @click="showPassword[1] = !showPassword[1]"
               >
                 <img
-                  v-if="!passwordVisible[1]"
+                  v-if="!showPassword"
                   :src="SeePassword"
                   class="w-6 h-6 text-gray-400"
                   alt="Show password"
@@ -94,7 +95,7 @@ import { useRoute, useRouter } from 'vue-router'
 const password = ref(['', ''])
 const passwordError = ref(['', ''])
 
-const passwordVisible = ref([false, false])
+const showPassword = ref([false, false])
 
 const notificationStore = useNotificationStore()
 
@@ -120,9 +121,5 @@ const submitPasswordChange = async (newPassword: string, token: string) => {
   } catch (error) {
     notificationStore.addErrorNotification('Nepavyko pakeisti slaptažodžio.', error)
   }
-}
-
-const switchPasswordVisibility = (index: number) => {
-  passwordVisible.value[index] = !passwordVisible.value[index]
 }
 </script>

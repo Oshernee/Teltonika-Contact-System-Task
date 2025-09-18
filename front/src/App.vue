@@ -17,9 +17,11 @@ import { subscribeToPermissionChanges } from '@/services/pocketbaseSubscriptionS
 
 const userStore = useUserStore()
 
-onMounted(() => {
-  if (userStore.refreshUser() && userStore.user) {
-    subscribeToPermissionChanges(userStore.user.permissions_id)
+onMounted(async () => {
+  if (userStore.reauthenticateOnPageReload()) {
+    if (userStore.user !== null) {
+      subscribeToPermissionChanges(userStore.user.permissions_id)
+    }
   }
 })
 </script>
