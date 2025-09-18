@@ -31,10 +31,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const reauthenticateOnPageReload = async () => {
-    if (
-      user.value === null &&
-      (accessToken.value !== null || localStorage.getItem('pocketbase_auth') !== null)
-    ) {
+    if (localStorage.getItem('pocketbase_auth') !== null) {
       refreshUser()
       return true
     }
