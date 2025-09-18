@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { User } from '../types/users'
-import type { UserPermission } from '../types/user_permissions'
-import { unsubscribeFromPermissionChanges } from '../services/pocketbaseSubscriptionService'
+import type { User } from '@/types/users'
+import type { UserPermission } from '@/types/user_permissions'
+import { unsubscribeFromPermissionChanges } from '@/services/pocketbaseSubscriptionService'
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(null)

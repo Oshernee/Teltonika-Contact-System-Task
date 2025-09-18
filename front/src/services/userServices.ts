@@ -1,5 +1,5 @@
-import pb from '../utils/globalInstance'
-import type { User } from '../types/users'
+import pb from '@/services/globalInstance'
+import type { User } from '@/types/users'
 
 export const login = async (email: string, password: string) => {
   try {

@@ -56,14 +56,14 @@
 <script lang="ts" setup>
 import { onMounted, reactive } from 'vue'
 
-import { getCompanies } from '../services/companiesService'
-import { getLowerFilteredItems } from '../services/universalService'
+import { getCompanies } from '@/services/companiesService'
+import { getLowerFilteredItems } from '@/services/universalService'
 
-import { PLACEHOLDERS, ERROR_MESSAGES, FILTER_LEVELS } from '../constants/filteringConstants'
+import { PLACEHOLDERS, ERROR_MESSAGES, FILTER_LEVELS } from '@/constants/filteringConstants'
 
-import { useNotificationStore } from '../stores/Notification'
+import { useNotificationStore } from '@/stores/Notification'
 
-import Dropdown from './Dropdown.vue'
+import Dropdown from '@/components/ui/Dropdown.vue'
 
 // Define the keys used for filtering
 type TargetKey = 'company' | 'office' | 'division' | 'department' | 'group'

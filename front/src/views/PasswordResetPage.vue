@@ -80,15 +80,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { ChangePassword } from '../services/passwordService'
+import { ChangePassword } from '@/services/passwordService'
 
-import SeePassword from '../assets/SeePassword.svg'
-import HidePassword from '../assets/HidePassword.svg'
-import Password from '../assets/Password.svg'
+import SeePassword from '@/assets/SeePassword.svg'
+import HidePassword from '@/assets/HidePassword.svg'
+import Password from '@/assets/Password.svg'
 
-import { validatePassword } from '../utils/validateInputs'
+import { validatePassword } from '@/utils/validateInputs'
 
-import { useNotificationStore } from '../stores/Notification'
+import { useNotificationStore } from '@/stores/Notification'
 import { useRoute, useRouter } from 'vue-router'
 
 const password = ref(['', ''])

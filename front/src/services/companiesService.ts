@@ -1,5 +1,5 @@
-import type { Company } from '../types/companies'
-import pb from '../utils/globalInstance'
+import type { Company } from '@/types/companies'
+import pb from '@/services/globalInstance'
 
 export async function getCompanies(): Promise<Company[]> {
   try {

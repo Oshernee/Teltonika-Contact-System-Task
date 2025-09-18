@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import Back from '../assets/Return.svg'
+import Back from '@/assets/Return.svg'
 
 const props = defineProps<{
   side?: string

@@ -31,17 +31,17 @@
             </div>
             <input
               class="w-full pl-10 pr-10 py-3 bg-gray-100 border-0 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               id="password"
               placeholder="Įveskite slaptažodį..."
               v-model="password"
             />
             <div
               class="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer"
-              @click="switchPasswordVisibility"
+              @click="showPassword = !showPassword"
             >
               <img
-                v-if="!passwordVisible"
+                v-if="!showPassword"
                 :src="SeePassword"
                 class="w-6 h-6 text-gray-400"
                 alt="Show password"
@@ -76,30 +76,28 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { validateEmail, validatePassword } from '../utils/validateInputs'
+import { validateEmail, validatePassword } from '@/utils/validateInputs'
 
-import { login } from '../services/userServices'
-import { getUserPermissions } from '../services/permissionsService'
+import { login } from '@/services/userServices'
+import { getUserPermissions } from '@/services/permissionsService'
 
-import ReturnButton from '../components/ReturnButton.vue'
+import ReturnButton from '@/components/ui/ReturnButton.vue'
 
-import { useNotificationStore } from '../stores/Notification'
-import { useUserStore } from '../stores/Auth'
+import { useNotificationStore } from '@/stores/Notification'
+import { useUserStore } from '@/stores/Auth'
 
-import Email from '../assets/Email.svg'
-import Password from '../assets/Password.svg'
-import SeePassword from '../assets/SeePassword.svg'
-import HidePassword from '../assets/HidePassword.svg'
+import Email from '@/assets/Email.svg'
+import Password from '@/assets/Password.svg'
+import SeePassword from '@/assets/SeePassword.svg'
+import HidePassword from '@/assets/HidePassword.svg'
 
-import { subscribeToPermissionChanges } from '../services/pocketbaseSubscriptionService'
+import { subscribeToPermissionChanges } from '@/services/pocketbaseSubscriptionService'
 
 const email = ref('')
 const password = ref('')
 
 const emailError = ref('')
 const passwordError = ref('')
-
-const passwordVisible = ref(false)
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
@@ -126,17 +124,6 @@ const Login = async (email: string, password: string) => {
     notificationStore.addErrorNotification('Prisijungti nepavyko, bandykite dar kartą', error)
     password = ''
     return null
-  }
-}
-
-const switchPasswordVisibility = () => {
-  const passwordInput = document.getElementById('password') as HTMLInputElement
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text'
-    passwordVisible.value = true
-  } else {
-    passwordInput.type = 'password'
-    passwordVisible.value = false
   }
 }
 </script>

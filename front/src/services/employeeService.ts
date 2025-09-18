@@ -1,6 +1,6 @@
-import type { Employee } from '../types/employees'
+import type { Employee } from '@/types/employees'
 import { ref } from 'vue'
-import pb from '../utils/globalInstance'
+import pb from '@/services/globalInstance'
 
 export async function getEmployees(
   perPage: number,

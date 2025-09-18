@@ -90,12 +90,12 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
 import { computed, ref } from 'vue'
-import { useUserStore } from '../stores/Auth'
-import { getPhotoUrl } from '../utils/photoUtils'
+import { useUserStore } from '@/stores/Auth'
+import { getPhotoUrl } from '@/utils/photoUtils'
 
-import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
+import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
-import NavbarIcon from '../assets/NavbarIcon.svg'
+import NavbarIcon from '@/assets/NavbarIcon.svg'
 
 const userStore = useUserStore()
 

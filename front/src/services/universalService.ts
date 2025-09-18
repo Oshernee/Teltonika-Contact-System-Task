@@ -1,5 +1,5 @@
-import type { FilterLevel } from '../types/filter'
-import pb from '../utils/globalInstance'
+import type { FilterLevel } from '@/types/filter'
+import pb from '@/services/globalInstance'
 
 export async function getIdByName(collectionName: string, name: string): Promise<string> {
   try {

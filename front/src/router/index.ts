@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import HomePage from '../views/HomePage.vue'
-import NotFound from '../views/NotFound.vue'
-import LoginPage from '../views/LoginPage.vue'
-import AdminManagementPage from '../views/AdminManagementPage.vue'
-import CompanieManagementPage from '../views/CompanieManagementPage.vue'
-import StructureManagementPage from '../views/StructureManagementPage.vue'
-import SingleContactPage from '../views/SingleContactPage.vue'
-import RecoveryPage from '../views/RecoveryPage.vue'
-import PasswordResetPage from '../views/PasswordResetPage.vue'
+import HomePage from '@/views/HomePage.vue'
+import NotFound from '@/views/NotFound.vue'
+import LoginPage from '@/views/LoginPage.vue'
+import AdminManagementPage from '@/views/AdminManagementPage.vue'
+import CompanieManagementPage from '@/views/CompanieManagementPage.vue'
+import StructureManagementPage from '@/views/StructureManagementPage.vue'
+import SingleContactPage from '@/views/SingleContactPage.vue'
+import RecoveryPage from '@/views/RecoveryPage.vue'
+import PasswordResetPage from '@/views/PasswordResetPage.vue'
 
-import { useUserStore } from '../stores/Auth'
+import { useUserStore } from '@/stores/Auth'
 
 const routes = [
   {
@@ -60,8 +60,30 @@ const routes = [
   },
   {
     path: '/structures',
-    name: 'Structures',
-    component: StructureManagementPage,
+    //name: 'Structures',
+    //component: StructureManagementPage,
+    children: [
+      {
+        path: 'office/:id',
+        name: 'OfficeStructureDetail',
+        component: StructureManagementPage,
+      },
+      {
+        path: 'division/:id',
+        name: 'DivisionStructureDetail',
+        component: StructureManagementPage,
+      },
+      {
+        path: 'department/:id',
+        name: 'DepartmentStructureDetail',
+        component: StructureManagementPage,
+      },
+      {
+        path: 'group/:id',
+        name: 'GroupStructureDetail',
+        component: StructureManagementPage,
+      },
+    ],
   },
   {
     path: '/contacts/:id',

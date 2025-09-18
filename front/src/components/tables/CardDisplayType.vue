@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import Card from './Card.vue'
-import type { Employee } from '../types/employees'
+import Card from '@/components/cards/Card.vue'
+import type { Employee } from '@/types/employees'
 
 const props = defineProps<{
   employees: Employee[]

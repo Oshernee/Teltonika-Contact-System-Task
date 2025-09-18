@@ -34,19 +34,19 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { getSingleEmployee } from '../services/employeeService'
+import { getSingleEmployee } from '@/services/employeeService'
 import { useRouter } from 'vue-router'
-import { useNotificationStore } from '../stores/Notification'
+import { useNotificationStore } from '@/stores/Notification'
 
-import Profile from '../assets/Profile.svg'
+import Profile from '@/assets/Profile.svg'
 
-import { getPhotoUrl } from '../utils/photoUtils'
+import { getPhotoUrl } from '@/utils/photoUtils'
 
-import type { Employee } from '../types/employees'
+import type { Employee } from '@/types/employees'
 
-import ReturnButton from '../components/ReturnButton.vue'
-import UnableToLoadCard from '../components/UnableToLoadCard.vue'
-import ContactInformationCard from '../components/ContactInformationCard.vue'
+import ReturnButton from '@/components/ui/ReturnButton.vue'
+import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
+import ContactInformationCard from '@/components/cards/ContactInformationCard.vue'
 
 const employee = ref<Employee | null>(null)
 const notificationStore = useNotificationStore()

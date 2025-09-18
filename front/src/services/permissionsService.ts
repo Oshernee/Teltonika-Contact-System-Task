@@ -1,5 +1,5 @@
-import pb from '../utils/globalInstance'
-import type { UserPermission } from '../types/user_permissions'
+import pb from '@/services/globalInstance'
+import type { UserPermission } from '@/types/user_permissions'
 
 export const getUserPermissions = async (id: string) => {
   try {

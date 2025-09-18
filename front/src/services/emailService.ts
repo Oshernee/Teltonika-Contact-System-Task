@@ -1,4 +1,4 @@
-import pb from '../utils/globalInstance'
+import pb from '@/services/globalInstance'
 
 export const requestPasswordReset = async (email: string) => {
   try {

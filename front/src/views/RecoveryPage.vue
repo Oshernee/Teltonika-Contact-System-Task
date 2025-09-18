@@ -43,16 +43,16 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
-import ReturnButton from '../components/ReturnButton.vue'
+import ReturnButton from '@/components/ui/ReturnButton.vue'
 
-import { requestPasswordReset } from '../services/emailService'
+import { requestPasswordReset } from '@/services/emailService'
 
-import Email from '../assets/Email.svg'
+import Email from '@/assets/Email.svg'
 
-import { validateEmail } from '../utils/validateInputs'
+import { validateEmail } from '@/utils/validateInputs'
 
-import { useUserStore } from '../stores/Auth'
-import { useNotificationStore } from '../stores/Notification'
+import { useUserStore } from '@/stores/Auth'
+import { useNotificationStore } from '@/stores/Notification'
 
 const email = ref('')
 const emailError = ref('')

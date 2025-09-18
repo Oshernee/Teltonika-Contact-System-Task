@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-xl hover:border-gray-300 transition-all duration-200 cursor-pointer"
+    class="rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-xl hover:border-gray-300 transition-all duration-200 cursor-pointer overflow-auto"
     @click="pushToDetailedView"
   >
     <div class="flex items-center mb-3">
@@ -15,17 +15,15 @@
       </div>
       <div>
         <h3 class="font-semibold text-black">
-          {{ props.employee.name + ' ' + props.employee.surname || 'Vardas ir pavardė' }}
+          {{ props.employee.name + ' ' + props.employee.surname }}
         </h3>
-        <p class="text-sm text-gray-500">
-          Pozicija: {{ props.employee.position || 'Nėra duomenų' }}
-        </p>
+        <p class="text-sm text-gray-500">Pozicija: {{ props.employee.position }}</p>
       </div>
     </div>
 
     <div class="space-y-1 text-sm text-text">
       <p>Telefono nr: {{ props.employee.phone_number || 'Nėra duomenų' }}</p>
-      <p>El. paštas: {{ props.employee.email || 'Nėra duomenų' }}</p>
+      <p>El. paštas: {{ props.employee.email }}</p>
       <p>
         Adresas:
         {{
@@ -37,20 +35,44 @@
         }}
       </p>
     </div>
+    <div class="flex justify-start mt-4 gap-2">
+      <button
+        @click="modalRef.show()"
+        class="w-12 h-12 mr-2 bg-secondary rounded-full justify-center items-center flex"
+      >
+        <img :src="Edit" alt="Edit" class="w-8 h-8" />
+      </button>
+      <button
+        @click="modalRef.show()"
+        class="w-12 h-12 mr-2 bg-primary rounded-full justify-center items-center flex"
+      >
+        <img :src="Delete" alt="Edit" class="w-8 h-8" />
+      </button>
+    </div>
+    <Modal ref="modalRef" @update="emit('update')" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { Employee } from '../types/employees'
-import { computed } from 'vue'
-
-import Profile from '../assets/Profile.svg'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { getPhotoUrl } from '../utils/photoUtils'
-import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
+import Modal from '@/components/ui/Modal.vue'
+
+import type { Employee } from '@/types/employees'
+
+import Profile from '@/assets/Profile.svg'
+import Edit from '@/assets/Edit.svg'
+import Delete from '@/assets/Delete.svg'
+
+import { getPhotoUrl } from '@/utils/photoUtils'
+
+import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
 const router = useRouter()
+
+const emit = defineEmits(['update'])
+const modalRef = ref()
 
 const imageAPI = computed(() => {
   return DEFAULT_CONSTANTS.EMPLOYEE_IMAGE_API + props.employee.id

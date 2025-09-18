@@ -1,5 +1,5 @@
-import pb from '../utils/globalInstance'
-import { useUserStore } from '../stores/Auth'
+import pb from '@/services/globalInstance'
+import { useUserStore } from '@/stores/Auth'
 
 export const subscribeToPermissionChanges = (id: string) => {
   const userStore = useUserStore()

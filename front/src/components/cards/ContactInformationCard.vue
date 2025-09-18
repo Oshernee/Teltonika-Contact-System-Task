@@ -8,13 +8,19 @@
         <div class="space-y-6 text-xl">
           <div>
             <span class="text-text">Elektroninis paštas: </span>
-            <a :href="`mailto:${employee.email}`" class="text-blue-600 hover:underline">
-              {{ employee.email || 'example@teltonika.lt' }}
+            <a
+              :href="`mailto:${employee.email}`"
+              class="text-blue-600 hover:underline overflow-auto"
+            >
+              {{ employee.email }}
             </a>
           </div>
           <div>
             <span class="text-text">Telefono numeris: </span>
-            <a :href="`tel:${employee.phone_number}`" class="text-blue-600 hover:underline">
+            <a
+              :href="`tel:${employee.phone_number}`"
+              class="text-blue-600 hover:underline overflow-auto"
+            >
               {{ employee.phone_number || '+00000000000' }}
             </a>
           </div>
@@ -24,24 +30,18 @@
         <div class="w-full border-b border-gray-200 pb-4 mb-6">
           <h4 class="text-2xl font-medium text-black">Kompanijos detalės:</h4>
         </div>
-        <div class="space-y-6 text-xl">
+        <div class="space-y-6 text-xl overflow-auto">
           <div>
             <span class="text-text">Kompanija: </span>
-            <span class="text-gray-900">{{
-              employee.expand.company_id.name || 'Trūksta duomenų'
-            }}</span>
+            <span class="text-gray-900">{{ employee.expand.company_id.name }}</span>
           </div>
           <div>
             <span class="text-text">Būstinė: </span>
-            <span class="text-gray-900">{{
-              employee.expand.office_id.name || 'Trūksta duomenų'
-            }}</span>
+            <span class="text-gray-900">{{ employee.expand.office_id.name }}</span>
           </div>
           <div>
             <span class="text-text">Padalinys: </span>
-            <span class="text-gray-900">{{
-              employee.expand.division_id.name || 'Trūksta duomenų'
-            }}</span>
+            <span class="text-gray-900">{{ employee.expand.division_id.name }}</span>
           </div>
           <div>
             <span class="text-text">Skyrius: </span>
@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Employee } from '../types/employees'
+import type { Employee } from '@/types/employees'
 
 defineProps<{
   employee: Employee
