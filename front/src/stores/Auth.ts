@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', () => {
     unsubscribeFromPermissionChanges(user.value?.permissions_id || '')
     user.value = null
     accessToken.value = null
+    permissions.value = undefined
     localStorage.removeItem('pocketbase_auth')
   }
 

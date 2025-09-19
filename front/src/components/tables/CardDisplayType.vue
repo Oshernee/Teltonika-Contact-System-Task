@@ -4,6 +4,7 @@
       v-for="employee in props.employees"
       :key="employee.id"
       :employee="employee"
+      :permissions="props.permissions"
       @open-edit-modal="emit('openEditModal', employee)"
       @open-delete-modal="emit('openDeleteModal', employee)"
     />
@@ -18,5 +19,9 @@ const emit = defineEmits(['openEditModal', 'openDeleteModal'])
 
 const props = defineProps<{
   employees: Employee[]
+  permissions: {
+    edit_employees: boolean
+    delete_employees: boolean
+  }
 }>()
 </script>

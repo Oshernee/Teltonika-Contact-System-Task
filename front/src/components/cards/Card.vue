@@ -37,12 +37,14 @@
     </div>
     <div class="flex justify-start mt-4 gap-2">
       <button
+        v-if="props.permissions.edit_employees"
         @click.stop="emit('openEditModal', props.employee)"
         class="w-12 h-12 mr-2 bg-secondary rounded-full justify-center items-center flex"
       >
         <img :src="Edit" alt="Edit" class="w-8 h-8" />
       </button>
       <button
+        v-if="props.permissions.delete_employees"
         @click.stop="emit('openDeleteModal', props.employee)"
         class="w-12 h-12 mr-2 bg-primary rounded-full justify-center items-center flex"
       >
@@ -76,6 +78,10 @@ const imageAPI = computed(() => {
 
 const props = defineProps<{
   employee: Employee
+  permissions: {
+    edit_employees: boolean
+    delete_employees: boolean
+  }
 }>()
 
 const pushToDetailedView = () => {
