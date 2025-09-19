@@ -37,27 +37,24 @@
     </div>
     <div class="flex justify-start mt-4 gap-2">
       <button
-        @click="modalRef.show()"
+        @click.stop="emit('openEditModal', props.employee)"
         class="w-12 h-12 mr-2 bg-secondary rounded-full justify-center items-center flex"
       >
         <img :src="Edit" alt="Edit" class="w-8 h-8" />
       </button>
       <button
-        @click="modalRef.show()"
+        @click.stop="emit('openDeleteModal', props.employee)"
         class="w-12 h-12 mr-2 bg-primary rounded-full justify-center items-center flex"
       >
         <img :src="Delete" alt="Edit" class="w-8 h-8" />
       </button>
     </div>
-    <Modal ref="modalRef" @update="emit('update')" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-
-import Modal from '@/components/ui/Modal.vue'
 
 import type { Employee } from '@/types/employees'
 
@@ -71,8 +68,7 @@ import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
 const router = useRouter()
 
-const emit = defineEmits(['update'])
-const modalRef = ref()
+const emit = defineEmits(['openEditModal', 'openDeleteModal'])
 
 const imageAPI = computed(() => {
   return DEFAULT_CONSTANTS.EMPLOYEE_IMAGE_API + props.employee.id

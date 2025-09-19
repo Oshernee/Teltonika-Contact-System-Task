@@ -43,7 +43,7 @@
     </button>
     <button
       class="w-[56px] h-[56px] bg-accent rounded-lg flex items-center justify-center hover:bg-accent-dark"
-      @click="openAddEmployeeModal()"
+      @click="emit('openAddModal')"
     >
       <img :src="Add" alt="Add" class="w-8 h-8" />
     </button>
@@ -67,7 +67,7 @@ const showDropdown = ref(false)
 const selectedCount = ref<number | string | null>(null)
 const isCard = ref(true)
 
-const emit = defineEmits(['changeView', 'changeCount', 'input-changed', 'openAddEmployeeModal'])
+const emit = defineEmits(['changeView', 'changeCount', 'input-changed', 'openAddModal'])
 
 const debouncedEmit = debounce((value: string) => {
   emit('input-changed', value)
@@ -109,9 +109,5 @@ const selectItemCountPerPage = (item: number | string) => {
 const toggleView = () => {
   isCard.value = !isCard.value
   emit('changeView')
-}
-
-const openAddEmployeeModal = () => {
-  emit('openAddEmployeeModal')
 }
 </script>

@@ -15,8 +15,9 @@ export const login = async (email: string, password: string) => {
 export const refreshUserInformation = async () => {
   try {
     const authData = await pb.collection('users').authRefresh<User>()
+    const permissions = await getUserPermissions(authData.record.permissions_id)
 
-    return { user: authData.record, token: authData.token }
+    return { user: authData.record, token: authData.token, permissions }
   } catch (error) {
     throw error
   }
@@ -46,7 +47,6 @@ export const ChangePassword = async (newPassword: string, token: string) => {
       .confirmPasswordReset(token, newPassword, newPassword)
     return response
   } catch (error) {
-    console.log('Error changing password:', error)
     throw error
   }
 }

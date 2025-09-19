@@ -39,11 +39,11 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const refreshUser = async () => {
-    console.log('Refreshing user...')
     const pocketbase_auth = localStorage.getItem('pocketbase_auth')
     if (pocketbase_auth) {
-      const { user, token: newToken } = await refreshUserInformation()
+      const { user, token: newToken, permissions: newPermissions } = await refreshUserInformation()
       setUser(user, newToken)
+      savePermissions(newPermissions)
       return
     }
     return
