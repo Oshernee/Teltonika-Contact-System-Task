@@ -80,8 +80,7 @@ import { useRouter } from 'vue-router'
 
 import { validateEmail, validatePassword } from '@/utils/validateInputs'
 
-import { login } from '@/services/userServices'
-import { getUserPermissions } from '@/services/permissionsService'
+import { login, getUserPermissions } from '@/services/userService'
 
 import ReturnButton from '@/components/ui/ReturnButton.vue'
 

@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { ChangePassword } from '@/services/passwordService'
+import { ChangePassword } from '@/services/userService'
 
 import SeePassword from '@/assets/SeePassword.svg'
 import HidePassword from '@/assets/HidePassword.svg'

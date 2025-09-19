@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { User } from '@/types/users'
 import type { UserPermission } from '@/types/user_permissions'
-import { refreshUserInformation } from '@/services/userServices'
+import { refreshUserInformation } from '@/services/userService'
 import { unsubscribeFromPermissionChanges } from '@/services/pocketbaseSubscriptionService'
 
 export const useUserStore = defineStore('user', () => {

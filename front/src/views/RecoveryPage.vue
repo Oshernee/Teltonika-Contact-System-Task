@@ -45,7 +45,7 @@ import { ref, computed } from 'vue'
 
 import ReturnButton from '@/components/ui/ReturnButton.vue'
 
-import { requestPasswordReset } from '@/services/emailService'
+import { requestPasswordReset } from '@/services/userService'
 
 import Email from '@/assets/Email.svg'
 
