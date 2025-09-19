@@ -41,6 +41,12 @@
       <img v-if="isCard" :src="toCard" alt="Search" />
       <img v-else-if="!isCard" :src="toTable" alt="Search" />
     </button>
+    <button
+      class="w-[56px] h-[56px] bg-accent rounded-lg flex items-center justify-center hover:bg-accent-dark"
+      @click="openAddEmployeeModal()"
+    >
+      <img :src="Add" alt="Add" class="w-8 h-8" />
+    </button>
   </div>
 </template>
 
@@ -55,12 +61,13 @@ import searchIcon from '@/assets/Search.svg'
 import paginationCount from '@/assets/PaginationCount.svg'
 import toCard from '@/assets/ToCard.svg'
 import toTable from '@/assets/ToTable.svg'
+import Add from '@/assets/Add.svg'
 
 const showDropdown = ref(false)
 const selectedCount = ref<number | string | null>(null)
 const isCard = ref(true)
 
-const emit = defineEmits(['changeView', 'changeCount', 'input-changed'])
+const emit = defineEmits(['changeView', 'changeCount', 'input-changed', 'openAddEmployeeModal'])
 
 const debouncedEmit = debounce((value: string) => {
   emit('input-changed', value)
@@ -102,5 +109,9 @@ const selectItemCountPerPage = (item: number | string) => {
 const toggleView = () => {
   isCard.value = !isCard.value
   emit('changeView')
+}
+
+const openAddEmployeeModal = () => {
+  emit('openAddEmployeeModal')
 }
 </script>

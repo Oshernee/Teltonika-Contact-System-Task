@@ -35,6 +35,20 @@
         }}
       </p>
     </div>
+    <div class="flex justify-start mt-4 gap-2">
+      <button
+        @click="modalRef.show()"
+        class="w-12 h-12 mr-2 bg-secondary rounded-full justify-center items-center flex"
+      >
+        <img :src="Edit" alt="Edit" class="w-8 h-8" />
+      </button>
+      <button
+        @click="modalRef.show()"
+        class="w-12 h-12 mr-2 bg-primary rounded-full justify-center items-center flex"
+      >
+        <img :src="Delete" alt="Edit" class="w-8 h-8" />
+      </button>
+    </div>
     <Modal ref="modalRef" @update="emit('update')" />
   </div>
 </template>
@@ -48,6 +62,8 @@ import Modal from '@/components/ui/Modal.vue'
 import type { Employee } from '@/types/employees'
 
 import Profile from '@/assets/Profile.svg'
+import Edit from '@/assets/Edit.svg'
+import Delete from '@/assets/Delete.svg'
 
 import { getPhotoUrl } from '@/utils/photoUtils'
 
