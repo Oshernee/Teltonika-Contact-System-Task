@@ -1,6 +1,7 @@
 import type { Employee } from '@/types/employees'
 import { ref } from 'vue'
 import pb from '@/services/globalInstance'
+import type { RecordModel } from 'pocketbase'
 
 export async function getEmployees(
   perPage: number,
@@ -46,6 +47,39 @@ export async function getSingleEmployee(id: string): Promise<Employee> {
     const record = await pb.collection('employees').getOne<Employee>(id, {
       expand: 'office_id,company_id,division_id,department_id,group_id',
     })
+    return record
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function createEmployee(
+  name: string,
+  surname: string,
+  position: string,
+  email: string,
+  phone: string | null,
+  company: string,
+  office: string,
+  division: string,
+  department: string | null,
+  group: string | null
+): Promise<RecordModel> {
+  try {
+    const data = {
+      name,
+      surname,
+      email,
+      phone_number: phone,
+      position,
+      company_id: company,
+      office_id: office,
+      division_id: division,
+      department_id: department,
+      group_id: group,
+    }
+
+    const record = await pb.collection('employees').create(data)
     return record
   } catch (error) {
     throw error

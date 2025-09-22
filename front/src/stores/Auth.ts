@@ -46,6 +46,8 @@ export const useUserStore = defineStore('user', () => {
       setUser(user, newToken)
       savePermissions(newPermissions)
       return
+    } else {
+      clearUser()
     }
     return
   }

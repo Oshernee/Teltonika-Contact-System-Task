@@ -4,7 +4,12 @@
     :disabled="props.isDisabled"
     :class="{ 'opacity-75 pointer-events-none': props.isDisabled }"
   >
-    <label class="block text-sm font-medium text-text mb-2">{{ props.title }}</label>
+    <label v-if="!props.isNecessary" class="block text-sm font-medium text-text mb-2">{{
+      props.title
+    }}</label>
+    <label v-else class="block text-sm font-medium text-text mb-2"
+      >{{ props.title }}<span class="text-red-600 ml-1">*</span></label
+    >
     <button
       @click="toggleDropdown"
       class="h-[36px] w-full px-4 rounded-lg bg-white border border-gray-300 flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -54,6 +59,7 @@ const props = defineProps<{
     id: string
     name: string
   }[]
+  isNecessary?: boolean
 }>()
 
 const emit = defineEmits<{

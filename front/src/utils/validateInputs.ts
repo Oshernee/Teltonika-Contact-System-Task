@@ -15,3 +15,36 @@ export function validatePassword(password: string): string {
     return ''
   return ''
 }
+
+export function validateName(name: string): string {
+  if (!name) return 'Vardas yra privalomas'
+  if (name.length < 2) return 'Vardas turi būti bent 2 simbolių ilgio'
+  const nameRegex = /^[a-zA-ZÀ-ž\s'-]+$/
+  if (!nameRegex.test(name)) return 'Varde gali būti tik raidės, tarpai, apostrofai ir brūkšneliai'
+  return ''
+}
+
+export function validateSurname(surname: string): string {
+  if (!surname) return 'Pavardė yra privaloma'
+  if (surname.length < 2) return 'Pavardė turi būti bent 2 simbolių ilgio'
+  const surnameRegex = /^[a-zA-ZÀ-ž\s'-]+$/
+  if (!surnameRegex.test(surname))
+    return 'Pavardėje gali būti tik raidės, tarpai, apostrofai ir brūkšneliai'
+  return ''
+}
+
+export function validatePhone(phone: string): string {
+  if (!phone) return ''
+  const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/
+  if (!phoneRegex.test(phone)) return 'Neteisingas telefono numerio formatas'
+  return ''
+}
+
+export function validatePosition(position: string): string {
+  if (!position) return 'Pozicija yra privaloma'
+  if (position.length < 2) return 'Pozicija turi būti bent 2 simbolių ilgio'
+  const positionRegex = /^[a-zA-ZÀ-ž\s'-]+$/
+  if (!positionRegex.test(position))
+    return 'Pozicijoje gali būti tik raidės, tarpai, apostrofai ir brūkšneliai'
+  return ''
+}
