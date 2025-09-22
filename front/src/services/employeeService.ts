@@ -63,7 +63,8 @@ export async function createEmployee(
   office: string,
   division: string,
   department: string | null,
-  group: string | null
+  group: string | null,
+  image: File | string | null = null
 ): Promise<RecordModel> {
   try {
     const data = {
@@ -77,7 +78,9 @@ export async function createEmployee(
       division_id: division,
       department_id: department,
       group_id: group,
+      photo: image,
     }
+    console.log(image)
 
     const record = await pb.collection('employees').create(data)
     return record
