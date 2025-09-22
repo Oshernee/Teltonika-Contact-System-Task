@@ -6,7 +6,7 @@
       @input-changed="updateSearchQuery"
       @change-view="updateViewType"
       @open-add-modal="
-        handleOpenModal(AddEmployeeForm, userStore.permissions?.edit_employees || false, false)
+        handleOpenModal(AddEmployeeForm, userStore.permissions?.edit_employees || false, {}, false)
       "
       :permissions="userStore.permissions?.edit_employees || false"
     />
@@ -28,10 +28,15 @@
       :employees="employees"
       v-if="isCardView && employees.length > 0"
       @open-edit-modal="
-        handleOpenModal(EditEmployeeForm, userStore.permissions?.edit_employees || false, false)
+        handleOpenModal(EditEmployeeForm, userStore.permissions?.edit_employees || false, {}, false)
       "
       @open-delete-modal="
-        handleOpenModal(DeleteEmployeeForm, userStore.permissions?.delete_employees || false, true)
+        handleOpenModal(
+          DeleteEmployeeForm,
+          userStore.permissions?.delete_employees || false,
+          { employee: $event },
+          true
+        )
       "
     />
     <TableDisplayType :employees="employees" v-if="!isCardView && employees.length > 0" />
@@ -42,7 +47,7 @@
       :total-pages="Math.ceil(totalEmployees / employeesPerPage)"
     />
   </div>
-  <Modal ref="modalRef" @update="emit('update')" />
+  <Modal ref="modalRef" @update="fetchEmployees" />
 </template>
 
 <script setup lang="ts">
@@ -130,11 +135,16 @@ const updateFiltering = (filters: Record<string, string>) => {
   fetchEmployees()
 }
 
-const handleOpenModal = (ViewComponent: any, permissions: boolean, isDelete: boolean) => {
+const handleOpenModal = (
+  ViewComponent: any,
+  permissions: boolean,
+  props: {},
+  isDelete: boolean
+) => {
   if (!permissions) {
     notificationStore.addInfoNotification(DEFAULT_CONSTANTS.UNAUTHORIZED_MESSAGE)
     return
   }
-  modalRef.value.open(ViewComponent, {}, isDelete)
+  modalRef.value.open(ViewComponent, props, isDelete)
 }
 </script>

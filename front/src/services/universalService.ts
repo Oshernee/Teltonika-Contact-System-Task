@@ -31,3 +31,11 @@ export async function getLowerFilteredItems(filterLevel: FilterLevel, id: string
     throw error
   }
 }
+
+export async function deleteRecordById(collectionName: string, id: string): Promise<void> {
+  try {
+    await pb.collection(collectionName).delete(id)
+  } catch (error) {
+    throw error
+  }
+}
