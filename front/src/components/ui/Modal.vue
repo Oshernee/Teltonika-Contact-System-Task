@@ -3,11 +3,11 @@
     <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="fixed inset-0 bg-black bg-opacity-80" @click="close()"></div>
       <div
-        class="relative bg-gradient-to-br bg-white rounded-lg border max-w-5xl mx-4 max-h-[90vh] overflow-y-auto"
+        class="relative bg-gradient-to-br bg-white rounded-lg border max-w-[1250px] mx-4 max-h-[90vh] overflow-y-auto"
       >
         <button
           v-if="!showClose"
-          class="absolute top-2.5 right-4 bg-transparent border-none text-2xl text-gray-100 cursor-pointer z-10 w-7 h-7 flex items-center justify-center rounded-full transition-colors duration-200 hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+          class="absolute top-4 right-4 text-white text-3xl bg-secondary rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-80"
           @click="close()"
           aria-label="Close modal"
         >
