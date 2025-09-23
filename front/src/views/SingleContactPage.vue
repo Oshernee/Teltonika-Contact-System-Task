@@ -6,10 +6,10 @@
     <text class="text-[56px] text-text font-thin">Detalesnė kontaktų informacija</text>
     <ReturnButton />
     <div class="flex flex-row items-center py-8 px-4">
-      <div class="w-24 h-24 rounded-full flex items-center justify-center mr-3">
+      <div v-if="!loading" class="w-24 h-24 rounded-full flex items-center justify-center mr-3">
         <img
           v-if="employee.photo"
-          :src="getPhotoUrl(employee.photo)"
+          :src="photo"
           :alt="employee.name + ' ' + employee.surname"
           class="w-24 h-24 rounded-full object-cover"
         />
@@ -37,6 +37,7 @@ import { onMounted, ref } from 'vue'
 import { getSingleEmployee } from '@/services/employeeService'
 import { useRouter } from 'vue-router'
 import { useNotificationStore } from '@/stores/Notification'
+import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
 import Profile from '@/assets/Profile.svg'
 
@@ -48,8 +49,11 @@ import ReturnButton from '@/components/ui/ReturnButton.vue'
 import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import ContactInformationCard from '@/components/cards/ContactInformationCard.vue'
 
+const constants = DEFAULT_CONSTANTS
 const employee = ref<Employee | null>(null)
 const notificationStore = useNotificationStore()
+const loading = ref(true)
+const photo = ref<string | undefined>(undefined)
 
 const router = useRouter()
 
@@ -59,6 +63,12 @@ const props = defineProps<{
 
 onMounted(async () => {
   employee.value = await fetchEmployeeById(props.id)
+  if (!employee.value?.photo) return
+  photo.value = await getPhotoUrl(
+    employee.value?.photo,
+    constants.EMPLOYEE_IMAGE_API + employee.value?.id
+  )
+  loading.value = false
 })
 
 const fetchEmployeeById = async (id: string) => {
