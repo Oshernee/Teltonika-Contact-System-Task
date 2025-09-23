@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 import InputFields from '../ui/InputField.vue'
 import ItemSelector from '../ui/ItemSelector.vue'
@@ -101,33 +101,19 @@ const userStore = useUserStore()
 
 const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
-const name = ref('')
-const surname = ref('')
-const position = ref('')
-const email = ref('')
-const phone = ref('')
-const image = ref<File | null>(null)
-
-onMounted(() => {
-  name.value = props.employee.name
-  surname.value = props.employee.surname
-  position.value = props.employee.position
-  email.value = props.employee.email
-  phone.value = props.employee.phone_number || ''
-  image.value = props.employee.photo || null
-  selectedIds.company = props.employee.company_id
-  selectedIds.office = props.employee.office_id
-  selectedIds.division = props.employee.division_id
-  selectedIds.department = props.employee.department_id ? props.employee.department_id : ''
-  selectedIds.group = props.employee.group_id ? props.employee.group_id : ''
-})
+const name = ref(props.employee.name)
+const surname = ref(props.employee.surname)
+const position = ref(props.employee.position)
+const email = ref(props.employee.email)
+const phone = ref(props.employee.phone_number || '')
+const image = ref<File | null>(props.employee.photo || null)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
-  company: '',
-  office: '',
-  division: '',
-  department: '',
-  group: '',
+  company: props.employee.company_id,
+  office: props.employee.office_id,
+  division: props.employee.division_id,
+  department: props.employee.department_id ? props.employee.department_id : '',
+  group: props.employee.group_id ? props.employee.group_id : '',
 })
 
 const errorMessages = reactive<Record<string, string>>({
