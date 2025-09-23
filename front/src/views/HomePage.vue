@@ -28,7 +28,12 @@
       :employees="employees"
       v-if="isCardView && employees.length > 0"
       @open-edit-modal="
-        handleOpenModal(EditEmployeeForm, userStore.permissions?.edit_employees || false, {}, false)
+        handleOpenModal(
+          EditEmployeeForm,
+          userStore.permissions?.edit_employees || false,
+          { employee: $event },
+          false
+        )
       "
       @open-delete-modal="
         handleOpenModal(

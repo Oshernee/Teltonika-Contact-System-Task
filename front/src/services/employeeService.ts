@@ -80,9 +80,44 @@ export async function createEmployee(
       group_id: group,
       photo: image,
     }
-    console.log(image)
 
     const record = await pb.collection('employees').create(data)
+    return record
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateEmployee(
+  id: string,
+  name: string,
+  surname: string,
+  position: string,
+  email: string,
+  phone: string | null,
+  company: string,
+  office: string,
+  division: string,
+  department: string | null,
+  group: string | null,
+  image: File | string | null = null
+): Promise<RecordModel> {
+  try {
+    const data = {
+      name,
+      surname,
+      email,
+      phone_number: phone,
+      position,
+      company_id: company,
+      office_id: office,
+      division_id: division,
+      department_id: department,
+      group_id: group,
+      photo: image,
+    }
+
+    const record = await pb.collection('employees').update(id, data)
     return record
   } catch (error) {
     throw error

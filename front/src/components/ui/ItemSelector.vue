@@ -10,8 +10,8 @@
     @item-selected="handleCompanySelected"
     :isNecessary="props.isErrorNecessary"
   />
-  <div class="text-red-500 text-sm absolute w-[400px]" v-if="errorMessages.company">
-    {{ errorMessages.company }}
+  <div class="text-red-500 text-sm absolute w-[400px]" v-if="props.errorMessages.company">
+    {{ props.errorMessages.company }}
   </div>
   <Dropdown
     :isDisabled="!isSelected.company"
@@ -24,8 +24,8 @@
     @item-selected="handleOfficeSelected"
     :isNecessary="props.isErrorNecessary"
   />
-  <div class="text-red-500 text-sm absolute w-[400px]" v-if="errorMessages.office">
-    {{ errorMessages.office }}
+  <div class="text-red-500 text-sm absolute w-[400px]" v-if="props.errorMessages.office">
+    {{ props.errorMessages.office }}
   </div>
   <Dropdown
     :isDisabled="!isSelected.office"
@@ -38,8 +38,8 @@
     @item-selected="handleDivisionSelected"
     :isNecessary="props.isErrorNecessary"
   />
-  <div class="text-red-500 text-sm absolute w-[400px]" v-if="errorMessages.division">
-    {{ errorMessages.division }}
+  <div class="text-red-500 text-sm absolute w-[400px]" v-if="props.errorMessages.division">
+    {{ props.errorMessages.division }}
   </div>
   <Dropdown
     :isDisabled="!isSelected.division"
@@ -88,12 +88,29 @@ const props = defineProps<{
     department: string
     group: string
   }
+  selectedIds?: {
+    company: string
+    office: string
+    division: string
+    department: string
+    group: string
+  }
   isErrorNecessary?: boolean
   errorMessages: Record<string, string>
 }>()
 
-onMounted(() => {
-  fetchCompanies()
+onMounted(async () => {
+  await fetchCompanies()
+  if (
+    props.modelValue &&
+    (props.modelValue.company ||
+      props.modelValue.office ||
+      props.modelValue.division ||
+      props.modelValue.department ||
+      props.modelValue.group)
+  ) {
+    await preloadData()
+  }
 })
 
 const items = reactive<Record<TargetKey, { id: string; name: string }[]>>({
@@ -126,18 +143,6 @@ const selectedIds = reactive<Record<TargetKey, string>>({
   division: '',
   department: '',
   group: '',
-})
-
-const errorMessages = reactive<Record<string, string>>({
-  name: '',
-  surname: '',
-  position: '',
-  email: '',
-  phone: '',
-  company: '',
-  office: '',
-  division: '',
-  image: '',
 })
 
 // Fetch functions for each filter level
@@ -178,6 +183,8 @@ const handleCompanySelected = (id: string, name: string) => {
   if (success && id !== '') {
     selectedIds.company = id
     fetchLowers('offices', id, 'office')
+  } else {
+    selectedIds.company = ''
   }
 
   handleOfficeSelected('', PLACEHOLDERS.office)
@@ -188,6 +195,8 @@ const handleOfficeSelected = (id: string, name: string) => {
   if (success && id !== '') {
     selectedIds.office = id
     fetchLowers('divisions', id, 'division')
+  } else {
+    selectedIds.office = ''
   }
 
   handleDivisionSelected('', PLACEHOLDERS.division)
@@ -198,6 +207,8 @@ const handleDivisionSelected = (id: string, name: string) => {
   if (success && id !== '') {
     selectedIds.division = id
     fetchLowers('departments', id, 'department')
+  } else {
+    selectedIds.division = ''
   }
 
   handleDepartmentSelected('', PLACEHOLDERS.department)
@@ -208,6 +219,8 @@ const handleDepartmentSelected = (id: string, name: string) => {
   if (success && id !== '') {
     selectedIds.department = id
     fetchLowers('groups', id, 'group')
+  } else {
+    selectedIds.department = ''
   }
 
   handleGroupSelected('', PLACEHOLDERS.group)
@@ -222,5 +235,43 @@ const handleGroupSelected = (id: string, name: string) => {
   }
 
   emit('update', { ...selectedIds })
+}
+
+const preloadData = async () => {
+  selectedIds.company = props.modelValue.company || ''
+  selectedIds.office = props.modelValue.office || ''
+  selectedIds.division = props.modelValue.division || ''
+  selectedIds.department = props.modelValue.department || ''
+  selectedIds.group = props.modelValue.group || ''
+
+  if (selectedIds.company) {
+    isSelected.company = true
+    selectedTargets.company = items.company.find((c) => c.id === selectedIds.company)?.name || ''
+    await fetchLowers('offices', selectedIds.company, 'office')
+  }
+
+  if (selectedIds.office) {
+    isSelected.office = true
+    selectedTargets.office = items.office.find((o) => o.id === selectedIds.office)?.name || ''
+    await fetchLowers('divisions', selectedIds.office, 'division')
+  }
+
+  if (selectedIds.division) {
+    isSelected.division = true
+    selectedTargets.division = items.division.find((d) => d.id === selectedIds.division)?.name || ''
+    await fetchLowers('departments', selectedIds.division, 'department')
+  }
+
+  if (selectedIds.department) {
+    isSelected.department = true
+    selectedTargets.department =
+      items.department.find((d) => d.id === selectedIds.department)?.name || ''
+    await fetchLowers('groups', selectedIds.department, 'group')
+  }
+
+  if (selectedIds.group) {
+    isSelected.group = true
+    selectedTargets.group = items.group.find((g) => g.id === selectedIds.group)?.name || ''
+  }
 }
 </script>

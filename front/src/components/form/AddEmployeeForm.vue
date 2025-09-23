@@ -25,7 +25,7 @@
           </label>
           <input
             type="file"
-            @change="handleImageUpload"
+            @change="uploadImage($event)"
             accept="image/*"
             class="hidden"
             id="image-upload"
@@ -73,6 +73,8 @@ import { createEmployee } from '@/services/employeeService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
+
+import { handleImageUpload } from '@/utils/photoUtils'
 
 type TargetKey = 'company' | 'office' | 'division' | 'department' | 'group'
 const notificationStore = useNotificationStore()
@@ -123,35 +125,10 @@ const updateIds = (ids: Record<TargetKey, string>) => {
   selectedIds.group = ids.group
 }
 
-const handleImageUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  errorMessages.image = ''
-
-  if (target.files && target.files[0]) {
-    const file = target.files[0]
-    const maxSizeKB = 5 * 1024
-    const fileSizeKB = file.size / 1024
-
-    if (fileSizeKB > maxSizeKB) {
-      errorMessages.image = `Nuotrauka per didelė. Maksimalus dydis: ${maxSizeKB}KB (dabartinis: ${fileSizeKB.toFixed(
-        1
-      )}KB)`
-      image.value = null
-      target.value = ''
-      return
-    }
-
-    if (!file.type.startsWith('image/')) {
-      errorMessages.image = 'Galima įkelti tik nuotraukas (JPG, PNG, GIF, etc.)'
-      image.value = null
-      target.value = ''
-      return
-    }
-
-    image.value = file
-  } else {
-    image.value = null
-  }
+const uploadImage = (event: Event) => {
+  const { image: uploadedImage, errorMessage } = handleImageUpload(event)
+  image.value = uploadedImage.value
+  errorMessages.image = errorMessage.value
 }
 
 const validateFields = () => {
@@ -189,19 +166,6 @@ const handleAddEmployee = async () => {
     return
   }
   try {
-    console.log('Adding employee with:', {
-      name: name.value,
-      surname: surname.value,
-      position: position.value,
-      email: email.value,
-      phone: phone.value,
-      companyId: selectedIds.company,
-      officeId: selectedIds.office,
-      divisionId: selectedIds.division,
-      departmentId: selectedIds.department ? selectedIds.department : null,
-      groupId: selectedIds.group ? selectedIds.group : null,
-      image: image.value,
-    })
     await createEmployee(
       name.value,
       surname.value,

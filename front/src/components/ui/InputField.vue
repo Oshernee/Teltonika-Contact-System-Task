@@ -87,7 +87,7 @@ import debounce from 'debounce'
 
 import Email from '@/assets/Email.svg'
 import Phone from '@/assets/PhoneNumber.svg'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const name = ref('')
 const surname = ref('')
@@ -103,14 +103,24 @@ const props = defineProps<{
     email?: string
     phone?: string
   }
+  startingValues?: [string, string, string, string, string]
 }>()
+
+onMounted(() => {
+  if (props.startingValues) {
+    name.value = props.startingValues[0]
+    surname.value = props.startingValues[1]
+    position.value = props.startingValues[2]
+    email.value = props.startingValues[3]
+    phone.value = props.startingValues[4]
+  }
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: [string, string, string, string, string]]
 }>()
 
 const debouncedEmit = debounce((value: [string, string, string, string, string]) => {
-  console.log(value)
   emit('update:modelValue', value)
 }, 300)
 </script>
