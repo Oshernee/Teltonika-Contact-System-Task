@@ -37,7 +37,6 @@ import { onMounted, ref } from 'vue'
 import { getSingleEmployee } from '@/services/employeeService'
 import { useRouter } from 'vue-router'
 import { useNotificationStore } from '@/stores/Notification'
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
 import Profile from '@/assets/Profile.svg'
 
@@ -49,7 +48,6 @@ import ReturnButton from '@/components/ui/ReturnButton.vue'
 import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import ContactInformationCard from '@/components/cards/ContactInformationCard.vue'
 
-const constants = DEFAULT_CONSTANTS
 const employee = ref<Employee | null>(null)
 const notificationStore = useNotificationStore()
 const loading = ref(true)
@@ -66,7 +64,7 @@ onMounted(async () => {
   if (!employee.value?.photo) return
   photo.value = await getPhotoUrl(
     employee.value?.photo,
-    constants.EMPLOYEE_IMAGE_API + employee.value?.id
+    __EMPLOYEE_IMAGE_API__ + employee.value?.id
   )
   loading.value = false
 })

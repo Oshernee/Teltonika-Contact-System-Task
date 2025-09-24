@@ -46,7 +46,7 @@
     />
     <TableDisplayType :employees="employees" v-if="!isCardView && employees.length > 0" />
     <Pagination
-      v-if="employeesPerPage !== DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES"
+      v-if="employeesPerPage !== SHOW_ALL_EMPLOYEES"
       @page-changed="updateCurrentPage"
       :current-page="currentPage"
       :total-pages="Math.ceil(totalEmployees / employeesPerPage)"
@@ -60,7 +60,6 @@ import { ref, onMounted } from 'vue'
 
 import { getEmployees } from '@/services/employeeService'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 import { MESSAGE_CONSTANTS } from '@/constants/messageConstants'
 
 import SearchBar from '@/components/ui/SearchBar.vue'
@@ -80,14 +79,15 @@ import type { Employee } from '@/types/employees'
 
 const employees = ref<Employee[]>([])
 const totalEmployees = ref(0)
-const employeesPerPage = ref(DEFAULT_CONSTANTS.DEFAULT_EMPLOYEES_PER_PAGE)
-const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
+const employeesPerPage = ref(__DEFAULT_EMPLOYEES_PER_PAGE__)
+const currentPage = ref(__DEFAULT_CURRENT_PAGE__)
 const searchQuery = ref('')
 const isCardView = ref(true)
 const filterQuery = ref<{ type: string; value: string | number }[]>([])
 const notificationStore = useNotificationStore()
 const modalRef = ref()
 const userStore = useUserStore()
+const SHOW_ALL_EMPLOYEES = __SHOW_ALL_EMPLOYEES__
 
 const emit = defineEmits(['update'])
 
