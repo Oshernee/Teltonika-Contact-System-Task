@@ -19,25 +19,25 @@ export const ERROR_MESSAGES = {
 export const FILTER_LEVELS: Record<string, FilterLevel> = {
   offices: {
     linkCollection: 'companies_offices',
-    targetCollection: 'offices',
+    targetCollection: 'companies',
     linkField: 'company_id',
     targetField: 'office_id',
   },
   divisions: {
     linkCollection: 'offices_divisions',
-    targetCollection: 'divisions',
+    targetCollection: 'offices',
     linkField: 'office_id',
     targetField: 'division_id',
   },
   departments: {
     linkCollection: 'divisions_departments',
-    targetCollection: 'departments',
+    targetCollection: 'divisions',
     linkField: 'division_id',
     targetField: 'department_id',
   },
   groups: {
     linkCollection: 'departments_groups',
-    targetCollection: 'groups',
+    targetCollection: 'departments',
     linkField: 'department_id',
     targetField: 'group_id',
   },
