@@ -166,7 +166,6 @@ const validateFields = () => {
 const uploadImage = (event: Event) => {
   const { image: uploadedImage, errorMessage } = handleImageUpload(event)
   image.value = uploadedImage.value
-  console.log(image.value)
   errorMessages.image = errorMessage.value
 }
 
@@ -174,7 +173,7 @@ const handleUpdateEmployee = async () => {
   if (!validateFields()) {
     return
   }
-  userStore.refreshUser()
+  await userStore.refreshUser()
   if (!userStore.permissions?.edit_employees) {
     notificationStore.addErrorNotification('Jūs neturite teisių pakeisti kontaktą', '')
     emit('close')

@@ -36,6 +36,7 @@
                 ? `${image.name} (${(image.size / 1024).toFixed(1)} KB)`
                 : 'Nuotrauka neįkelta. Maks. 5MB'
             }}
+            <button v-if="image" @click="image = null" class="text-red-500 text-sm ml-2">x</button>
           </p>
           <div class="text-red-500 text-sm mt-1" v-if="errorMessages.image">
             {{ errorMessages.image }}
@@ -168,15 +169,13 @@ const validateFields = async () => {
 const handleAddEmployee = async () => {
   const uniqueEmail = await isEmailUnique(email.value)
   const isValid = await validateFields()
-  console.log('isValid', isValid)
-  console.log('uniqueEmail', uniqueEmail)
   if (!isValid || !uniqueEmail) {
     if (!uniqueEmail) {
       errorMessages.email = 'Toks el. paštas jau egzistuoja'
     }
     return
   }
-  userStore.refreshUser()
+  await userStore.refreshUser()
   if (!userStore.permissions?.edit_employees) {
     notificationStore.addErrorNotification('Jūs neturite teisių pridėti kontaktą', '')
     emit('close')
