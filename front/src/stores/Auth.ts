@@ -22,7 +22,7 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('pocketbase_auth')
   }
 
-  const isLoggedIn = () => {
+  const isLoggedIn = async () => {
     return (
       user.value !== null &&
       accessToken.value !== null &&

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { computed } from 'vue'
 
 import HomePage from '@/views/HomePage.vue'
 import NotFound from '@/views/NotFound.vue'
@@ -103,9 +104,9 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
-  const isAuthenticated = userStore.isLoggedIn()
+  const isAuthenticated = computed(() => userStore.isLoggedIn())
 
   const publicRoutes = [
     'Login',
