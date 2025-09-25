@@ -6,7 +6,7 @@
       @input-changed="updateSearchQuery"
       @change-view="updateViewType"
       @open-add-modal="
-        handleOpenModal(AddEmployeeForm, userStore.permissions?.edit_employees || false, {}, false)
+        handleOpenModal(AddEmployeeForm, userStore.permissions?.edit_employees || false, {})
       "
       :permissions="userStore.permissions?.edit_employees || false"
     />
@@ -21,52 +21,18 @@
       Nėra kontaktų
     </div>
     <CardDisplayType
-      :permissions="{
-        edit_employees: userStore.permissions?.edit_employees || false,
-        delete_employees: userStore.permissions?.delete_employees || false,
-      }"
-      :employees="employees"
       v-if="isCardView && employees.length > 0"
-      @open-edit-modal="
-        handleOpenModal(
-          EditEmployeeForm,
-          userStore.permissions?.edit_employees || false,
-          { employee: $event },
-          false
-        )
-      "
-      @open-delete-modal="
-        handleOpenModal(
-          DeleteEmployeeForm,
-          userStore.permissions?.delete_employees || false,
-          { employee: $event },
-          true
-        )
-      "
+      :permissions="modalPermissions"
+      :employees="employees"
+      @open-edit-modal="handleEditModal($event)"
+      @open-delete-modal="handleDeleteModal($event)"
     />
     <TableDisplayType
-      :employees="employees"
       v-if="!isCardView && employees.length > 0"
-      :permissions="{
-        edit_employees: userStore.permissions?.edit_employees || false,
-        delete_employees: userStore.permissions?.delete_employees || false,
-      }"
-      @open-edit-modal="
-        handleOpenModal(
-          EditEmployeeForm,
-          userStore.permissions?.edit_employees || false,
-          { employee: $event },
-          false
-        )
-      "
-      @open-delete-modal="
-        handleOpenModal(
-          DeleteEmployeeForm,
-          userStore.permissions?.delete_employees || false,
-          { employee: $event },
-          true
-        )
-      "
+      :employees="employees"
+      :permissions="modalPermissions"
+      @open-edit-modal="handleEditModal($event)"
+      @open-delete-modal="handleDeleteModal($event)"
     />
     <Pagination
       v-if="employeesPerPage !== DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES"
@@ -79,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import { getEmployees } from '@/services/employeeService'
 
@@ -110,6 +76,10 @@ const filterQuery = ref<{ type: string; value: string | number }[]>([])
 const notificationStore = useNotificationStore()
 const modalRef = ref()
 const userStore = useUserStore()
+const modalPermissions = computed(() => ({
+  edit_employees: userStore.permissions?.edit_employees || false,
+  delete_employees: userStore.permissions?.delete_employees || false,
+}))
 
 const emit = defineEmits(['update'])
 
@@ -163,16 +133,24 @@ const updateFiltering = (filters: Record<string, string>) => {
   fetchEmployees()
 }
 
+function handleEditModal(employee: Employee) {
+  handleOpenModal(EditEmployeeForm, modalPermissions.value.edit_employees, { employee })
+}
+
+function handleDeleteModal(employee: Employee) {
+  handleOpenModal(DeleteEmployeeForm, modalPermissions.value.delete_employees, { employee }, true)
+}
+
 const handleOpenModal = (
   ViewComponent: any,
   permissions: boolean,
   props: {},
-  isDelete: boolean
+  isDelete?: boolean
 ) => {
   if (!permissions) {
     notificationStore.addInfoNotification(DEFAULT_CONSTANTS.UNAUTHORIZED_MESSAGE)
     return
   }
-  modalRef.value.open(ViewComponent, props, isDelete)
+  modalRef.value.open(ViewComponent, props, isDelete || false)
 }
 </script>
