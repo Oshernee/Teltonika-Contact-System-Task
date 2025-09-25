@@ -44,7 +44,30 @@
         )
       "
     />
-    <TableDisplayType :employees="employees" v-if="!isCardView && employees.length > 0" />
+    <TableDisplayType
+      :employees="employees"
+      v-if="!isCardView && employees.length > 0"
+      :permissions="{
+        edit_employees: userStore.permissions?.edit_employees || false,
+        delete_employees: userStore.permissions?.delete_employees || false,
+      }"
+      @open-edit-modal="
+        handleOpenModal(
+          EditEmployeeForm,
+          userStore.permissions?.edit_employees || false,
+          { employee: $event },
+          false
+        )
+      "
+      @open-delete-modal="
+        handleOpenModal(
+          DeleteEmployeeForm,
+          userStore.permissions?.delete_employees || false,
+          { employee: $event },
+          true
+        )
+      "
+    />
     <Pagination
       v-if="employeesPerPage !== DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES"
       @page-changed="updateCurrentPage"

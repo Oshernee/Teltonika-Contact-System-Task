@@ -28,7 +28,7 @@ export async function getEmployees(
 
     const records = await pb.collection('employees').getList<Employee>(page, perPage, {
       expand: 'office_id,company_id,division_id,department_id,group_id',
-      filter: filter,
+      ...(filter && { filter }),
     })
 
     if (page > records.totalPages && records.totalPages > 0) {
