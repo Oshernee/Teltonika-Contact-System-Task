@@ -42,13 +42,8 @@
             id="image-upload"
           />
           <p class="text-sm text-gray-500 text-center mt-2">
-            {{
-              image && image.name
-                ? `${image.name} (${(image.size / 1024).toFixed(1)} KB)`
-                : image && !image.name
-                ? 'Esama nuotrauka įkelta'
-                : 'Nuotrauka neįkelta. Maks. 5MB'
-            }}
+            {{ image ? (image.name ? image.name : image) : 'Nuotrauka neįkelta. Maks. 5MB' }}
+            <button v-if="image" @click="image = null" class="text-red-500 text-sm ml-2">x</button>
           </p>
           <div class="text-red-500 text-sm mt-1" v-if="errorMessages.image">
             {{ errorMessages.image }}
@@ -171,6 +166,7 @@ const validateFields = () => {
 const uploadImage = (event: Event) => {
   const { image: uploadedImage, errorMessage } = handleImageUpload(event)
   image.value = uploadedImage.value
+  console.log(image.value)
   errorMessages.image = errorMessage.value
 }
 
