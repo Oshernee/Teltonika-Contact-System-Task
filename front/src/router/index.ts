@@ -107,6 +107,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   const isAuthenticated = computed(() => userStore.isLoggedIn())
+  console.log(isAuthenticated.value)
 
   const publicRoutes = [
     'Login',
@@ -124,7 +125,8 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.name === 'Login' && isAuthenticated) {
+  if (to.name === 'Login' && isAuthenticated.value) {
+    console.log('User is already logged in, redirecting to Home')
     next({ name: 'Home' })
     return
   }
@@ -134,7 +136,7 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (!isAuthenticated && !publicRoutes.includes(to.name as string)) {
+  if (!isAuthenticated.value && !publicRoutes.includes(to.name as string)) {
     next({ name: 'Login' })
     return
   }

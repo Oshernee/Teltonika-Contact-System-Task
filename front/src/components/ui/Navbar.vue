@@ -109,6 +109,7 @@ const isInLogin = computed(
 )
 
 const isLoggedIn = computed(() => userStore.isLoggedIn())
+console.log('Is logged in:', isLoggedIn.value)
 
 const isDropdownOpen = ref(false)
 

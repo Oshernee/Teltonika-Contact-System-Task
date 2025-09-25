@@ -10,6 +10,6 @@ export const subscribeToPermissionChanges = (id: string) => {
   })
 }
 
-export const unsubscribeFromPermissionChanges = (id: string) => {
-  pb.collection('user_permissions').unsubscribe(id)
+export const unsubscribeFromPermissionChanges = () => {
+  pb.collection('user_permissions').unsubscribe()
 }

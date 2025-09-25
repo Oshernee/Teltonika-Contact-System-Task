@@ -16,18 +16,23 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const clearUser = () => {
-    unsubscribeFromPermissionChanges(user.value?.permissions_id || '')
+    unsubscribeFromPermissionChanges()
     user.value = null
     accessToken.value = null
     localStorage.removeItem('pocketbase_auth')
   }
 
-  const isLoggedIn = async () => {
-    return (
+  const isLoggedIn = () => {
+    if (
       user.value !== null &&
       accessToken.value !== null &&
       localStorage.getItem('pocketbase_auth') !== null
-    )
+    ) {
+      return true
+    } else {
+      clearUser()
+      return false
+    }
   }
 
   const reauthenticateOnPageReload = async () => {
@@ -39,7 +44,6 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const refreshUser = async () => {
-    console.log('Refreshing user...')
     const pocketbase_auth = localStorage.getItem('pocketbase_auth')
     if (pocketbase_auth) {
       const { user, token: newToken } = await refreshUserInformation()
