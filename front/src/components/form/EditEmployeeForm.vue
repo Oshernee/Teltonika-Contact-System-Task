@@ -96,11 +96,11 @@ const userStore = useUserStore()
 
 const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
-const name = ref(props.employee.name)
-const surname = ref(props.employee.surname)
-const position = ref(props.employee.position)
-const email = ref(props.employee.email)
-const phone = ref(props.employee.phone_number || '')
+let name = props.employee.name
+let surname = props.employee.surname
+let position = props.employee.position
+let email = props.employee.email
+let phone = props.employee.phone_number || ''
 const image = ref<File | null>(props.employee.photo || null)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
@@ -124,11 +124,11 @@ const errorMessages = reactive<Record<string, string>>({
 })
 
 const updateValues = (values: [string, string, string, string, string]) => {
-  name.value = values[0]
-  surname.value = values[1]
-  position.value = values[2]
-  email.value = values[3]
-  phone.value = values[4]
+  name = values[0]
+  surname = values[1]
+  position = values[2]
+  email = values[3]
+  phone = values[4]
 }
 
 const updateIds = (ids: Record<TargetKey, string>) => {
@@ -140,11 +140,11 @@ const updateIds = (ids: Record<TargetKey, string>) => {
 }
 
 const validateFields = () => {
-  errorMessages.name = validateName(name.value)
-  errorMessages.surname = validateSurname(surname.value)
-  errorMessages.position = validatePosition(position.value)
-  errorMessages.email = validateEmail(email.value)
-  errorMessages.phone = validatePhone(phone.value)
+  errorMessages.name = validateName(name)
+  errorMessages.surname = validateSurname(surname)
+  errorMessages.position = validatePosition(position)
+  errorMessages.email = validateEmail(email)
+  errorMessages.phone = validatePhone(phone)
   errorMessages.company = selectedIds.company ? '' : 'Pasirinkite įmonę'
   errorMessages.office = selectedIds.office ? '' : 'Pasirinkite biurą'
   errorMessages.division = selectedIds.division ? '' : 'Pasirinkite padalinį'
@@ -182,11 +182,11 @@ const handleUpdateEmployee = async () => {
   try {
     await updateEmployee(
       props.employee.id,
-      name.value,
-      surname.value,
-      position.value,
-      email.value,
-      phone.value,
+      name,
+      surname,
+      position,
+      email,
+      phone,
       selectedIds.company,
       selectedIds.office,
       selectedIds.division,

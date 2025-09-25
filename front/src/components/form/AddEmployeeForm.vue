@@ -83,12 +83,12 @@ const userStore = useUserStore()
 
 const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
-const name = ref('')
-const surname = ref('')
-const position = ref('')
-const email = ref('')
-const phone = ref('')
-const image = ref<File | null>(null)
+let name = ''
+let surname = ''
+let position = ''
+let email = ''
+let phone = ''
+const image = ref<File | string | null>(null)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
   company: '',
@@ -111,11 +111,11 @@ const errorMessages = reactive<Record<string, string>>({
 })
 
 const updateValues = (values: [string, string, string, string, string]) => {
-  name.value = values[0]
-  surname.value = values[1]
-  position.value = values[2]
-  email.value = values[3]
-  phone.value = values[4]
+  name = values[0]
+  surname = values[1]
+  position = values[2]
+  email = values[3]
+  phone = values[4]
 }
 
 const updateIds = (ids: Record<TargetKey, string>) => {
@@ -143,11 +143,11 @@ const isEmailUnique = async (emailToCheck: string) => {
 }
 
 const validateFields = async () => {
-  errorMessages.name = validateName(name.value)
-  errorMessages.surname = validateSurname(surname.value)
-  errorMessages.position = validatePosition(position.value)
-  errorMessages.email = validateEmail(email.value)
-  errorMessages.phone = validatePhone(phone.value)
+  errorMessages.name = validateName(name)
+  errorMessages.surname = validateSurname(surname)
+  errorMessages.position = validatePosition(position)
+  errorMessages.email = validateEmail(email)
+  errorMessages.phone = validatePhone(phone)
   errorMessages.company = selectedIds.company ? '' : 'Pasirinkite įmonę'
   errorMessages.office = selectedIds.office ? '' : 'Pasirinkite biurą'
   errorMessages.division = selectedIds.division ? '' : 'Pasirinkite padalinį'
@@ -167,7 +167,7 @@ const validateFields = async () => {
 }
 
 const handleAddEmployee = async () => {
-  const uniqueEmail = await isEmailUnique(email.value)
+  const uniqueEmail = await isEmailUnique(email)
   const isValid = await validateFields()
   if (!isValid || !uniqueEmail) {
     if (!uniqueEmail) {
@@ -184,11 +184,11 @@ const handleAddEmployee = async () => {
 
   try {
     await createEmployee(
-      name.value,
-      surname.value,
-      position.value,
-      email.value,
-      phone.value,
+      name,
+      surname,
+      position,
+      email,
+      phone,
       selectedIds.company,
       selectedIds.office,
       selectedIds.division,
