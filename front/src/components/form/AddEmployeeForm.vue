@@ -69,7 +69,7 @@ import {
   validatePosition,
 } from '@/utils/validateInputs'
 
-import { createEmployee } from '@/services/employeeService'
+import { checkEmailExists, createEmployee } from '@/services/employeeService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
@@ -131,7 +131,17 @@ const uploadImage = (event: Event) => {
   errorMessages.image = errorMessage.value
 }
 
-const validateFields = () => {
+const isEmailUnique = async (emailToCheck: string) => {
+  try {
+    const exists = await checkEmailExists(emailToCheck)
+    return exists
+  } catch (error) {
+    notificationStore.addErrorNotification('Nepavyko patikrinti el. pašto unikalumo', error)
+    return false
+  }
+}
+
+const validateFields = async () => {
   errorMessages.name = validateName(name.value)
   errorMessages.surname = validateSurname(surname.value)
   errorMessages.position = validatePosition(position.value)
@@ -156,7 +166,14 @@ const validateFields = () => {
 }
 
 const handleAddEmployee = async () => {
-  if (!validateFields()) {
+  const uniqueEmail = await isEmailUnique(email.value)
+  const isValid = await validateFields()
+  console.log('isValid', isValid)
+  console.log('uniqueEmail', uniqueEmail)
+  if (!isValid || !uniqueEmail) {
+    if (!uniqueEmail) {
+      errorMessages.email = 'Toks el. paštas jau egzistuoja'
+    }
     return
   }
   userStore.refreshUser()
@@ -165,6 +182,7 @@ const handleAddEmployee = async () => {
     emit('close')
     return
   }
+
   try {
     await createEmployee(
       name.value,

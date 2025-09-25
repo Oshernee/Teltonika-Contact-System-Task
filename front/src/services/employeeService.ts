@@ -53,6 +53,17 @@ export async function getSingleEmployee(id: string): Promise<Employee> {
   }
 }
 
+export async function checkEmailExists(email: string): Promise<boolean> {
+  try {
+    const resultList = await pb.collection('employees').getFullList({
+      filter: `email = "${email}"`,
+    })
+    return resultList.length === 0
+  } catch (error) {
+    throw error
+  }
+}
+
 export async function createEmployee(
   name: string,
   surname: string,
