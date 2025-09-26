@@ -42,3 +42,14 @@ export async function getEmployees(
     throw error
   }
 }
+
+export async function getSingleEmployee(id: string): Promise<Employee> {
+  try {
+    const record = await pb.collection('employees').getOne<Employee>(id, {
+      expand: 'office_id,company_id,division_id,department_id,group_id',
+    })
+    return record
+  } catch (error) {
+    throw error
+  }
+}

@@ -34,7 +34,8 @@
         <tr
           v-for="employee in props.employees"
           :key="employee.id"
-          class="hover:bg-gray-50 transition-colors duration-150"
+          class="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+          @click="pushToDetailedView(employee)"
         >
           <td class="px-6 py-4 whitespace-nowrap text-md text-gray-900">
             {{ employee.name }} {{ employee.surname }}
@@ -52,7 +53,7 @@
             {{
               employee.expand?.office_id
                 ? `${employee.expand.office_id.street}, ${employee.expand.office_id.street_number}, ${employee.expand.office_id.city}`
-                : 'Nėra duomenų'
+                : '-'
             }}
           </td>
         </tr>
@@ -65,7 +66,15 @@
 import { defineProps } from 'vue'
 import type { Employee } from '../types/employees'
 
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 const props = defineProps<{
   employees: Employee[]
 }>()
+
+const pushToDetailedView = (employee: Employee) => {
+  router.push({ name: 'SingleContact', params: { id: employee.id } })
+}
 </script>
