@@ -124,8 +124,7 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.name === 'Login' && isAuthenticated.value) {
-    console.log('User is already logged in, redirecting to Home')
+  if (to.name === 'Login' && isAuthenticated) {
     next({ name: 'Home' })
     return
   }
@@ -140,10 +139,10 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.name === 'Admin' && isAuthenticated.value) {
+  if (to.name === 'Admin' && isAuthenticated) {
     try {
       const userStore = useUserStore()
-      if (userStore.user?.name !== 'admin') {
+      if (userStore.user?.name !== 'Admin') {
         next({ name: 'Home' })
         return
       }
