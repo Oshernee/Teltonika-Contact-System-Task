@@ -9,6 +9,7 @@ export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(null)
   const accessToken = ref<string | null>(null)
   const permissions = ref<UserPermission>()
+  const loginStatus = ref<boolean>(false)
 
   const setUser = (newUser: User, newAccessToken: string) => {
     user.value = newUser
@@ -28,11 +29,11 @@ export const useUserStore = defineStore('user', () => {
       accessToken.value !== null &&
       localStorage.getItem('pocketbase_auth') !== null
     ) {
-      return true
-    } else {
-      clearUser()
-      return false
+      loginStatus.value = true
+      return loginStatus.value
     }
+    loginStatus.value = false
+    return loginStatus.value
   }
 
   const reauthenticateOnPageReload = async () => {

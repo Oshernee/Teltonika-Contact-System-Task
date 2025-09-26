@@ -1,6 +1,6 @@
 <template>
   <nav v-if="!isInLogin" class="top-0 left-0 right-0 bg-secondary h-28 text-2xl">
-    <div v-if="!isLoggedIn" class="flex items-center justify-end h-full mr-12">
+    <div v-if="!loginStatus" class="flex items-center justify-end h-full mr-12">
       <RouterLink to="/login" class="no-underline">
         <button
           class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
@@ -9,7 +9,7 @@
         </button>
       </RouterLink>
     </div>
-    <div v-else class="flex items-center justify-center h-full mr-12 gap-20">
+    <div v-else-if="loginStatus" class="flex items-center justify-center h-full mr-12 gap-20">
       <RouterLink to="/" class="no-underline">
         <button
           class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
@@ -108,8 +108,7 @@ const isInLogin = computed(
     route.path.startsWith('/confirm-password-reset/')
 )
 
-const isLoggedIn = computed(() => userStore.isLoggedIn())
-console.log('Is logged in:', isLoggedIn.value)
+const loginStatus = computed(() => !!userStore.isLoggedIn())
 
 const isDropdownOpen = ref(false)
 

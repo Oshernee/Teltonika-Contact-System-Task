@@ -107,7 +107,6 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   const isAuthenticated = computed(() => userStore.isLoggedIn())
-  console.log(isAuthenticated.value)
 
   const publicRoutes = [
     'Login',
@@ -141,7 +140,7 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.name === 'Admin' && isAuthenticated) {
+  if (to.name === 'Admin' && isAuthenticated.value) {
     try {
       const userStore = useUserStore()
       if (userStore.user?.name !== 'admin') {
