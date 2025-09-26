@@ -13,18 +13,8 @@ const routes = [
     children: [
       {
         path: '',
-        name: 'Home',
         component: HomePage,
-      },
-      {
-        path: 'contacts',
-        name: 'Contacts',
-        component: HomePage,
-      },
-      {
-        path: 'home',
-        name: 'HomeAlias',
-        component: HomePage,
+        alias: ['home', 'contacts'],
       },
     ],
   },
@@ -51,6 +41,7 @@ const routes = [
   {
     path: '/contacts/:id',
     name: 'SingleContact',
+    props: true,
     component: SingleContactPage,
   },
   {

@@ -16,7 +16,7 @@ export type Employee = {
   division_id: string
   department_id?: string
   group_id?: string
-  photo?: File | string | null
+  photo?: File | null
   created_at: string
   updated_at: string
   expand: {
