@@ -1,6 +1,6 @@
 <template>
   <nav v-if="!isInLogin" class="top-0 left-0 right-0 bg-secondary h-28 text-2xl">
-    <div v-if="!isLoggedIn" class="flex items-center justify-end h-full mr-12">
+    <div v-if="!loginStatus && !isLoading" class="flex items-center justify-end h-full mr-12">
       <RouterLink to="/login" class="no-underline">
         <button
           class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
@@ -9,7 +9,10 @@
         </button>
       </RouterLink>
     </div>
-    <div v-else class="flex items-center justify-center h-full mr-12 gap-20">
+    <div
+      v-else-if="loginStatus && !isLoading"
+      class="flex items-center justify-center h-full mr-12 gap-20"
+    >
       <RouterLink to="/" class="no-underline">
         <button
           class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
@@ -31,7 +34,7 @@
           Struktūra
         </button>
       </RouterLink>
-      <RouterLink v-if="isAdmin" to="/admin" class="no-underline">
+      <RouterLink v-if="isAdmin && !isLoading" to="/admin" class="no-underline">
         <button
           class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
         >
@@ -89,7 +92,7 @@
 
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/Auth'
 import { getPhotoUrl } from '@/utils/photoUtils'
 
@@ -101,20 +104,32 @@ const userStore = useUserStore()
 
 const route = useRoute()
 
-const isInLogin = computed(
-  () =>
-    route.path === '/login' ||
-    route.path === '/password-recovery' ||
-    route.path.startsWith('/confirm-password-reset/')
+const isInLogin = ref(false)
+const loginStatus = ref(false)
+const isLoading = ref(true)
+const isAdmin = ref(false)
+
+watch(
+  () => route.path,
+  async () => {
+    isLoading.value = true
+    if (
+      route.path === '/login' ||
+      route.path === '/password-recovery' ||
+      route.path.startsWith('/confirm-password-reset/')
+    ) {
+      isInLogin.value = true
+    } else {
+      isInLogin.value = false
+    }
+    loginStatus.value = userStore.isLoggedIn()
+    isAdmin.value = userStore.isAdmin()
+    isLoading.value = false
+  },
+  { immediate: true }
 )
 
-const isLoggedIn = computed(() => userStore.isLoggedIn())
-
 const isDropdownOpen = ref(false)
-
-const isAdmin = computed(() => {
-  return userStore.user?.name === 'Admin'
-})
 
 const imageAPI = computed(() => {
   return DEFAULT_CONSTANTS.USER_IMAGE_API + userStore.user?.id
