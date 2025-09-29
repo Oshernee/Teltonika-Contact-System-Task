@@ -61,8 +61,6 @@ const routes = [
   },
   {
     path: '/structures',
-    //name: 'Structures',
-    //component: StructureManagementPage,
     children: [
       {
         path: 'offices',
@@ -124,7 +122,7 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.name === 'Login' && isAuthenticated) {
+  if (to.name === 'Login' && isAuthenticated.value) {
     next({ name: 'Home' })
     return
   }
