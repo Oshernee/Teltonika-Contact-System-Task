@@ -24,16 +24,23 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const isLoggedIn = () => {
-    if (
-      user.value !== null &&
-      accessToken.value !== null &&
-      localStorage.getItem('pocketbase_auth') !== null
-    ) {
+    if (localStorage.getItem('pocketbase_auth') !== null) {
       loginStatus.value = true
       return loginStatus.value
     }
     loginStatus.value = false
     return loginStatus.value
+  }
+
+  const isAdmin = () => {
+    const pocketbase_auth = localStorage.getItem('pocketbase_auth')
+    if (!pocketbase_auth) return false
+    try {
+      const authObj = JSON.parse(pocketbase_auth)
+      return authObj.record?.name === 'Admin'
+    } catch (e) {
+      return false
+    }
   }
 
   const reauthenticateOnPageReload = async () => {
@@ -65,6 +72,7 @@ export const useUserStore = defineStore('user', () => {
     clearUser,
     savePermissions,
     refreshUser,
+    isAdmin,
     user,
     accessToken,
     permissions,
