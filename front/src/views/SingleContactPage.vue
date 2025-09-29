@@ -8,7 +8,7 @@
     <div class="flex flex-row items-center py-8 px-4">
       <div v-if="!loading" class="w-24 h-24 rounded-full flex items-center justify-center mr-3">
         <img
-          v-if="employee.photo"
+          v-if="employee.photo && photo !== undefined"
           :src="photo"
           :alt="employee.name + ' ' + employee.surname"
           class="w-24 h-24 rounded-full object-cover"
@@ -63,13 +63,17 @@ const props = defineProps<{
 
 onMounted(async () => {
   employee.value = await fetchEmployeeById(props.id)
-  if (!employee.value?.photo) return
+  if (!employee.value?.photo) {
+    loading.value = false
+    return
+  }
   photo.value = await getPhotoUrl(
     employee.value?.photo,
     constants.EMPLOYEE_IMAGE_API + employee.value?.id
   )
   loading.value = false
 })
+console.log('Employee data:', employee.value?.photo)
 
 const fetchEmployeeById = async (id: string) => {
   try {
