@@ -1,9 +1,11 @@
 <template>
-  <div class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start gap-4">
+  <div
+    v-if="!loading"
+    class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start gap-4 min-h-[85vh]"
+  >
     <text class="text-[56px] text-text font-thin">Įmonės</text>
-    <div class="w-full flex items-center gap-8 text-xl">
+    <div v-if="permissions.edit_companies" class="w-full flex items-center gap-8 text-xl">
       <button
-        v-if="modalPermissions.edit_companies"
         class="w-[56px] h-[56px] bg-accent rounded-full flex items-center justify-center hover:bg-accent-dark"
         @click="handleAddModal()"
       >
@@ -14,57 +16,71 @@
     <text
       >Iš viso rasta:
       <span class="font-bold"
-        >{{ totalEmployees }} {{ totalEmployees > 10 ? 'įmonių' : 'įmonės' }}</span
+        >{{ totalCompanies }} {{ totalCompanies > 10 ? 'įmonių' : 'įmonės' }}</span
       ></text
     >
-    <div v-if="employees.length === 0" class="w-full text-center text-2xl text-text font-bold">
+    <div v-if="companies.length === 0" class="w-full text-center text-2xl text-text font-bold">
       Nėra įmonių
     </div>
-    <div
-      v-else
-      :class="isCardView ? 'grid grid-cols-4 gap-4 w-full' : 'flex flex-col gap-4 w-full'"
-    ></div>
+    <div v-else class="w-full text-center text-2xl text-text font-bold">
+      <StructuresTable
+        :structures="companies"
+        :permissions="{
+          edit: permissions.edit_companies,
+          delete: permissions.delete_companies,
+        }"
+        @open-edit-modal="handleEditModal($event)"
+        @open-delete-modal="handleDeleteModal($event)"
+      />
+    </div>
+    <div class="flex-grow"></div>
     <Pagination
-      v-if="employeesPerPage !== DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES"
       @page-changed="updateCurrentPage"
       :current-page="currentPage"
-      :total-pages="Math.ceil(totalEmployees / employeesPerPage)"
+      :total-pages="Math.ceil(totalCompanies / companiesPerPage)"
+      class="w-full pb-8"
     />
   </div>
-  <Modal ref="modalRef" @update="fetchEmployees" />
+  <div v-else class="w-full h-full flex justify-center items-center">
+    <LoadingCard class="w-full h-full justify-center items-center" />
+  </div>
+  <Modal ref="modalRef" @update="fetchCompanies" />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 
-import { getEmployees } from '@/services/employeeService'
+import { getStructures } from '@/services/universalService'
 
 import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
+import { STRUCTURE_CONSTANTS } from '@/constants/structureConstants'
+import { FILTER_LEVELS } from '@/constants/filteringConstants'
 
 import Add from '@/assets/Add.svg'
 import Modal from '@/components/ui/Modal.vue'
-import Pagination from '@/components/ui/Pagination.vue'
 
 import { useUserStore } from '@/stores/Auth'
 import { useNotificationStore } from '@/stores/Notification'
 
-import type { Employee } from '@/types/employees'
+import type { Structure } from '@/types/structures'
 
-import AddCompanyForm from '@/components/form/AddCompanyForm.vue'
-import EditCompanyForm from '@/components/form/EditCompanyForm.vue'
-import DeleteCompanyForm from '@/components/form/DeleteCompanyForm.vue'
+import AddStructureForm from '@/components/form/AddStructureForm.vue'
+import EditStructureForm from '@/components/form/EditStructureForm.vue'
+import DeleteStructureForm from '@/components/form/DeleteStructureForm.vue'
+import LoadingCard from '@/components/cards/LoadingCard.vue'
+import Pagination from '@/components/ui/Pagination.vue'
+import StructuresTable from '@/components/tables/StructuresTable.vue'
 
-const employees = ref<Employee[]>([])
-const totalEmployees = ref(0)
-const employeesPerPage = ref(DEFAULT_CONSTANTS.DEFAULT_EMPLOYEES_PER_PAGE)
+const companies = ref<Structure[]>([])
+const totalCompanies = ref(0)
+const companiesPerPage = ref(4)
 const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
-const searchQuery = ref('')
-const isCardView = ref(true)
-const filterQuery = ref<{ type: string; value: string | number }[]>([])
+const constants = STRUCTURE_CONSTANTS.companies
+const loading = ref(true)
 const notificationStore = useNotificationStore()
 const modalRef = ref()
 const userStore = useUserStore()
-const modalPermissions = computed(() => ({
+const permissions = computed(() => ({
   edit_companies: userStore.permissions?.edit_companies || false,
   delete_companies: userStore.permissions?.delete_companies || false,
 }))
@@ -72,65 +88,46 @@ const modalPermissions = computed(() => ({
 const emit = defineEmits(['update'])
 
 onMounted(() => {
-  fetchEmployees()
+  fetchCompanies().then(() => {
+    loading.value = false
+  })
 })
 
-const fetchEmployees = async () => {
+const fetchCompanies = async () => {
   try {
-    const response = await getEmployees(
-      employeesPerPage.value,
-      currentPage.value,
-      searchQuery.value,
-      filterQuery.value
-    )
-    employees.value = response[0]
-    totalEmployees.value = response[1]
+    const response = await getStructures('companies', currentPage.value, companiesPerPage.value)
+    companies.value = response[0]
+    totalCompanies.value = response[1]
     currentPage.value = response[2]
   } catch (error: any) {
-    notificationStore.addErrorNotification('Nepavyko užkrauti kontaktų', error)
+    notificationStore.addErrorNotification('Nepavyko užkrauti kompanijų', error)
   }
 }
 
-const updateEmployees = () => {
-  fetchEmployees()
-}
-
-const updateEmployeesPerPage = (count: number) => {
-  employeesPerPage.value = count
-  updateEmployees()
-}
-
-const updateSearchQuery = (query: string) => {
-  searchQuery.value = query
-  updateEmployees()
+const updateCompanies = () => {
+  fetchCompanies()
 }
 
 const updateCurrentPage = (page: number) => {
   currentPage.value = page
-  updateEmployees()
-}
-
-const updateViewType = () => {
-  isCardView.value = !isCardView.value
-}
-
-const updateFiltering = (filters: Record<string, string>) => {
-  filterQuery.value = Object.entries(filters)
-    .filter(([_, value]) => value !== '' && value !== 'ALL')
-    .map(([type, value]) => ({ type, value }))
-  fetchEmployees()
+  updateCompanies()
 }
 
 function handleAddModal() {
-  handleOpenModal(AddCompanyForm, modalPermissions.value.edit_companies, {})
+  handleOpenModal(AddStructureForm, permissions.value.edit_companies, { constants })
 }
 
-function handleEditModal(employee: Employee) {
-  handleOpenModal(EditCompanyForm, modalPermissions.value.edit_companies, { employee })
+function handleEditModal(structure: Structure) {
+  handleOpenModal(EditStructureForm, permissions.value.edit_companies, { structure, constants })
 }
 
-function handleDeleteModal(employee: Employee) {
-  handleOpenModal(DeleteCompanyForm, modalPermissions.value.delete_companies, { employee }, true)
+function handleDeleteModal(structure: Structure) {
+  handleOpenModal(
+    DeleteStructureForm,
+    permissions.value.delete_companies,
+    { structure, constants, filterLevel: FILTER_LEVELS.offices },
+    true
+  )
 }
 
 const handleOpenModal = (

@@ -39,3 +39,60 @@ export async function deleteRecordById(collectionName: string, id: string): Prom
     throw error
   }
 }
+
+export async function getStructures(
+  collectionName: string,
+  currentPage: number,
+  itemsPerPage: number
+): Promise<any> {
+  try {
+    const records = await pb.collection(collectionName).getList(currentPage, itemsPerPage)
+
+    if (currentPage > records.totalPages && records.totalPages > 0) {
+      currentPage = records.totalPages
+      return getStructures(collectionName, currentPage, itemsPerPage)
+    }
+
+    return [records.items, records.totalItems, currentPage]
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function createStructure(collectionName: string, name: string): Promise<void> {
+  try {
+    const data = { name: name }
+    await pb.collection(collectionName).create(data)
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateStructure(
+  collectionName: string,
+  id: string,
+  name: string
+): Promise<void> {
+  try {
+    const data = { name }
+    await pb.collection(collectionName).update(id, data)
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteStructure(
+  collectionName: string,
+  id: string,
+  filterLevel: FilterLevel
+): Promise<void> {
+  try {
+    if ((await getLowerFilteredItems(filterLevel, id)).length === 0) {
+      await pb.collection(collectionName).delete(id)
+    } else {
+      throw { status: 406 }
+    }
+  } catch (error) {
+    throw error
+  }
+}

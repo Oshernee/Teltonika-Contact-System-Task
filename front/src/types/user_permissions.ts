@@ -13,4 +13,5 @@ export type UserPermission = {
   delete_companies?: boolean
   created_at: string
   updated_at: string
+  [key: string]: string | boolean | undefined
 }
