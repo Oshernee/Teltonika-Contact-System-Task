@@ -101,6 +101,7 @@ let surname = props.employee.surname
 let position = props.employee.position
 let email = props.employee.email
 let phone = props.employee.phone_number || ''
+const valuesChanged = ref(false)
 const image = ref<File | null>(props.employee.photo || null)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
@@ -124,11 +125,12 @@ const errorMessages = reactive<Record<string, string>>({
 })
 
 const updateValues = (values: [string, string, string, string, string]) => {
-  name = values[0]
-  surname = values[1]
-  position = values[2]
-  email = values[3]
-  phone = values[4]
+  name = trimWhiteSpace(values[0])
+  surname = trimWhiteSpace(values[1])
+  position = trimWhiteSpace(values[2])
+  email = trimWhiteSpace(values[3])
+  phone = trimWhiteSpace(values[4])
+  valuesChanged.value = true
 }
 
 const updateIds = (ids: Record<TargetKey, string>) => {
@@ -137,6 +139,10 @@ const updateIds = (ids: Record<TargetKey, string>) => {
   selectedIds.division = ids.division
   selectedIds.department = ids.department
   selectedIds.group = ids.group
+}
+
+function trimWhiteSpace(str: string): string {
+  return str.trim().replace(/\s+/g, ' ')
 }
 
 const validateFields = () => {
@@ -171,6 +177,10 @@ const uploadImage = (event: Event) => {
 
 const handleUpdateEmployee = async () => {
   if (!validateFields()) {
+    return
+  }
+  if (!valuesChanged.value) {
+    notificationStore.addInfoNotification('Nėra padarytų pakeitimų')
     return
   }
   await userStore.refreshUser()
