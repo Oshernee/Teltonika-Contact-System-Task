@@ -48,6 +48,7 @@
 
   <div class="flex justify-end px-6 pb-6">
     <button
+      :disabled="sending"
       @click="handleAddEmployee"
       class="w-72 bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
     >
@@ -90,6 +91,7 @@ let email = ''
 let phone = ''
 const valuesChanged = ref(false)
 const image = ref<File | string | null>(null)
+const sending = ref(false)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
   company: '',
@@ -173,10 +175,13 @@ const validateFields = async () => {
 }
 
 const handleAddEmployee = async () => {
+  if (sending.value) return
+  sending.value = true
   const uniqueEmail = await isEmailUnique(email)
   const isValid = await validateFields()
   if (!isValid || !uniqueEmail) {
     if (!uniqueEmail) {
+      sending.value = false
       errorMessages.email = 'Toks el. paštas jau egzistuoja'
     }
     return
@@ -187,6 +192,7 @@ const handleAddEmployee = async () => {
     if (!userStore.permissions?.edit_employees) {
       notificationStore.addErrorNotification('Jūs neturite teisių pridėti kontaktą', '')
       emit('close')
+      sending.value = false
       return
     }
     await createEmployee(
@@ -209,6 +215,8 @@ const handleAddEmployee = async () => {
     emit('close')
   } catch (error) {
     notificationStore.addErrorNotification('Nepavyko pridėti kontakto', error)
+  } finally {
+    sending.value = false
   }
 }
 </script>

@@ -55,6 +55,7 @@
 
   <div class="flex justify-end px-6 pb-6">
     <button
+      :disabled="sending"
       @click="handleUpdateEmployee"
       class="w-72 bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
     >
@@ -103,6 +104,7 @@ let email = props.employee.email
 let phone = props.employee.phone_number || ''
 const valuesChanged = ref(false)
 const image = ref<File | null>(props.employee.photo || null)
+const sending = ref(false)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
   company: props.employee.company_id,
@@ -177,11 +179,15 @@ const uploadImage = (event: Event) => {
 }
 
 const handleUpdateEmployee = async () => {
+  if (sending.value) return
+  sending.value = true
   if (!validateFields()) {
+    sending.value = false
     return
   }
   if (!valuesChanged.value) {
     notificationStore.addInfoNotification('Nėra padarytų pakeitimų')
+    sending.value = false
     return
   }
   try {
@@ -189,6 +195,7 @@ const handleUpdateEmployee = async () => {
     if (!userStore.permissions?.edit_employees) {
       notificationStore.addErrorNotification('Jūs neturite teisių pakeisti kontaktą', '')
       emit('close')
+      sending.value = false
       return
     }
     await updateEmployee(
@@ -212,6 +219,8 @@ const handleUpdateEmployee = async () => {
     emit('close')
   } catch (error) {
     notificationStore.addErrorNotification('Nepavyko pakeisti kontakto', error)
+  } finally {
+    sending.value = false
   }
 }
 </script>
