@@ -41,17 +41,17 @@ const props = defineProps<{
 }>()
 
 const handleDelete = async () => {
-  userStore.refreshUser()
-  const permission = 'delete_' + props.constants.structure_type
-  if (userStore.permissions?.[permission] !== true) {
-    notificationStore.addErrorNotification(
-      'Jūs neturite teisių ištrinti ' + props.constants.type_accusative,
-      ''
-    )
-    emit('close')
-    return
-  }
   try {
+    userStore.refreshUser()
+    const permission = 'delete_' + props.constants.structure_type
+    if (userStore.permissions?.[permission] !== true) {
+      notificationStore.addErrorNotification(
+        'Jūs neturite teisių ištrinti ' + props.constants.type_accusative,
+        ''
+      )
+      emit('close')
+      return
+    }
     await deleteStructure(props.constants.structure_type, props.structure.id, props.filterLevel)
     notificationStore.addSuccessNotification(props.constants.type_genitive + ' sėkmingai ištrintas')
     emit('update')

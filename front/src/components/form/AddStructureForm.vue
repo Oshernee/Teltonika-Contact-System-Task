@@ -11,7 +11,7 @@
         type="text"
         class="w-72 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         :class="{ 'border-red-500': nameError }"
-        @input="updateValues($event.target.value)"
+        @input="updateValues(($event.target as HTMLInputElement).value)"
       />
 
       <button
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 
 import { validateName } from '@/utils/validateInputs'
 
@@ -68,18 +68,17 @@ const handleAddStructure = async () => {
   if (!isValid) {
     return
   }
-  await userStore.refreshUser()
-  const permission = 'edit_' + props.constants.structure_type
-  if (userStore.permissions?.[permission] !== true) {
-    notificationStore.addErrorNotification(
-      'Jūs neturite teisių sukurti ' + props.constants.type_accusative,
-      ''
-    )
-    emit('close')
-    return
-  }
-
   try {
+    await userStore.refreshUser()
+    const permission = 'edit_' + props.constants.structure_type
+    if (userStore.permissions?.[permission] !== true) {
+      notificationStore.addErrorNotification(
+        'Jūs neturite teisių sukurti ' + props.constants.type_accusative,
+        ''
+      )
+      emit('close')
+      return
+    }
     await createStructure(props.constants.structure_type, name.trim())
 
     notificationStore.addSuccessNotification(props.constants.type_genitive + ' sėkmingai pridėtas')

@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { ref } from 'vue'
 
 import { validateName } from '@/utils/validateInputs'
 
@@ -33,6 +33,8 @@ import { updateStructure } from '@/services/universalService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
+
+import type { Structure } from '@/types/structures'
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
@@ -65,18 +67,18 @@ const handleUpdateStructure = async () => {
   if (!isValid) {
     return
   }
-  await userStore.refreshUser()
-  const permission = 'edit_' + props.constants.structure_type
-  if (userStore.permissions?.[permission] !== true) {
-    notificationStore.addErrorNotification(
-      'Jūs neturite teisių atnaujinti ' + props.constants.type_accusative,
-      ''
-    )
-    emit('close')
-    return
-  }
 
   try {
+    await userStore.refreshUser()
+    const permission = 'edit_' + props.constants.structure_type
+    if (userStore.permissions?.[permission] !== true) {
+      notificationStore.addErrorNotification(
+        'Jūs neturite teisių atnaujinti ' + props.constants.type_accusative,
+        ''
+      )
+      emit('close')
+      return
+    }
     await updateStructure(props.constants.structure_type, props.structure.id, name.value.trim())
 
     notificationStore.addSuccessNotification(
