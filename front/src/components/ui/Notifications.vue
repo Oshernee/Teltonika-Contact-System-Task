@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useNotificationStore } from '../stores/Notification'
+import { useNotificationStore } from '@/stores/Notification'
 
 const notificationStore = useNotificationStore()
 const { notifications } = storeToRefs(notificationStore)
