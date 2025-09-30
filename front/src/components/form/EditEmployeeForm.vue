@@ -139,6 +139,7 @@ const updateIds = (ids: Record<TargetKey, string>) => {
   selectedIds.division = ids.division
   selectedIds.department = ids.department
   selectedIds.group = ids.group
+  valuesChanged.value = true
 }
 
 function trimWhiteSpace(str: string): string {
@@ -183,13 +184,13 @@ const handleUpdateEmployee = async () => {
     notificationStore.addInfoNotification('Nėra padarytų pakeitimų')
     return
   }
-  await userStore.refreshUser()
-  if (!userStore.permissions?.edit_employees) {
-    notificationStore.addErrorNotification('Jūs neturite teisių pakeisti kontaktą', '')
-    emit('close')
-    return
-  }
   try {
+    await userStore.refreshUser()
+    if (!userStore.permissions?.edit_employees) {
+      notificationStore.addErrorNotification('Jūs neturite teisių pakeisti kontaktą', '')
+      emit('close')
+      return
+    }
     await updateEmployee(
       props.employee.id,
       name,

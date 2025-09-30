@@ -35,13 +35,13 @@ const props = defineProps<{
 }>()
 
 const handleDelete = async () => {
-  userStore.refreshUser()
-  if (userStore.permissions?.delete_employees !== true) {
-    notificationStore.addErrorNotification('Jūs neturite teisių ištrinti kontaktą', '')
-    emit('close')
-    return
-  }
   try {
+    userStore.refreshUser()
+    if (userStore.permissions?.delete_employees !== true) {
+      notificationStore.addErrorNotification('Jūs neturite teisių ištrinti kontaktą', '')
+      emit('close')
+      return
+    }
     await deleteRecordById('employees', props.employee.id)
     notificationStore.addSuccessNotification('Kontaktas sėkmingai ištrintas')
     emit('update')

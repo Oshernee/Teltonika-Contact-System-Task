@@ -19,7 +19,6 @@ export function validatePassword(password: string): string {
 }
 
 export function validateName(name: string): string {
-  console.log(`Validating name: "${name.length}"`)
   if (!name) return 'Vardas yra privalomas'
   if (name.length < 2) return 'Vardas turi būti bent 2 simbolių ilgio'
   if (name.length > 100) return 'Vardas negali būti ilgesnis nei 100 simbolių'

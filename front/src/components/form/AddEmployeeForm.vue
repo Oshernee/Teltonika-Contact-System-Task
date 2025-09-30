@@ -181,14 +181,14 @@ const handleAddEmployee = async () => {
     }
     return
   }
-  await userStore.refreshUser()
-  if (!userStore.permissions?.edit_employees) {
-    notificationStore.addErrorNotification('Jūs neturite teisių pridėti kontaktą', '')
-    emit('close')
-    return
-  }
 
   try {
+    await userStore.refreshUser()
+    if (!userStore.permissions?.edit_employees) {
+      notificationStore.addErrorNotification('Jūs neturite teisių pridėti kontaktą', '')
+      emit('close')
+      return
+    }
     await createEmployee(
       name,
       surname,
