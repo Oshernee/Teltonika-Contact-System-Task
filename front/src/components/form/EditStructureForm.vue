@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { validateName } from '@/utils/validateInputs'
+import { validateStructureName } from '@/utils/validateInputs'
 
 import { updateStructure } from '@/services/universalService'
 
@@ -55,7 +55,7 @@ let name = ref(props.structure.name)
 const nameError = ref<string | null>(null)
 
 const validateFields = async () => {
-  nameError.value = validateName(name.value)
+  nameError.value = validateStructureName(name.value)
   if (nameError.value) {
     return false
   }

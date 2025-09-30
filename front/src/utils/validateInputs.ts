@@ -1,5 +1,6 @@
 export function validateEmail(email: string): string {
   if (!email) return 'Paštas yra privalomas'
+  if (email.length > 255) return 'Paštas negali būti ilgesnis nei 255 simboliai'
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email)) return 'Neteisingas pašto formato'
   return ''
@@ -8,6 +9,7 @@ export function validateEmail(email: string): string {
 export function validatePassword(password: string): string {
   if (!password) return 'Slaptažodis yra privalomas'
   if (password.length < 8) return 'Slaptažodis turi būti bent 8 simbolių ilgio'
+  if (password.length > 72) return 'Slaptažodis negali būti ilgesnis nei 72 simboliai'
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
   if (!passwordRegex.test(password))
     // Logiškai čia turėtų būti kažkas, bet šiuo metu grąžinu tuščią stringą, nes paskirti slaptažodžiai neatitinka šių reikalavimų
@@ -19,6 +21,7 @@ export function validatePassword(password: string): string {
 export function validateName(name: string): string {
   if (!name) return 'Vardas yra privalomas'
   if (name.length < 2) return 'Vardas turi būti bent 2 simbolių ilgio'
+  if (name.length > 100) return 'Vardas negali būti ilgesnis nei 100 simbolių'
   const nameRegex = /^[a-zA-ZÀ-ž\s'-]+$/
   if (!nameRegex.test(name)) return 'Varde gali būti tik raidės, tarpai, apostrofai ir brūkšneliai'
   return ''
@@ -27,6 +30,7 @@ export function validateName(name: string): string {
 export function validateSurname(surname: string): string {
   if (!surname) return 'Pavardė yra privaloma'
   if (surname.length < 2) return 'Pavardė turi būti bent 2 simbolių ilgio'
+  if (surname.length > 100) return 'Pavardė negali būti ilgesnė nei 100 simbolių'
   const surnameRegex = /^[a-zA-ZÀ-ž\s'-]+$/
   if (!surnameRegex.test(surname))
     return 'Pavardėje gali būti tik raidės, tarpai, apostrofai ir brūkšneliai'
@@ -35,16 +39,28 @@ export function validateSurname(surname: string): string {
 
 export function validatePhone(phone: string): string {
   if (!phone) return ''
+  if (phone.length > 15) return 'Telefono numeris negali būti ilgesnis nei 15 simbolių'
   const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/
-  if (!phoneRegex.test(phone)) return 'Neteisingas telefono numerio formatas'
+  if (!phoneRegex.test(phone)) return 'Neteisingas telefono numerio formatas: +370/0 ***********'
   return ''
 }
 
 export function validatePosition(position: string): string {
   if (!position) return 'Pozicija yra privaloma'
   if (position.length < 2) return 'Pozicija turi būti bent 2 simbolių ilgio'
-  const positionRegex = /^[a-zA-ZÀ-ž\s'-]+$/
+  if (position.length > 100) return 'Pozicija negali būti ilgesnė nei 100 simbolių'
+  const positionRegex = /^[a-zA-ZÀ-ž\s'-.]+$/
   if (!positionRegex.test(position))
-    return 'Pozicijoje gali būti tik raidės, tarpai, apostrofai ir brūkšneliai'
+    return 'Pozicijoje gali būti tik raidės, tarpai, apostrofai, brūkšneliai ir taškai'
+  return ''
+}
+
+export function validateStructureName(name: string): string {
+  if (!name) return 'Pavadinimas yra privalomas'
+  if (name.length < 2) return 'Pavadinimas turi būti bent 2 simbolių ilgio'
+  if (name.length > 255) return 'Pavadinimas negali būti ilgesnis nei 255 simboliai'
+  const nameRegex = /^[a-zA-ZÀ-ž0-9\s'-.]+$/
+  if (!nameRegex.test(name))
+    return 'Pavadinime gali būti tik raidės, skaičiai, tarpai, apostrofai, brūkšneliai ir taškai'
   return ''
 }
