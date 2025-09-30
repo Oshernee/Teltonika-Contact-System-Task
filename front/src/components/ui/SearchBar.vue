@@ -48,13 +48,13 @@
 import { ref } from 'vue'
 import debounce from 'debounce'
 
-import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
-import { UNALLOWED_CHARACTERS } from '../constants/unallowedCharacters'
+import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
+import { UNALLOWED_CHARACTERS } from '@/constants/unallowedCharacters'
 
-import searchIcon from '../assets/Search.svg'
-import paginationCount from '../assets/PaginationCount.svg'
-import toCard from '../assets/ToCard.svg'
-import toTable from '../assets/ToTable.svg'
+import searchIcon from '@/assets/Search.svg'
+import paginationCount from '@/assets/PaginationCount.svg'
+import toCard from '@/assets/ToCard.svg'
+import toTable from '@/assets/ToTable.svg'
 
 const showDropdown = ref(false)
 const selectedCount = ref<number | string | null>(null)

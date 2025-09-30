@@ -8,9 +8,23 @@
 </template>
 
 <script setup lang="ts">
-import Navbar from './components/Navbar.vue'
-import Modal from './components/Modal.vue'
-import Notifications from './components/Notifications.vue'
+import Navbar from '@/components/ui/Navbar.vue'
+import Modal from '@/components/ui/Modal.vue'
+import Notifications from '@/components/ui/Notifications.vue'
+import { useUserStore } from '@/stores/Auth'
+import { onMounted } from 'vue'
+import { subscribeToPermissionChanges } from '@/services/pocketbaseSubscriptionService'
+
+const userStore = useUserStore()
+
+onMounted(async () => {
+  const isAuthenticated = await userStore.reauthenticateOnPageReload()
+  if (isAuthenticated) {
+    if (userStore.user !== null) {
+      subscribeToPermissionChanges(userStore.user.permissions_id)
+    }
+  }
+})
 </script>
 
 <style>

@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import Arrow from '../assets/Arrows.svg'
+import Arrow from '@/assets/Arrows.svg'
 
 const emit = defineEmits(['page-changed'])
 

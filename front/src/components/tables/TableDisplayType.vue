@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import type { Employee } from '../types/employees'
+import type { Employee } from '@/types/employees'
 
 import { useRouter } from 'vue-router'
 

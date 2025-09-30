@@ -30,18 +30,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-import { getEmployees } from '../services/employeeService'
-import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
+import { getEmployees } from '@/services/employeeService'
+import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
-import SearchBar from '../components/SearchBar.vue'
-import Filtering from '../components/Filtering.vue'
-import Pagination from '../components/Pagination.vue'
-import CardDisplayType from '../components/CardDisplayType.vue'
-import TableDisplayType from '../components/TableDisplayType.vue'
+import SearchBar from '@/components/ui/SearchBar.vue'
+import Filtering from '@/components/ui/Filtering.vue'
+import Pagination from '@/components/ui/Pagination.vue'
+import CardDisplayType from '@/components/tables/CardDisplayType.vue'
+import TableDisplayType from '@/components/tables/TableDisplayType.vue'
 
-import { useNotificationStore } from '../stores/Notification'
+import { useNotificationStore } from '@/stores/Notification'
 
-import type { Employee } from '../types/employees'
+import type { Employee } from '@/types/employees'
 
 const employees = ref<Employee[]>([])
 const totalEmployees = ref(0)

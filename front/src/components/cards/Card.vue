@@ -22,7 +22,7 @@
     </div>
 
     <div class="space-y-1 text-sm text-text">
-      <p>Telefono nr: {{ props.employee.phone_number || '-' }}</p>
+      <p>Telefono nr: {{ props.employee.phone_number || 'Nėra duomenų' }}</p>
       <p>El. paštas: {{ props.employee.email }}</p>
       <p>
         Adresas:
@@ -31,28 +31,32 @@
             ', ' +
             props.employee.expand.office_id.street_number +
             ', ' +
-            props.employee.expand.office_id.city || '-'
+            props.employee.expand.office_id.city || 'Nėra duomenų'
         }}
       </p>
     </div>
+    <Modal ref="modalRef" @update="emit('update')" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import type { Employee } from '../types/employees'
+import Modal from '@/components/ui/Modal.vue'
 
-import Profile from '../assets/Profile.svg'
+import type { Employee } from '@/types/employees'
 
-import { getPhotoUrl } from '../utils/photoUtils'
+import Profile from '@/assets/Profile.svg'
 
-import { DEFAULT_CONSTANTS } from '../constants/defaultConstants'
+import { getPhotoUrl } from '@/utils/photoUtils'
+
+import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
 const router = useRouter()
 
-const emit = defineEmits(['openEditModal', 'openDeleteModal'])
+const emit = defineEmits(['update'])
+const modalRef = ref()
 
 const imageAPI = computed(() => {
   return DEFAULT_CONSTANTS.EMPLOYEE_IMAGE_API + props.employee.id
