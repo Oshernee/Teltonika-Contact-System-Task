@@ -20,6 +20,7 @@
     <div v-else class="w-full text-center text-2xl text-text font-bold">
       <StructuresTable
         :structures="structures"
+        :structure-type="selectedStructureType"
         :permissions="{
           edit: permissions.edit_companies,
           delete: permissions.delete_companies,

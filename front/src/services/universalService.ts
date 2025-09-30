@@ -52,6 +52,7 @@ export async function getStructures(
       currentPage = records.totalPages
       return getStructures(collectionName, currentPage, itemsPerPage)
     }
+    console.log(records)
 
     return [records.items, records.totalItems, currentPage]
   } catch (error) {
