@@ -46,7 +46,7 @@ export const useUserStore = defineStore('user', () => {
 
   const reauthenticateOnPageReload = async () => {
     if (localStorage.getItem('pocketbase_auth') !== null) {
-      refreshUser()
+      await refreshUser()
       return true
     }
     return false

@@ -73,8 +73,6 @@ onMounted(async () => {
   )
   loading.value = false
 })
-console.log('Employee data:', employee.value?.photo)
-
 const fetchEmployeeById = async (id: string) => {
   try {
     const response = await getSingleEmployee(id)

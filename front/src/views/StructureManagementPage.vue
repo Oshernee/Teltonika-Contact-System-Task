@@ -4,7 +4,7 @@
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start gap-4 min-h-[85vh]"
   >
     <text class="text-[56px] text-text font-thin">Struktūra</text>
-    <div v-if="permissions.edit_companies" class="w-full flex items-center gap-8 text-xl">
+    <div v-if="permissions.edit" class="w-full flex items-center gap-8 text-xl">
       <button
         class="w-[56px] h-[56px] bg-accent rounded-full flex items-center justify-center hover:bg-accent-dark"
         @click="handleAddModal()"
@@ -22,8 +22,8 @@
         :structures="structures"
         :structure-type="selectedStructureType"
         :permissions="{
-          edit: permissions.edit_companies,
-          delete: permissions.delete_companies,
+          edit: permissions.edit,
+          delete: permissions.delete,
         }"
         @open-edit-modal="handleEditModal($event)"
         @open-delete-modal="handleDeleteModal($event)"
@@ -44,13 +44,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 
 import { getStructures } from '@/services/universalService'
 
 import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
-import { STRUCTURE_CONSTANTS } from '@/constants/structureConstants'
-import { FILTER_LEVELS } from '@/constants/filteringConstants'
+import { CHECK_LOWER_CONSTRAINTS, STRUCTURE_CONSTANTS } from '@/constants/structureConstants'
 
 import Add from '@/assets/Add.svg'
 import Modal from '@/components/ui/Modal.vue'
@@ -60,9 +59,14 @@ import { useNotificationStore } from '@/stores/Notification'
 
 import type { Structure } from '@/types/structures'
 
-import AddCompanyForm from '@/components/form/AddCompanyForm.vue'
-import EditCompanyForm from '@/components/form/EditCompanyForm.vue'
-import DeleteCompanyForm from '@/components/form/DeleteCompanyForm.vue'
+import AddStructureForm from '@/components/form/AddStructureForm.vue'
+import EditStructureForm from '@/components/form/EditStructureForm.vue'
+import DeleteStructureForm from '@/components/form/DeleteStructureForm.vue'
+
+import AddOfficeForm from '@/components/form/AddOfficeForm.vue'
+import EditOfficeForm from '@/components/form/EditOfficeForm.vue'
+import DeleteOfficeForm from '@/components/form/DeleteOfficeForm.vue'
+
 import LoadingCard from '@/components/cards/LoadingCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import StructuresTable from '@/components/tables/StructuresTable.vue'
@@ -70,23 +74,26 @@ import StructureSelector from '@/components/ui/StructureSelector.vue'
 
 const selectedStructureType = ref('offices')
 const structures = ref<Structure[]>([])
+const upperStructures = ref<Structure[]>([])
 const totalCompanies = ref(0)
 const companiesPerPage = ref(4)
 const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
-const constants = STRUCTURE_CONSTANTS.companies
+const constants = ref(STRUCTURE_CONSTANTS[selectedStructureType.value])
 const loading = ref(true)
 const notificationStore = useNotificationStore()
 const modalRef = ref()
 const userStore = useUserStore()
-const permissions = computed(() => ({
-  edit_companies: userStore.permissions?.edit_companies || false,
-  delete_companies: userStore.permissions?.delete_companies || false,
-}))
+const key = ['companies', 'offices', 'divisions', 'departments', 'groups'] as const
+const editPermission = ref('edit_' + selectedStructureType.value)
+const deletePermission = ref('delete_' + selectedStructureType.value)
+const permissions = ref({ edit: false, delete: false })
 
 const emit = defineEmits(['update'])
 
-onMounted(() => {
-  fetchStructures().then(() => {
+onMounted(async () => {
+  await fetchStructures().then(() => {
+    permissions.value.edit = userStore.permissions?.[editPermission.value] as boolean
+    permissions.value.delete = userStore.permissions?.[deletePermission.value] as boolean
     loading.value = false
   })
 })
@@ -98,11 +105,17 @@ const fetchStructures = async () => {
       currentPage.value,
       companiesPerPage.value
     )
+    const upperStructureResponse = await getStructures(
+      key[key.indexOf(selectedStructureType.value as (typeof key)[number]) - 1],
+      1,
+      1000
+    )
     structures.value = response[0]
     totalCompanies.value = response[1]
     currentPage.value = response[2]
+    upperStructures.value = upperStructureResponse[0]
   } catch (error: any) {
-    notificationStore.addErrorNotification('Nepavyko užkrauti kompanijų', error)
+    notificationStore.addErrorNotification('Nepavyko užkrauti struktūrų', error)
   }
 }
 
@@ -116,23 +129,52 @@ const updateCurrentPage = (page: number) => {
 }
 
 const handleStructureSelected = (structure: string) => {
+  currentPage.value = 1
   selectedStructureType.value = structure
+  editPermission.value =
+    'edit_' + (key.includes(selectedStructureType.value as any) ? 'structure' : 'offices')
+  deletePermission.value =
+    'delete_' + (key.includes(selectedStructureType.value as any) ? 'structure' : 'offices')
+  permissions.value.edit = userStore.permissions?.[editPermission.value] as boolean
+  permissions.value.delete = userStore.permissions?.[deletePermission.value] as boolean
+  constants.value = STRUCTURE_CONSTANTS[selectedStructureType.value]
   updateStructures()
 }
 
 function handleAddModal() {
-  handleOpenModal(AddCompanyForm, permissions.value.edit_companies, { constants })
+  handleOpenModal(
+    key.includes(selectedStructureType.value as any) ? AddStructureForm : AddOfficeForm,
+    permissions.value.edit,
+    {
+      constants,
+      filterLevel: CHECK_LOWER_CONSTRAINTS[selectedStructureType.value],
+      upperStructures: upperStructures.value,
+    }
+  )
 }
 
 function handleEditModal(structure: Structure) {
-  handleOpenModal(EditCompanyForm, permissions.value.edit_companies, { structure, constants })
+  handleOpenModal(
+    key.includes(selectedStructureType.value as any) ? EditStructureForm : EditOfficeForm,
+    permissions.value.edit,
+    {
+      structure,
+      constants,
+      filterLevel: CHECK_LOWER_CONSTRAINTS[selectedStructureType.value],
+      upperStructures: upperStructures.value,
+    }
+  )
 }
 
 function handleDeleteModal(structure: Structure) {
   handleOpenModal(
-    DeleteCompanyForm,
-    permissions.value.delete_companies,
-    { structure, constants, filterLevel: FILTER_LEVELS.offices },
+    key.includes(selectedStructureType.value as any) ? DeleteStructureForm : DeleteOfficeForm,
+    permissions.value.delete,
+    {
+      structure,
+      constants,
+      filterLevel: CHECK_LOWER_CONSTRAINTS[selectedStructureType.value],
+    },
     true
   )
 }

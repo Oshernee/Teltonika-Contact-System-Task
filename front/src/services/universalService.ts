@@ -52,7 +52,6 @@ export async function getStructures(
       currentPage = records.totalPages
       return getStructures(collectionName, currentPage, itemsPerPage)
     }
-    console.log(records)
 
     return [records.items, records.totalItems, currentPage]
   } catch (error) {
@@ -60,10 +59,21 @@ export async function getStructures(
   }
 }
 
-export async function createStructure(collectionName: string, name: string): Promise<void> {
+export async function createStructure(
+  collectionName: string,
+  name: string,
+  upperStructureId?: string | null,
+  upperRelationField?: string
+): Promise<void> {
   try {
     const data = { name: name }
-    await pb.collection(collectionName).create(data)
+    const response = await pb.collection(collectionName).create(data)
+    if (upperStructureId && upperRelationField) {
+      await pb.collection(upperRelationField + '_' + collectionName).create({
+        [upperRelationField.slice(0, -1) + '_id']: upperStructureId,
+        [collectionName.slice(0, -1) + '_id']: response.id,
+      })
+    }
   } catch (error) {
     throw error
   }
@@ -88,6 +98,8 @@ export async function deleteStructure(
   filterLevel: FilterLevel
 ): Promise<void> {
   try {
+    console.log(collectionName, id, filterLevel)
+    console.log(await getLowerFilteredItems(filterLevel, id))
     if ((await getLowerFilteredItems(filterLevel, id)).length === 0) {
       await pb.collection(collectionName).delete(id)
     } else {

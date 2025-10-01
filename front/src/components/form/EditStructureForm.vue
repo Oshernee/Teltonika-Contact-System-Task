@@ -47,6 +47,7 @@ const props = defineProps<{
     type_accusative: string
     type_genitive: string
     structure_type: string
+    upper_structure_type: string
   }
 }>()
 
@@ -70,8 +71,7 @@ const handleUpdateStructure = async () => {
 
   try {
     await userStore.refreshUser()
-    const permission = 'edit_' + props.constants.structure_type
-    if (userStore.permissions?.[permission] !== true) {
+    if (userStore.permissions?.edit_structure !== true) {
       notificationStore.addErrorNotification(
         'Jūs neturite teisių atnaujinti ' + props.constants.type_accusative,
         ''
