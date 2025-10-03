@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-import { getStructures } from '@/services/universalService'
+import { getStructures, getConnectionById } from '@/services/universalService'
 
 import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 import { CHECK_LOWER_CONSTRAINTS, STRUCTURE_CONSTANTS } from '@/constants/structureConstants'
@@ -61,11 +61,11 @@ import type { Structure } from '@/types/structures'
 
 import AddStructureForm from '@/components/form/AddStructureForm.vue'
 import EditStructureForm from '@/components/form/EditStructureForm.vue'
-import DeleteStructureForm from '@/components/form/DeleteStructureForm.vue'
 
 import AddOfficeForm from '@/components/form/AddOfficeForm.vue'
 import EditOfficeForm from '@/components/form/EditOfficeForm.vue'
-import DeleteOfficeForm from '@/components/form/DeleteOfficeForm.vue'
+
+import DeleteStructureForm from '@/components/form/DeleteStructureForm.vue'
 
 import LoadingCard from '@/components/cards/LoadingCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
@@ -143,7 +143,7 @@ const handleStructureSelected = (structure: string) => {
 
 function handleAddModal() {
   handleOpenModal(
-    key.includes(selectedStructureType.value as any) ? AddStructureForm : AddOfficeForm,
+    selectedStructureType.value === 'offices' ? AddOfficeForm : AddStructureForm,
     permissions.value.edit,
     {
       constants,
@@ -153,12 +153,18 @@ function handleAddModal() {
   )
 }
 
-function handleEditModal(structure: Structure) {
+async function handleEditModal(structure: Structure) {
+  const selectedUpperStructure = await getConnectionById(
+    structure.id,
+    constants.value.structure_type,
+    constants.value.upper_structure_type
+  )
   handleOpenModal(
-    key.includes(selectedStructureType.value as any) ? EditStructureForm : EditOfficeForm,
+    selectedStructureType.value === 'offices' ? EditOfficeForm : EditStructureForm,
     permissions.value.edit,
     {
       structure,
+      selectedUpperStructure,
       constants,
       filterLevel: CHECK_LOWER_CONSTRAINTS[selectedStructureType.value],
       upperStructures: upperStructures.value,
@@ -168,7 +174,7 @@ function handleEditModal(structure: Structure) {
 
 function handleDeleteModal(structure: Structure) {
   handleOpenModal(
-    key.includes(selectedStructureType.value as any) ? DeleteStructureForm : DeleteOfficeForm,
+    DeleteStructureForm,
     permissions.value.delete,
     {
       structure,

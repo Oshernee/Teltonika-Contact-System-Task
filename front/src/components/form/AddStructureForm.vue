@@ -54,7 +54,7 @@ const userStore = useUserStore()
 const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
 let name = ''
-const selectedUpperStructureId = ref<string | null>(null)
+const selectedUpperStructureId = ref<string[]>([])
 
 const nameError = ref<string | null>(null)
 

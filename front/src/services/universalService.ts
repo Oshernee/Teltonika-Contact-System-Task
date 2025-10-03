@@ -62,18 +62,35 @@ export async function getStructures(
 export async function createStructure(
   collectionName: string,
   name: string,
-  upperStructureId?: string | null,
+  upperStructureId?: string[],
   upperRelationField?: string
 ): Promise<void> {
   try {
     const data = { name: name }
     const response = await pb.collection(collectionName).create(data)
     if (upperStructureId && upperRelationField) {
-      await pb.collection(upperRelationField + '_' + collectionName).create({
-        [upperRelationField.slice(0, -1) + '_id']: upperStructureId,
-        [collectionName.slice(0, -1) + '_id']: response.id,
-      })
+      for (const id of upperStructureId) {
+        await pb.collection(upperRelationField + '_' + collectionName).create({
+          [upperRelationField.slice(0, -1) + '_id']: id,
+          [collectionName.slice(0, -1) + '_id']: response.id,
+        })
+      }
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getConnectionById(
+  id: string,
+  structureType: string,
+  upperStructureType: string
+): Promise<Record<string, any>[]> {
+  try {
+    const data = await pb.collection(upperStructureType + '_' + structureType).getFullList(200, {
+      filter: `${structureType.slice(0, -1)}_id="${id}"`,
+    })
+    return data
   } catch (error) {
     throw error
   }
@@ -82,11 +99,38 @@ export async function createStructure(
 export async function updateStructure(
   collectionName: string,
   id: string,
-  name: string
+  name: string,
+  upperStructureId?: string[],
+  upperStructureType?: string
 ): Promise<void> {
   try {
     const data = { name }
     await pb.collection(collectionName).update(id, data)
+    if (upperStructureId && upperStructureType) {
+      const existingConnections = await getConnectionById(id, collectionName, upperStructureType)
+      const existingUpperIds = existingConnections.map(
+        (conn) => conn[upperStructureType.slice(0, -1) + '_id']
+      )
+
+      const idsToAdd = upperStructureId.filter((uid) => !existingUpperIds.includes(uid))
+      const idsToRemove = existingUpperIds.filter((eid) => !upperStructureId.includes(eid))
+
+      for (const uid of idsToAdd) {
+        await pb.collection(upperStructureType + '_' + collectionName).create({
+          [upperStructureType.slice(0, -1) + '_id']: uid,
+          [collectionName.slice(0, -1) + '_id']: id,
+        })
+      }
+
+      for (const eid of idsToRemove) {
+        const connection = existingConnections.find(
+          (conn) => conn[upperStructureType.slice(0, -1) + '_id'] === eid
+        )
+        if (connection) {
+          await pb.collection(upperStructureType + '_' + collectionName).delete(connection.id)
+        }
+      }
+    }
   } catch (error) {
     throw error
   }
@@ -98,8 +142,6 @@ export async function deleteStructure(
   filterLevel: FilterLevel
 ): Promise<void> {
   try {
-    console.log(collectionName, id, filterLevel)
-    console.log(await getLowerFilteredItems(filterLevel, id))
     if ((await getLowerFilteredItems(filterLevel, id)).length === 0) {
       await pb.collection(collectionName).delete(id)
     } else {

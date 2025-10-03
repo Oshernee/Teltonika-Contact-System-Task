@@ -1,25 +1,39 @@
 <template>
-  <div class="w-[600px] h-[250px]">
+  <div class="w-[800px]">
     <div class="p-6">
-      <h1 class="text-3xl">Redaguoti {{ props.constants.type_accusative }}:</h1>
+      <h1 class="text-3xl">Redaguoti naują {{ props.constants.type_accusative }}:</h1>
     </div>
 
-    <div class="w-1/2 pl-6">
-      <h1 class="text-xl mb-2">{{ props.constants.type_genitive }} pavadinimas:</h1>
-      <input
-        type="text"
-        class="w-72 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        :class="{ 'border-red-500': nameError }"
-        v-model="name"
-      />
-      <p v-if="nameError" class="text-red-500 mt-1">{{ nameError }}</p>
+    <div class="grid grid-cols-2 gap-6 px-6 pb-6">
+      <div>
+        <h1 class="text-xl mb-2">{{ props.constants.type_genitive }} pavadinimas:</h1>
+        <input
+          :placeholder="'Įveskite ' + props.constants.type_genitive.toLowerCase() + ' pavadinimą'"
+          type="text"
+          class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          :class="{ 'border-red-500': nameError }"
+          :value="name"
+          @input="updateValues(($event.target as HTMLInputElement).value)"
+        />
+      </div>
 
-      <button
-        @click="handleUpdateStructure"
-        class="w-72 mt-6 bg-blue-600 text-white py-4 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
-      >
-        REDAGUOTI
-      </button>
+      <div>
+        <UpperStructureSelector
+          :structures="props.upperStructures"
+          :upperStructureType="props.constants.upper_structure_type_plural"
+          :modelValue="selectedUpperStructures"
+          @update:model-value="(value) => (selectedUpperStructures = value) && (updated = true)"
+        />
+      </div>
+
+      <div class="col-span-2 flex justify-start">
+        <button
+          @click="handleUpdateStructure"
+          class="w-72 mt-6 bg-blue-600 text-white py-4 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
+        >
+          REDAGUOTI
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +50,9 @@ import { useUserStore } from '@/stores/Auth'
 
 import type { Structure } from '@/types/structures'
 
+import UpperStructureSelector from '../ui/UpperStructureSelector.vue'
+
+const updated = ref(false)
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
 
@@ -43,17 +60,32 @@ const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
 const props = defineProps<{
   structure: Structure
+  selectedUpperStructure: Structure[]
   constants: {
     type_accusative: string
     type_genitive: string
+    upper_structure_type_plural: string
     structure_type: string
     upper_structure_type: string
   }
+  upperStructures: { id: string; name: string }[]
 }>()
 
-let name = ref(props.structure.name)
+const name = ref(props.structure.name)
+const selectedUpperStructures = ref(
+  props.selectedUpperStructure.map(
+    (structure) =>
+      (structure as Record<string, string>)[
+        props.constants.upper_structure_type.slice(0, -1) + '_id'
+      ]
+  )
+)
 
 const nameError = ref<string | null>(null)
+
+const updateValues = (newName: string) => {
+  name.value = newName
+}
 
 const validateFields = async () => {
   nameError.value = validateStructureName(name.value)
@@ -79,7 +111,25 @@ const handleUpdateStructure = async () => {
       emit('close')
       return
     }
-    await updateStructure(props.constants.structure_type, props.structure.id, name.value.trim())
+    if (selectedUpperStructures.value.length === 0) {
+      notificationStore.addErrorNotification(
+        'Pasirinkite ' + props.constants.type_accusative.toLowerCase(),
+        ''
+      )
+      return
+    }
+    if (!updated.value) {
+      notificationStore.addInfoNotification('Nėra ką atnaujinti')
+      emit('close')
+      return
+    }
+    await updateStructure(
+      props.constants.structure_type,
+      props.structure.id,
+      name.value.trim(),
+      selectedUpperStructures.value,
+      props.constants.upper_structure_type
+    )
 
     notificationStore.addSuccessNotification(
       props.constants.type_genitive + ' sėkmingai atnaujintas'
