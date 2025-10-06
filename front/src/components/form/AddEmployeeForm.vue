@@ -181,9 +181,9 @@ const handleAddEmployee = async () => {
   const isValid = await validateFields()
   if (!isValid || !uniqueEmail) {
     if (!uniqueEmail) {
-      sending.value = false
       errorMessages.email = 'Toks el. paštas jau egzistuoja'
     }
+    sending.value = false
     return
   }
 

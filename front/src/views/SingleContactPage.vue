@@ -62,13 +62,20 @@ const props = defineProps<{
 }>()
 
 onMounted(async () => {
-  employee.value = await fetchEmployeeById(props.id)
-  if (!employee.value?.photo) return
-  photo.value = await getPhotoUrl(
-    employee.value?.photo,
-    constants.EMPLOYEE_IMAGE_API + employee.value?.id
-  )
-  loading.value = false
+  try {
+    employee.value = await fetchEmployeeById(props.id)
+
+    if (employee.value?.photo) {
+      photo.value = await getPhotoUrl(
+        employee.value.photo,
+        constants.EMPLOYEE_IMAGE_API + employee.value.id
+      )
+    }
+  } catch (error) {
+    console.error('Error loading employee:', error)
+  } finally {
+    loading.value = false // Always set loading to false
+  }
 })
 
 const fetchEmployeeById = async (id: string) => {

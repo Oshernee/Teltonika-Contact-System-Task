@@ -185,7 +185,7 @@ const handleUpdateEmployee = async () => {
     sending.value = false
     return
   }
-  if (!valuesChanged.value) {
+  if (!valuesChanged.value && image.value === props.employee.photo) {
     notificationStore.addInfoNotification('Nėra padarytų pakeitimų')
     sending.value = false
     return

@@ -11,7 +11,7 @@
         class="mt-1 block w-full px-4 py-3 bg-gray-200 rounded-md placeholder-gray-800 font-extralight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
       />
     </div>
-    <div class="text-red-500 text-sm mt-1 absolute w-[400px]" v-if="props.errorMessages.name">
+    <div class="text-red-500 text-sm mt-1 absolute w-full" v-if="props.errorMessages.name">
       {{ props.errorMessages.name }}
     </div>
     <div class="mt-6">
@@ -25,7 +25,7 @@
         class="mt-1 block w-full px-4 py-3 bg-gray-200 rounded-md placeholder-gray-800 font-extralight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
       />
     </div>
-    <div class="text-red-500 text-sm mt-1 absolute w-[400px]" v-if="props.errorMessages.surname">
+    <div class="text-red-500 text-sm mt-1 absolute w-full" v-if="props.errorMessages.surname">
       {{ props.errorMessages.surname }}
     </div>
     <div class="mt-6">
@@ -39,7 +39,7 @@
         class="mt-1 block w-full px-4 py-3 bg-gray-200 rounded-md placeholder-gray-800 font-extralight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
       />
     </div>
-    <div class="text-red-500 text-sm mt-1 absolute w-[400px]" v-if="props.errorMessages.position">
+    <div class="text-red-500 text-sm mt-1 absolute w-full" v-if="props.errorMessages.position">
       {{ props.errorMessages.position }}
     </div>
     <h1 class="text-2xl pl-6 pt-8">Kontaktinė informacija:</h1>
@@ -59,7 +59,7 @@
         />
       </div>
     </div>
-    <div class="text-red-500 text-sm mt-1 absolute w-[400px]" v-if="props.errorMessages.email">
+    <div class="text-red-500 text-sm mt-1 absolute w-full" v-if="props.errorMessages.email">
       {{ props.errorMessages.email }}
     </div>
     <div class="mt-6">
@@ -76,7 +76,7 @@
         />
       </div>
     </div>
-    <div class="text-red-500 text-sm mt-1 absolute w-[400px]" v-if="props.errorMessages.phone">
+    <div class="text-red-500 text-sm mt-1 absolute w-full" v-if="props.errorMessages.phone">
       {{ props.errorMessages.phone }}
     </div>
   </div>
