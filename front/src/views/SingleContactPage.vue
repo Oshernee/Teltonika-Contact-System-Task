@@ -1,4 +1,5 @@
 <template>
+  <LoadingCard v-if="loading" class="w-full h-full justify-center items-center" />
   <div
     v-if="employee"
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start"
@@ -26,7 +27,7 @@
     </div>
     <ContactInformationCard :employee="employee" />
   </div>
-  <div v-else class="flex flex-col justify-center items-center pt-48">
+  <div v-if="!loading && !employee" class="flex flex-col justify-center items-center pt-48">
     <UnableToLoadCard />
   </div>
 </template>
@@ -47,6 +48,7 @@ import type { Employee } from '@/types/employees'
 import ReturnButton from '@/components/ui/ReturnButton.vue'
 import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import ContactInformationCard from '@/components/cards/ContactInformationCard.vue'
+import LoadingCard from '@/components/cards/LoadingCard.vue'
 
 const employee = ref<Employee | null>(null)
 const notificationStore = useNotificationStore()
@@ -61,7 +63,10 @@ const props = defineProps<{
 
 onMounted(async () => {
   employee.value = await fetchEmployeeById(props.id)
-  if (!employee.value?.photo) return
+  if (!employee.value?.photo) {
+    loading.value = false
+    return
+  }
   photo.value = await getPhotoUrl(
     employee.value?.photo,
     __EMPLOYEE_IMAGE_API__ + employee.value?.id
