@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[600px] h-[250px]">
+  <div class="w-[600px] h-[350px]">
     <div class="p-6">
       <h1 class="text-3xl">Redaguoti {{ props.constants.type_accusative }}:</h1>
     </div>
@@ -12,11 +12,11 @@
         :class="{ 'border-red-500': nameError }"
         v-model="name"
       />
-      <p v-if="nameError" class="text-red-500 mt-1">{{ nameError }}</p>
+      <p v-if="nameError" class="text-red-500 mt-1 absolute w-72">{{ nameError }}</p>
 
       <button
         @click="handleUpdateStructure"
-        class="w-72 mt-6 bg-blue-600 text-white py-4 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
+        class="w-72 mt-24 bg-blue-600 text-white py-4 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
       >
         REDAGUOTI
       </button>
@@ -29,7 +29,7 @@ import { ref } from 'vue'
 
 import { validateStructureName } from '@/utils/validateInputs'
 
-import { updateStructure } from '@/services/universalService'
+import { updateStructure, isStructureNameUnique } from '@/services/universalService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
@@ -69,6 +69,14 @@ const handleUpdateStructure = async () => {
   }
 
   try {
+    if (name.value.trim() !== props.structure.name) {
+      const isNameUnique = await isStructureNameUnique(name.value.trim(), 'companies')
+      if (!isNameUnique) {
+        nameError.value = 'Toks įmonės pavadinimas jau egzistuoja'
+        return
+      }
+    }
+
     await userStore.refreshUser()
     const permission = 'edit_' + props.constants.structure_type
     if (userStore.permissions?.[permission] !== true) {
@@ -88,6 +96,7 @@ const handleUpdateStructure = async () => {
     emit('update')
     emit('close')
   } catch (error) {
+    console.log(error)
     notificationStore.addErrorNotification(
       'Nepavyko atnaujinti ' + props.constants.type_genitive.toLowerCase(),
       error

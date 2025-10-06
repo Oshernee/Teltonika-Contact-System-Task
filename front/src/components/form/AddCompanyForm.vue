@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[600px] h-[250px]">
+  <div class="w-[600px] h-[300px]">
     <div class="p-6">
       <h1 class="text-3xl">Pridėti naują {{ props.constants.type_accusative }}:</h1>
     </div>
@@ -13,10 +13,11 @@
         :class="{ 'border-red-500': nameError }"
         @input="updateValues(($event.target as HTMLInputElement).value)"
       />
+      <p v-if="nameError" class="text-red-500 mt-1 absolute w-72">{{ nameError }}</p>
 
       <button
         @click="handleAddStructure"
-        class="w-72 mt-6 bg-blue-600 text-white py-4 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
+        class="w-72 mt-24 bg-blue-600 text-white py-4 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
       >
         PRIDĖTI
       </button>
@@ -29,7 +30,7 @@ import { ref } from 'vue'
 
 import { validateStructureName } from '@/utils/validateInputs'
 
-import { createStructure } from '@/services/universalService'
+import { createStructure, isStructureNameUnique } from '@/services/universalService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
@@ -69,6 +70,12 @@ const handleAddStructure = async () => {
     return
   }
   try {
+    const isNameUnique = await isStructureNameUnique(name.trim(), 'companies')
+    if (!isNameUnique) {
+      nameError.value = 'Toks įmonės pavadinimas jau egzistuoja'
+      return
+    }
+
     await userStore.refreshUser()
     const permission = 'edit_' + props.constants.structure_type
     if (userStore.permissions?.[permission] !== true) {

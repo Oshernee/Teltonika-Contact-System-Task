@@ -4,7 +4,7 @@
     @click="pushToDetailedView"
   >
     <div class="flex items-center mb-3">
-      <div class="w-16 h-16 rounded-full flex items-center justify-center mr-3">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
         <img
           v-if="props.employee.photo"
           :src="getPhotoUrl(props.employee.photo, imageAPI)"
@@ -13,11 +13,11 @@
         />
         <img v-else :src="Profile" class="w-16 h-16" alt="Profile" />
       </div>
-      <div>
-        <h3 class="font-semibold text-black">
+      <div class="min-w-0 flex-1">
+        <h3 class="font-semibold text-black truncate">
           {{ props.employee.name + ' ' + props.employee.surname }}
         </h3>
-        <p class="text-sm text-gray-500">Pozicija: {{ props.employee.position }}</p>
+        <p class="text-sm text-gray-500 truncate">Pozicija: {{ props.employee.position }}</p>
       </div>
     </div>
 

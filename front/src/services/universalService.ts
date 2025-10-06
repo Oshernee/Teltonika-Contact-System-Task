@@ -156,6 +156,20 @@ export async function deleteStructure(
   }
 }
 
+export async function isStructureNameUnique(name: string, structureType: string): Promise<boolean> {
+  try {
+    const records = await pb
+      .collection(structureType)
+      .getFullList<{ name: string }>(200, { filter: `name ?~ "${name}"` })
+
+    const exactMatch = records.find((record) => record.name.toLowerCase() === name.toLowerCase())
+
+    return !exactMatch
+  } catch (error) {
+    throw error
+  }
+}
+
 export async function deleteConnection(
   collectionName: string,
   upperCollectionName: string,
@@ -166,17 +180,6 @@ export async function deleteConnection(
     for (const conn of connections) {
       await pb.collection(upperCollectionName + '_' + collectionName).delete(conn.id)
     }
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function isStructureNameUnique(name: string, structureType: string): Promise<boolean> {
-  try {
-    const records = await pb
-      .collection(structureType)
-      .getFullList<{ name: string }>(200, { filter: `name="${name}"` })
-    return records.length === 0
   } catch (error) {
     throw error
   }

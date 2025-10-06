@@ -67,7 +67,7 @@ import type { Structure } from '@/types/structures'
 import AddCompanyForm from '@/components/form/AddCompanyForm.vue'
 import EditCompanyForm from '@/components/form/EditCompanyForm.vue'
 import DeleteCompanyForm from '@/components/form/DeleteCompanyForm.vue'
-import LoadingCard from '@/components/cards/LoadingCard.vue'
+import LoadingCard from '@/components/ui/LoadingCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import CompaniesTable from '@/components/tables/CompaniesTable.vue'
 
@@ -100,7 +100,7 @@ const fetchCompanies = async () => {
     totalCompanies.value = response[1]
     currentPage.value = response[2]
   } catch (error: any) {
-    notificationStore.addErrorNotification('Nepavyko užkrauti kompanijų', error)
+    notificationStore.addErrorNotification('Nepavyko užkrauti įmonių', error)
   }
 }
 

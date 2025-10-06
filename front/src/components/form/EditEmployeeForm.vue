@@ -55,6 +55,7 @@
 
   <div class="flex justify-end px-6 pb-6">
     <button
+      :disabled="sending"
       @click="handleUpdateEmployee"
       class="w-72 bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
     >
@@ -101,7 +102,9 @@ let surname = props.employee.surname
 let position = props.employee.position
 let email = props.employee.email
 let phone = props.employee.phone_number || ''
+const valuesChanged = ref(false)
 const image = ref<File | null>(props.employee.photo || null)
+const sending = ref(false)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
   company: props.employee.company_id,
@@ -124,11 +127,12 @@ const errorMessages = reactive<Record<string, string>>({
 })
 
 const updateValues = (values: [string, string, string, string, string]) => {
-  name = values[0]
-  surname = values[1]
-  position = values[2]
-  email = values[3]
-  phone = values[4]
+  name = trimWhiteSpace(values[0])
+  surname = trimWhiteSpace(values[1])
+  position = trimWhiteSpace(values[2])
+  email = trimWhiteSpace(values[3])
+  phone = trimWhiteSpace(values[4])
+  valuesChanged.value = true
 }
 
 const updateIds = (ids: Record<TargetKey, string>) => {
@@ -137,6 +141,11 @@ const updateIds = (ids: Record<TargetKey, string>) => {
   selectedIds.division = ids.division
   selectedIds.department = ids.department
   selectedIds.group = ids.group
+  valuesChanged.value = true
+}
+
+function trimWhiteSpace(str: string): string {
+  return str.trim().replace(/\s+/g, ' ')
 }
 
 const validateFields = () => {
@@ -170,16 +179,25 @@ const uploadImage = (event: Event) => {
 }
 
 const handleUpdateEmployee = async () => {
+  if (sending.value) return
+  sending.value = true
   if (!validateFields()) {
+    sending.value = false
     return
   }
-  await userStore.refreshUser()
-  if (!userStore.permissions?.edit_employees) {
-    notificationStore.addErrorNotification('Jūs neturite teisių pakeisti kontaktą', '')
-    emit('close')
+  if (!valuesChanged.value && image.value === props.employee.photo) {
+    notificationStore.addInfoNotification('Nėra padarytų pakeitimų')
+    sending.value = false
     return
   }
   try {
+    await userStore.refreshUser()
+    if (!userStore.permissions?.edit_employees) {
+      notificationStore.addErrorNotification('Jūs neturite teisių pakeisti kontaktą', '')
+      emit('close')
+      sending.value = false
+      return
+    }
     await updateEmployee(
       props.employee.id,
       name,
@@ -201,6 +219,8 @@ const handleUpdateEmployee = async () => {
     emit('close')
   } catch (error) {
     notificationStore.addErrorNotification('Nepavyko pakeisti kontakto', error)
+  } finally {
+    sending.value = false
   }
 }
 </script>

@@ -67,7 +67,7 @@ import EditOfficeForm from '@/components/form/EditOfficeForm.vue'
 
 import DeleteStructureForm from '@/components/form/DeleteStructureForm.vue'
 
-import LoadingCard from '@/components/cards/LoadingCard.vue'
+import LoadingCard from '@/components/ui/LoadingCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import StructuresTable from '@/components/tables/StructuresTable.vue'
 import StructureSelector from '@/components/ui/StructureSelector.vue'

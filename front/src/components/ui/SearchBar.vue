@@ -9,7 +9,7 @@
       <input
         class="input w-[574px] h-[56px] pl-10 pr-4 rounded-lg bg-background border border-gray-300 text-text placeholder-gray-500"
         type="text"
-        placeholder="Search"
+        placeholder="Paieška"
         v-on:input="handleInput"
       />
     </div>

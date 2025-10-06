@@ -29,9 +29,15 @@
           class="transition-colors duration-150 cursor-pointer"
         >
           <td
-            class="px-6 py-4 whitespace-nowrap text-md text-gray-900 text-start font-light w-[32.5%]"
+            class="px-6 py-4 whitespace-nowrap text-md text-gray-900 text-start font-light w-4/6 overflow-hidden"
           >
-            {{ structure.name }}
+            <div class="truncate" :title="structure.name">
+              {{
+                structure.name.length > 60
+                  ? structure.name.substring(0, 60) + '...'
+                  : structure.name
+              }}
+            </div>
           </td>
           <td
             v-if="props.structureType === 'offices'"
