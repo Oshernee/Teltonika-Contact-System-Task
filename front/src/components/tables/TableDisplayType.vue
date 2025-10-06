@@ -32,7 +32,7 @@
             v-if="props.permissions.edit_employees || props.permissions.delete_employees"
             class="px-6 py-3 text-left text-md font-medium text-black uppercase tracking-wider border-b border-gray-200"
           >
-            Redagavimas
+            Veiksmas
           </th>
         </tr>
       </thead>

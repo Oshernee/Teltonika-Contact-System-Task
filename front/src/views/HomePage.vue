@@ -99,6 +99,9 @@ const fetchEmployees = async () => {
     totalEmployees.value = response[1]
     currentPage.value = response[2]
   } catch (error: any) {
+    employees.value = []
+    totalEmployees.value = 0
+    currentPage.value = 1
     notificationStore.addErrorNotification('Nepavyko užkrauti kontaktų', error)
   }
 }

@@ -48,6 +48,7 @@
 
   <div class="flex justify-end px-6 pb-6">
     <button
+      :disabled="sending"
       @click="handleAddEmployee"
       class="w-72 bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
     >
@@ -88,7 +89,9 @@ let surname = ''
 let position = ''
 let email = ''
 let phone = ''
+const valuesChanged = ref(false)
 const image = ref<File | string | null>(null)
+const sending = ref(false)
 
 const selectedIds = reactive<Record<TargetKey, string>>({
   company: '',
@@ -111,11 +114,12 @@ const errorMessages = reactive<Record<string, string>>({
 })
 
 const updateValues = (values: [string, string, string, string, string]) => {
-  name = values[0]
-  surname = values[1]
-  position = values[2]
-  email = values[3]
-  phone = values[4]
+  name = trimWhiteSpace(values[0])
+  surname = trimWhiteSpace(values[1])
+  position = trimWhiteSpace(values[2])
+  email = trimWhiteSpace(values[3])
+  phone = trimWhiteSpace(values[4])
+  valuesChanged.value = true
 }
 
 const updateIds = (ids: Record<TargetKey, string>) => {
@@ -124,6 +128,10 @@ const updateIds = (ids: Record<TargetKey, string>) => {
   selectedIds.division = ids.division
   selectedIds.department = ids.department
   selectedIds.group = ids.group
+}
+
+function trimWhiteSpace(str: string): string {
+  return str.trim().replace(/\s+/g, ' ')
 }
 
 const uploadImage = (event: Event) => {
@@ -167,22 +175,26 @@ const validateFields = async () => {
 }
 
 const handleAddEmployee = async () => {
+  if (sending.value) return
+  sending.value = true
   const uniqueEmail = await isEmailUnique(email)
   const isValid = await validateFields()
   if (!isValid || !uniqueEmail) {
     if (!uniqueEmail) {
       errorMessages.email = 'Toks el. paštas jau egzistuoja'
     }
-    return
-  }
-  await userStore.refreshUser()
-  if (!userStore.permissions?.edit_employees) {
-    notificationStore.addErrorNotification('Jūs neturite teisių pridėti kontaktą', '')
-    emit('close')
+    sending.value = false
     return
   }
 
   try {
+    await userStore.refreshUser()
+    if (!userStore.permissions?.edit_employees) {
+      notificationStore.addErrorNotification('Jūs neturite teisių pridėti kontaktą', '')
+      emit('close')
+      sending.value = false
+      return
+    }
     await createEmployee(
       name,
       surname,
@@ -203,6 +215,8 @@ const handleAddEmployee = async () => {
     emit('close')
   } catch (error) {
     notificationStore.addErrorNotification('Nepavyko pridėti kontakto', error)
+  } finally {
+    sending.value = false
   }
 }
 </script>

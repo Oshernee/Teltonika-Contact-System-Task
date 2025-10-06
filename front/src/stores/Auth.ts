@@ -25,7 +25,8 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const isLoggedIn = () => {
-    if (localStorage.getItem('pocketbase_auth') !== null) {
+    const pocketbase_auth = localStorage.getItem('pocketbase_auth')
+    if (pocketbase_auth) {
       loginStatus.value = true
       return loginStatus.value
     }
@@ -55,10 +56,18 @@ export const useUserStore = defineStore('user', () => {
   const refreshUser = async () => {
     const pocketbase_auth = localStorage.getItem('pocketbase_auth')
     if (pocketbase_auth) {
-      const { user, token: newToken, permissions: newPermissions } = await refreshUserInformation()
-      setUser(user, newToken)
-      savePermissions(newPermissions)
-      return
+      try {
+        const {
+          user,
+          token: newToken,
+          permissions: newPermissions,
+        } = await refreshUserInformation()
+        setUser(user, newToken)
+        savePermissions(newPermissions)
+        return
+      } catch (error) {
+        clearUser()
+      }
     } else {
       clearUser()
     }

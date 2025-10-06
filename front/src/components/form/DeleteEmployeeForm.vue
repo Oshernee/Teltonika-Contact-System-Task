@@ -13,7 +13,11 @@
     </div>
     <div class="flex justify-end pt-10 gap-4">
       <button class="px-4 py-2 text-secondary font-bold text-2xl" @click="emit('close')">Ne</button>
-      <button class="px-4 py-2 text-secondary font-bold text-2xl" @click="handleDelete">
+      <button
+        :disabled="sending"
+        class="px-4 py-2 text-secondary font-bold text-2xl"
+        @click="handleDelete"
+      >
         Taip
       </button>
     </div>
@@ -21,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { Employee } from '@/types/employees'
 import { deleteRecordById } from '@/services/universalService'
 import { useNotificationStore } from '@/stores/Notification'
@@ -30,24 +35,30 @@ const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
 
+const sending = ref(false)
+
 const props = defineProps<{
   employee: Employee
 }>()
 
 const handleDelete = async () => {
-  userStore.refreshUser()
-  if (userStore.permissions?.delete_employees !== true) {
-    notificationStore.addErrorNotification('Jūs neturite teisių ištrinti kontaktą', '')
-    emit('close')
-    return
-  }
+  if (sending.value) return
+  sending.value = true
   try {
+    userStore.refreshUser()
+    if (userStore.permissions?.delete_employees !== true) {
+      notificationStore.addErrorNotification('Jūs neturite teisių ištrinti kontaktą', '')
+      emit('close')
+      return
+    }
     await deleteRecordById('employees', props.employee.id)
     notificationStore.addSuccessNotification('Kontaktas sėkmingai ištrintas')
     emit('update')
     emit('close')
   } catch (error) {
     notificationStore.addErrorNotification('Nepavyko ištrinti kontakto', error)
+  } finally {
+    sending.value = false
   }
 }
 </script>
