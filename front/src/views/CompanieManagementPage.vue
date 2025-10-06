@@ -64,10 +64,10 @@ import { useNotificationStore } from '@/stores/Notification'
 
 import type { Structure } from '@/types/structures'
 
-import AddStructureForm from '@/components/form/AddStructureForm.vue'
-import EditStructureForm from '@/components/form/EditStructureForm.vue'
-import DeleteStructureForm from '@/components/form/DeleteStructureForm.vue'
-import LoadingCard from '@/components/cards/LoadingCard.vue'
+import AddCompanyForm from '@/components/form/AddCompanyForm.vue'
+import EditCompanyForm from '@/components/form/EditCompanyForm.vue'
+import DeleteCompanyForm from '@/components/form/DeleteCompanyForm.vue'
+import LoadingCard from '@/components/ui/LoadingCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import StructuresTable from '@/components/tables/StructuresTable.vue'
 
@@ -100,7 +100,7 @@ const fetchCompanies = async () => {
     totalCompanies.value = response[1]
     currentPage.value = response[2]
   } catch (error: any) {
-    notificationStore.addErrorNotification('Nepavyko užkrauti kompanijų', error)
+    notificationStore.addErrorNotification('Nepavyko užkrauti įmonių', error)
   }
 }
 
@@ -114,16 +114,16 @@ const updateCurrentPage = (page: number) => {
 }
 
 function handleAddModal() {
-  handleOpenModal(AddStructureForm, permissions.value.edit_companies, { constants })
+  handleOpenModal(AddCompanyForm, permissions.value.edit_companies, { constants })
 }
 
 function handleEditModal(structure: Structure) {
-  handleOpenModal(EditStructureForm, permissions.value.edit_companies, { structure, constants })
+  handleOpenModal(EditCompanyForm, permissions.value.edit_companies, { structure, constants })
 }
 
 function handleDeleteModal(structure: Structure) {
   handleOpenModal(
-    DeleteStructureForm,
+    DeleteCompanyForm,
     permissions.value.delete_companies,
     { structure, constants, filterLevel: FILTER_LEVELS.offices },
     true

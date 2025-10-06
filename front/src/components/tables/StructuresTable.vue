@@ -22,8 +22,16 @@
           :key="structure.id"
           class="transition-colors duration-150 cursor-pointer"
         >
-          <td class="px-6 py-4 whitespace-nowrap text-md text-gray-900 text-start font-light">
-            {{ structure.name }}
+          <td
+            class="px-6 py-4 whitespace-nowrap text-md text-gray-900 text-start font-light w-4/6 overflow-hidden"
+          >
+            <div class="truncate" :title="structure.name">
+              {{
+                structure.name.length > 60
+                  ? structure.name.substring(0, 60) + '...'
+                  : structure.name
+              }}
+            </div>
           </td>
           <td
             class="px-6 py-4 flex gap-2 w-full justify-center"

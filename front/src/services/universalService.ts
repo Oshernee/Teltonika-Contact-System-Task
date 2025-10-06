@@ -96,3 +96,17 @@ export async function deleteStructure(
     throw error
   }
 }
+
+export async function isStructureNameUnique(name: string, structureType: string): Promise<boolean> {
+  try {
+    const records = await pb
+      .collection(structureType)
+      .getFullList<{ name: string }>(200, { filter: `name ?~ "${name}"` })
+
+    const exactMatch = records.find((record) => record.name.toLowerCase() === name.toLowerCase())
+
+    return !exactMatch
+  } catch (error) {
+    throw error
+  }
+}
