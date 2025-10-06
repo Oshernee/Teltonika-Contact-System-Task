@@ -147,7 +147,9 @@ export async function deleteStructure(
   try {
     if ((await getLowerFilteredItems(filterLevel, id)).length === 0) {
       await pb.collection(collectionName).delete(id)
-      await deleteConnection(collectionName, upperCollectionName, id)
+      if (upperCollectionName !== '') {
+        await deleteConnection(collectionName, upperCollectionName, id)
+      }
     } else {
       throw { status: 406 }
     }

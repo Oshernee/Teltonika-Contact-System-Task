@@ -101,8 +101,8 @@ const deletePermission = computed(
 )
 
 const permissions = computed(() => ({
-  edit: userStore.permissions?.[editPermission.value] ?? false,
-  delete: userStore.permissions?.[deletePermission.value] ?? false,
+  edit: (userStore.permissions?.[editPermission.value] as boolean) ?? false,
+  delete: (userStore.permissions?.[deletePermission.value] as boolean) ?? false,
 }))
 
 onMounted(async () => {

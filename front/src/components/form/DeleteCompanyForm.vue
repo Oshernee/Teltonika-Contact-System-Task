@@ -52,7 +52,7 @@ const handleDelete = async () => {
       emit('close')
       return
     }
-    await deleteStructure(props.constants.structure_type, props.structure.id, props.filterLevel)
+    await deleteStructure(props.constants.structure_type, props.structure.id, props.filterLevel, '')
     notificationStore.addSuccessNotification(props.constants.type_genitive + ' sėkmingai ištrintas')
     emit('update')
     emit('close')
