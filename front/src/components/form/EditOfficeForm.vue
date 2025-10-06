@@ -39,7 +39,8 @@ import {
   validateOfficeCountry,
 } from '@/utils/validateInputs'
 
-import { updateOffice, isOfficeNameUnique } from '@/services/officeService'
+import { updateOffice } from '@/services/officeService'
+import { isStructureNameUnique } from '@/services/universalService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
@@ -124,7 +125,7 @@ const handleAddStructure = async () => {
   }
 
   if (updatedName.value) {
-    const isNameUnique = await isOfficeNameUnique(office.value.name.trim())
+    const isNameUnique = await isStructureNameUnique(office.value.name.trim(), 'offices')
     if (!isNameUnique) {
       errors.value.name = 'Toks ofiso pavadinimas jau egzistuoja'
       return
@@ -156,7 +157,7 @@ const handleAddStructure = async () => {
     )
 
     notificationStore.addSuccessNotification(
-      props.constants.type_genitive + ' sėkmingai atnaujintas'
+      props.constants.type_genitive + ' įrašas sėkmingai atnaujintas'
     )
 
     emit('update')

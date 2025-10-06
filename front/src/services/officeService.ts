@@ -60,7 +60,6 @@ export async function updateOffice(
       const idsToAdd = upperStructureId.filter((uid) => !existingUpperIds.includes(uid))
       const idsToRemove = existingUpperIds.filter((eid) => !upperStructureId.includes(eid))
 
-      // Add new connections
       for (const uid of idsToAdd) {
         await pb.collection(junctionCollection).create({
           [upperFieldName]: uid,
@@ -68,7 +67,6 @@ export async function updateOffice(
         })
       }
 
-      // Remove old connections
       for (const eid of idsToRemove) {
         const connection = existingConnections.find((conn) => conn[upperFieldName] === eid)
         if (connection) {
@@ -76,17 +74,6 @@ export async function updateOffice(
         }
       }
     }
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function isOfficeNameUnique(name: string): Promise<boolean> {
-  try {
-    const records = await pb
-      .collection('offices')
-      .getFullList<{ name: string }>(200, { filter: `name="${name}"` })
-    return records.length === 0
   } catch (error) {
     throw error
   }

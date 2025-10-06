@@ -17,6 +17,7 @@ export async function getIdByName(collectionName: string, name: string): Promise
 
 export async function getLowerFilteredItems(filterLevel: FilterLevel, id: string): Promise<any[]> {
   try {
+    if (!filterLevel.linkCollection) return []
     const links = await pb
       .collection(filterLevel.linkCollection)
       .getFullList(200, { filter: `${filterLevel.linkField}="${id}"`, sort: '-created' })
@@ -108,26 +109,27 @@ export async function updateStructure(
     await pb.collection(collectionName).update(id, data)
     if (upperStructureId && upperStructureType) {
       const existingConnections = await getConnectionById(id, collectionName, upperStructureType)
-      const existingUpperIds = existingConnections.map(
-        (conn) => conn[upperStructureType.slice(0, -1) + '_id']
-      )
+
+      const upperFieldName = upperStructureType.slice(0, -1) + '_id'
+      const currentFieldName = collectionName.slice(0, -1) + '_id'
+      const junctionCollection = upperStructureType + '_' + collectionName
+
+      const existingUpperIds = existingConnections.map((conn) => conn[upperFieldName])
 
       const idsToAdd = upperStructureId.filter((uid) => !existingUpperIds.includes(uid))
       const idsToRemove = existingUpperIds.filter((eid) => !upperStructureId.includes(eid))
 
       for (const uid of idsToAdd) {
-        await pb.collection(upperStructureType + '_' + collectionName).create({
-          [upperStructureType.slice(0, -1) + '_id']: uid,
-          [collectionName.slice(0, -1) + '_id']: id,
+        await pb.collection(junctionCollection).create({
+          [upperFieldName]: uid,
+          [currentFieldName]: id,
         })
       }
 
       for (const eid of idsToRemove) {
-        const connection = existingConnections.find(
-          (conn) => conn[upperStructureType.slice(0, -1) + '_id'] === eid
-        )
+        const connection = existingConnections.find((conn) => conn[upperFieldName] === eid)
         if (connection) {
-          await pb.collection(upperStructureType + '_' + collectionName).delete(connection.id)
+          await pb.collection(junctionCollection).delete(connection.id)
         }
       }
     }
@@ -139,14 +141,42 @@ export async function updateStructure(
 export async function deleteStructure(
   collectionName: string,
   id: string,
-  filterLevel: FilterLevel
+  filterLevel: FilterLevel,
+  upperCollectionName: string
 ): Promise<void> {
   try {
     if ((await getLowerFilteredItems(filterLevel, id)).length === 0) {
       await pb.collection(collectionName).delete(id)
+      await deleteConnection(collectionName, upperCollectionName, id)
     } else {
       throw { status: 406 }
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteConnection(
+  collectionName: string,
+  upperCollectionName: string,
+  id: string
+): Promise<void> {
+  try {
+    const connections = await getConnectionById(id, collectionName, upperCollectionName)
+    for (const conn of connections) {
+      await pb.collection(upperCollectionName + '_' + collectionName).delete(conn.id)
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function isStructureNameUnique(name: string, structureType: string): Promise<boolean> {
+  try {
+    const records = await pb
+      .collection(structureType)
+      .getFullList<{ name: string }>(200, { filter: `name="${name}"` })
+    return records.length === 0
   } catch (error) {
     throw error
   }

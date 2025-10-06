@@ -14,6 +14,7 @@
           :class="{ 'border-red-500': nameError }"
           @input="updateValues(($event.target as HTMLInputElement).value)"
         />
+        <p v-if="nameError" class="text-red-500 text-sm mt-1">{{ nameError }}</p>
       </div>
 
       <div>
@@ -42,7 +43,7 @@ import { ref } from 'vue'
 
 import { validateStructureName } from '@/utils/validateInputs'
 
-import { createStructure } from '@/services/universalService'
+import { createStructure, isStructureNameUnique } from '@/services/universalService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
@@ -82,6 +83,12 @@ const validateFields = async () => {
 }
 
 const handleAddStructure = async () => {
+  const isNameUnique = await isStructureNameUnique(name.trim(), props.constants.structure_type)
+  if (!isNameUnique) {
+    nameError.value = 'Toks pavadinimas jau egzistuoja'
+    return
+  }
+
   const isValid = await validateFields()
   if (!isValid) {
     return
@@ -103,7 +110,9 @@ const handleAddStructure = async () => {
       props.constants.upper_structure_type
     )
 
-    notificationStore.addSuccessNotification(props.constants.type_genitive + ' sėkmingai pridėtas')
+    notificationStore.addSuccessNotification(
+      props.constants.type_genitive + ' įrašas sėkmingai pridėtas'
+    )
 
     emit('update')
     emit('close')

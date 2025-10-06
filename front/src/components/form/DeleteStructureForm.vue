@@ -33,6 +33,7 @@ const userStore = useUserStore()
 
 const props = defineProps<{
   structure: Structure
+  upperStructureName: string
   constants: {
     type_accusative: string
     type_genitive: string
@@ -52,8 +53,15 @@ const handleDelete = async () => {
       emit('close')
       return
     }
-    await deleteStructure(props.constants.structure_type, props.structure.id, props.filterLevel)
-    notificationStore.addSuccessNotification(props.constants.type_genitive + ' sėkmingai ištrintas')
+    await deleteStructure(
+      props.constants.structure_type,
+      props.structure.id,
+      props.filterLevel,
+      props.upperStructureName
+    )
+    notificationStore.addSuccessNotification(
+      props.constants.type_genitive + ' įrašas sėkmingai ištrintas'
+    )
     emit('update')
     emit('close')
   } catch (error: any) {
@@ -68,7 +76,7 @@ const handleDelete = async () => {
       return
     }
     notificationStore.addErrorNotification(
-      'Nepavyko ištrinti ' + props.constants.type_genitive,
+      'Nepavyko ištrinti ' + props.constants.type_genitive.toLowerCase(),
       error
     )
   }

@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import { getStructures, getConnectionById } from '@/services/universalService'
 
@@ -78,24 +78,41 @@ const upperStructures = ref<Structure[]>([])
 const totalCompanies = ref(0)
 const companiesPerPage = ref(4)
 const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
-const constants = ref(STRUCTURE_CONSTANTS[selectedStructureType.value])
 const loading = ref(true)
 const notificationStore = useNotificationStore()
 const modalRef = ref()
 const userStore = useUserStore()
 const key = ['companies', 'offices', 'divisions', 'departments', 'groups'] as const
-const editPermission = ref('edit_' + selectedStructureType.value)
-const deletePermission = ref('delete_' + selectedStructureType.value)
-const permissions = ref({ edit: false, delete: false })
 
 const emit = defineEmits(['update'])
 
+const constants = computed(() => STRUCTURE_CONSTANTS[selectedStructureType.value])
+
+const editPermission = computed(
+  () =>
+    'edit_' +
+    (key.includes(selectedStructureType.value as any) ? 'structure' : selectedStructureType.value)
+)
+
+const deletePermission = computed(
+  () =>
+    'delete_' +
+    (key.includes(selectedStructureType.value as any) ? 'structure' : selectedStructureType.value)
+)
+
+const permissions = computed(() => ({
+  edit: userStore.permissions?.[editPermission.value] ?? false,
+  delete: userStore.permissions?.[deletePermission.value] ?? false,
+}))
+
 onMounted(async () => {
-  await fetchStructures().then(() => {
-    permissions.value.edit = userStore.permissions?.[editPermission.value] as boolean
-    permissions.value.delete = userStore.permissions?.[deletePermission.value] as boolean
+  try {
+    await fetchStructures()
+  } catch (error) {
+    notificationStore.addErrorNotification('Nepavyko užkrauti duomenų', error)
+  } finally {
     loading.value = false
-  })
+  }
 })
 
 const fetchStructures = async () => {
@@ -131,13 +148,6 @@ const updateCurrentPage = (page: number) => {
 const handleStructureSelected = (structure: string) => {
   currentPage.value = 1
   selectedStructureType.value = structure
-  editPermission.value =
-    'edit_' + (key.includes(selectedStructureType.value as any) ? 'structure' : 'offices')
-  deletePermission.value =
-    'delete_' + (key.includes(selectedStructureType.value as any) ? 'structure' : 'offices')
-  permissions.value.edit = userStore.permissions?.[editPermission.value] as boolean
-  permissions.value.delete = userStore.permissions?.[deletePermission.value] as boolean
-  constants.value = STRUCTURE_CONSTANTS[selectedStructureType.value]
   updateStructures()
 }
 
@@ -180,6 +190,7 @@ function handleDeleteModal(structure: Structure) {
       structure,
       constants,
       filterLevel: CHECK_LOWER_CONSTRAINTS[selectedStructureType.value],
+      upperStructureName: key[key.indexOf(selectedStructureType.value as (typeof key)[number]) - 1],
     },
     true
   )
@@ -187,11 +198,11 @@ function handleDeleteModal(structure: Structure) {
 
 const handleOpenModal = (
   ViewComponent: any,
-  permissions: boolean,
+  hasPermission: boolean,
   props: {},
   isDelete?: boolean
 ) => {
-  if (!permissions) {
+  if (!hasPermission) {
     notificationStore.addInfoNotification(DEFAULT_CONSTANTS.UNAUTHORIZED_MESSAGE)
     return
   }

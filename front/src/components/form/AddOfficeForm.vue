@@ -39,7 +39,8 @@ import {
   validateOfficeCountry,
 } from '@/utils/validateInputs'
 
-import { createOffice, isOfficeNameUnique } from '@/services/officeService'
+import { createOffice } from '@/services/officeService'
+import { isStructureNameUnique } from '@/services/universalService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
@@ -104,17 +105,18 @@ const validateFields = async () => {
 }
 
 const handleAddStructure = async () => {
-  const isValid = await validateFields()
-  if (!isValid) {
-    return
-  }
-
-  const isNameUnique = await isOfficeNameUnique(office.value.name.trim())
-  if (!isNameUnique) {
-    errors.value.name = 'Toks pavadinimas jau egzistuoja'
-    return
-  }
   try {
+    const isNameUnique = await isStructureNameUnique(office.value.name.trim(), 'offices')
+    if (!isNameUnique) {
+      errors.value.name = 'Toks pavadinimas jau egzistuoja'
+      return
+    }
+
+    const isValid = await validateFields()
+    if (!isValid) {
+      return
+    }
+
     await userStore.refreshUser()
     if (userStore.permissions?.edit_structure !== true) {
       notificationStore.addErrorNotification(
@@ -126,16 +128,18 @@ const handleAddStructure = async () => {
     }
     await createOffice(
       props.constants.structure_type,
-      office.value.name.trim(),
       office.value.street.trim(),
       office.value.street_number.trim(),
       office.value.city.trim(),
       office.value.country.trim(),
+      office.value.name.trim(),
       selectedUpperStructureId.value,
       props.constants.upper_structure_type
     )
 
-    notificationStore.addSuccessNotification(props.constants.type_genitive + ' sėkmingai pridėtas')
+    notificationStore.addSuccessNotification(
+      props.constants.type_genitive + ' įrašas sėkmingai pridėtas'
+    )
 
     emit('update')
     emit('close')

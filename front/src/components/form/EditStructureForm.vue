@@ -12,9 +12,9 @@
           type="text"
           class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           :class="{ 'border-red-500': nameError }"
-          :value="name"
-          @input="updateValues(($event.target as HTMLInputElement).value)"
+          v-model="name"
         />
+        <p v-if="nameError" class="text-red-500 text-sm mt-1">{{ nameError }}</p>
       </div>
 
       <div>
@@ -43,7 +43,7 @@ import { ref } from 'vue'
 
 import { validateStructureName } from '@/utils/validateInputs'
 
-import { updateStructure } from '@/services/universalService'
+import { updateStructure, isStructureNameUnique } from '@/services/universalService'
 
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
@@ -83,10 +83,6 @@ const selectedUpperStructures = ref(
 
 const nameError = ref<string | null>(null)
 
-const updateValues = (newName: string) => {
-  name.value = newName
-}
-
 const validateFields = async () => {
   nameError.value = validateStructureName(name.value)
   if (nameError.value) {
@@ -102,6 +98,17 @@ const handleUpdateStructure = async () => {
   }
 
   try {
+    if (name.value.trim() !== props.structure.name) {
+      const isNameUnique = await isStructureNameUnique(
+        name.value.trim(),
+        props.constants.structure_type
+      )
+      if (!isNameUnique) {
+        nameError.value = 'Toks pavadinimas jau egzistuoja'
+        return
+      }
+    }
+
     await userStore.refreshUser()
     if (userStore.permissions?.edit_structure !== true) {
       notificationStore.addErrorNotification(
@@ -111,16 +118,18 @@ const handleUpdateStructure = async () => {
       emit('close')
       return
     }
+
+    if (!updated.value && name.value.trim() === props.structure.name) {
+      notificationStore.addInfoNotification('Nėra ką atnaujinti')
+      emit('close')
+      return
+    }
+
     if (selectedUpperStructures.value.length === 0) {
       notificationStore.addErrorNotification(
         'Pasirinkite ' + props.constants.type_accusative.toLowerCase(),
         ''
       )
-      return
-    }
-    if (!updated.value) {
-      notificationStore.addInfoNotification('Nėra ką atnaujinti')
-      emit('close')
       return
     }
     await updateStructure(
@@ -132,7 +141,7 @@ const handleUpdateStructure = async () => {
     )
 
     notificationStore.addSuccessNotification(
-      props.constants.type_genitive + ' sėkmingai atnaujintas'
+      props.constants.type_genitive + ' įrašas sėkmingai atnaujintas'
     )
 
     emit('update')
