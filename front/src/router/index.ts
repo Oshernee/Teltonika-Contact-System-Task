@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { computed } from 'vue'
 
 import HomePage from '@/views/HomePage.vue'
 import NotFound from '@/views/NotFound.vue'
@@ -103,9 +104,9 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
-  const isAuthenticated = userStore.isLoggedIn()
+  const isAuthenticated = computed(() => userStore.isLoggedIn())
 
   const publicRoutes = [
     'Login',
@@ -123,7 +124,7 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  if (to.name === 'Login' && isAuthenticated) {
+  if (to.name === 'Login' && isAuthenticated.value) {
     next({ name: 'Home' })
     return
   }
@@ -133,7 +134,7 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  if (!isAuthenticated && !publicRoutes.includes(to.name as string)) {
+  if (!isAuthenticated.value && !publicRoutes.includes(to.name as string)) {
     next({ name: 'Login' })
     return
   }
@@ -141,7 +142,7 @@ router.beforeEach((to, from, next) => {
   if (to.name === 'Admin' && isAuthenticated) {
     try {
       const userStore = useUserStore()
-      if (userStore.user?.name !== 'admin') {
+      if (userStore.user?.name !== 'Admin') {
         next({ name: 'Home' })
         return
       }

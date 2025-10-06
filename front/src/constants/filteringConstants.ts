@@ -1,4 +1,4 @@
-import type { FilterLevel } from '../types/filter'
+import type { FilterLevel } from '@/types/filter'
 
 export const PLACEHOLDERS = {
   company: 'Pasirinkite įmonę',

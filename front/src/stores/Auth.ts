@@ -9,6 +9,7 @@ export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(null)
   const accessToken = ref<string | null>(null)
   const permissions = ref<UserPermission>()
+  const loginStatus = ref<boolean>(false)
 
   const setUser = (newUser: User, newAccessToken: string) => {
     user.value = newUser
@@ -24,11 +25,24 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const isLoggedIn = () => {
-    return (
-      user.value !== null &&
-      accessToken.value !== null &&
-      localStorage.getItem('pocketbase_auth') !== null
-    )
+    const pocketbase_auth = localStorage.getItem('pocketbase_auth')
+    if (pocketbase_auth) {
+      loginStatus.value = true
+      return loginStatus.value
+    }
+    loginStatus.value = false
+    return loginStatus.value
+  }
+
+  const isAdmin = () => {
+    const pocketbase_auth = localStorage.getItem('pocketbase_auth')
+    if (!pocketbase_auth) return false
+    try {
+      const authObj = JSON.parse(pocketbase_auth)
+      return authObj.record?.name === 'Admin'
+    } catch (e) {
+      return false
+    }
   }
 
   const reauthenticateOnPageReload = async () => {
@@ -42,10 +56,18 @@ export const useUserStore = defineStore('user', () => {
   const refreshUser = async () => {
     const pocketbase_auth = localStorage.getItem('pocketbase_auth')
     if (pocketbase_auth) {
-      const { user, token: newToken, permissions: newPermissions } = await refreshUserInformation()
-      setUser(user, newToken)
-      savePermissions(newPermissions)
-      return
+      try {
+        const {
+          user,
+          token: newToken,
+          permissions: newPermissions,
+        } = await refreshUserInformation()
+        setUser(user, newToken)
+        savePermissions(newPermissions)
+        return
+      } catch (error) {
+        clearUser()
+      }
     } else {
       clearUser()
     }
@@ -63,6 +85,7 @@ export const useUserStore = defineStore('user', () => {
     clearUser,
     savePermissions,
     refreshUser,
+    isAdmin,
     user,
     accessToken,
     permissions,
