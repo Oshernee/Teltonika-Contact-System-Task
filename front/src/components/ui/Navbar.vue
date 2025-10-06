@@ -114,6 +114,9 @@ watch(
   () => route.path,
   async () => {
     isLoggedIn.value = await userStore.isLoggedIn()
+    if (!isLoggedIn.value) {
+      await userStore.refreshUser()
+    }
     isLoading.value = true
     if (
       route.path === '/login' ||
