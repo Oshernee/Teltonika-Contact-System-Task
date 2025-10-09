@@ -48,7 +48,7 @@ import type { Employee } from '@/types/employees'
 import ReturnButton from '@/components/ui/ReturnButton.vue'
 import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import ContactInformationCard from '@/components/cards/ContactInformationCard.vue'
-import LoadingCard from '@/components/cards/LoadingCard.vue'
+import LoadingCard from '@/components/ui/LoadingCard.vue'
 
 const employee = ref<Employee | null>(null)
 const notificationStore = useNotificationStore()

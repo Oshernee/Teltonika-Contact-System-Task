@@ -1,4 +1,5 @@
 <template>
+  <LoadingCard v-if="loading" class="w-full h-full justify-center items-center" />
   <div
     v-if="!loading"
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start gap-4 min-h-[85vh]"
@@ -37,8 +38,11 @@
       class="w-full pb-8"
     />
   </div>
-  <div v-else class="w-full h-full flex justify-center items-center">
-    <LoadingCard class="w-full h-full justify-center items-center" />
+  <div
+    v-if="!loading && !structures.length"
+    class="flex flex-col justify-center items-center pt-48"
+  >
+    <UnableToLoadCard />
   </div>
   <Modal ref="modalRef" @update="fetchStructures" />
 </template>
@@ -67,6 +71,7 @@ import EditOfficeForm from '@/components/form/EditOfficeForm.vue'
 import DeleteStructureForm from '@/components/form/DeleteStructureForm.vue'
 
 import LoadingCard from '@/components/ui/LoadingCard.vue'
+import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import StructuresTable from '@/components/tables/StructuresTable.vue'
 import StructureSelector from '@/components/ui/StructureSelector.vue'

@@ -7,6 +7,7 @@
     <div class="w-1/2 pl-6">
       <h1 class="text-xl mb-2">{{ props.constants.type_genitive }} pavadinimas:</h1>
       <input
+        maxlength="255"
         :placeholder="'Įveskite ' + props.constants.type_genitive.toLowerCase() + ' pavadinimą'"
         type="text"
         class="w-72 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
