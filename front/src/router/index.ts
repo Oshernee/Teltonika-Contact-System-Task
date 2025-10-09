@@ -129,7 +129,7 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (from.name === 'Login' && !publicRoutes.includes(to.name as string)) {
+  if (from.name === 'Login' && to.name !== 'Home' && to.name !== 'HomeAlias') {
     next({ name: 'Home' })
     return
   }
