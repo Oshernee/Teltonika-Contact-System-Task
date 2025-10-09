@@ -100,11 +100,11 @@ const updateValues = (newValues: typeof office.value) => {
 }
 
 const validateFields = async () => {
-  errors.value.name = validateOfficeName(office.value.name)
-  errors.value.street = validateOfficeStreet(office.value.street)
-  errors.value.street_number = validateOfficeStreetNumber(office.value.street_number)
-  errors.value.city = validateOfficeCity(office.value.city)
-  errors.value.country = validateOfficeCountry(office.value.country)
+  errors.value.name = validateOfficeName(office.value.name.trim())
+  errors.value.street = validateOfficeStreet(office.value.street.trim())
+  errors.value.street_number = validateOfficeStreetNumber(office.value.street_number.trim())
+  errors.value.city = validateOfficeCity(office.value.city.trim())
+  errors.value.country = validateOfficeCountry(office.value.country.trim())
 
   if (
     errors.value.name ||

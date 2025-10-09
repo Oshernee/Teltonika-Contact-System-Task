@@ -93,15 +93,11 @@ const emit = defineEmits(['update'])
 const constants = computed(() => STRUCTURE_CONSTANTS[selectedStructureType.value])
 
 const editPermission = computed(
-  () =>
-    'edit_' +
-    (key.includes(selectedStructureType.value as any) ? 'structure' : selectedStructureType.value)
+  () => 'edit_' + (selectedStructureType.value === 'offices' ? 'offices' : 'structure')
 )
 
 const deletePermission = computed(
-  () =>
-    'delete_' +
-    (key.includes(selectedStructureType.value as any) ? 'structure' : selectedStructureType.value)
+  () => 'delete_' + (selectedStructureType.value === 'offices' ? 'offices' : 'structure')
 )
 
 const permissions = computed(() => ({

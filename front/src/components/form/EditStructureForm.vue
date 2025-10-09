@@ -85,7 +85,7 @@ const selectedUpperStructures = ref(
 const nameError = ref<string | null>(null)
 
 const validateFields = async () => {
-  nameError.value = validateStructureName(name.value)
+  nameError.value = validateStructureName(name.value.trim())
   if (nameError.value) {
     return false
   }

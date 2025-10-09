@@ -76,7 +76,7 @@ const props = defineProps<{
 }>()
 
 const validateFields = async () => {
-  nameError.value = validateStructureName(name)
+  nameError.value = validateStructureName(name.trim())
   if (nameError.value) {
     return false
   }
