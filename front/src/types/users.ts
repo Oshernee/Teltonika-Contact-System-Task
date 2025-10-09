@@ -4,7 +4,7 @@ export interface User {
   email: string
   name?: string
   permissions_id: string
-  avatar?: File | string | null
+  avatar?: File | null
   created_at: string
   updated_at: string
 }
