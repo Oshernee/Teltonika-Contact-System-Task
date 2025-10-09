@@ -52,7 +52,6 @@ import { ref, onMounted, computed } from 'vue'
 
 import { getStructures } from '@/services/universalService'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 import { STRUCTURE_CONSTANTS } from '@/constants/structureConstants'
 import { FILTER_LEVELS } from '@/constants/filteringConstants'
 
@@ -74,7 +73,7 @@ import CompaniesTable from '@/components/tables/CompaniesTable.vue'
 const companies = ref<Structure[]>([])
 const totalCompanies = ref(0)
 const companiesPerPage = ref(4)
-const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
+const currentPage = ref(__DEFAULT_CURRENT_PAGE__)
 const constants = STRUCTURE_CONSTANTS.companies
 const loading = ref(true)
 const notificationStore = useNotificationStore()
@@ -137,7 +136,7 @@ const handleOpenModal = (
   isDelete?: boolean
 ) => {
   if (!permissions) {
-    notificationStore.addInfoNotification(DEFAULT_CONSTANTS.UNAUTHORIZED_MESSAGE)
+    notificationStore.addInfoNotification('Jūs neturite leidimo atlikti šį veiksmą')
     return
   }
   modalRef.value.open(ViewComponent, props, isDelete || false)

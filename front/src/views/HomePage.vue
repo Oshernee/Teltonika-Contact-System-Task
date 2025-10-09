@@ -55,8 +55,6 @@ import { ref, onMounted, computed } from 'vue'
 
 import { getEmployees } from '@/services/employeeService'
 
-import { MESSAGE_CONSTANTS } from '@/constants/messageConstants'
-
 import SearchBar from '@/components/ui/SearchBar.vue'
 import Filtering from '@/components/ui/Filtering.vue'
 import Pagination from '@/components/ui/Pagination.vue'
@@ -162,7 +160,7 @@ const handleOpenModal = (
   isDelete?: boolean
 ) => {
   if (!permissions) {
-    notificationStore.addInfoNotification(MESSAGE_CONSTANTS.UNAUTHORIZED_MESSAGE)
+    notificationStore.addInfoNotification('Jūs neturite leidimo atlikti šį veiksmą')
     return
   }
   modalRef.value.open(ViewComponent, props, isDelete || false)

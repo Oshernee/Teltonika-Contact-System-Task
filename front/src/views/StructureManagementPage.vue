@@ -48,7 +48,6 @@ import { ref, onMounted, computed } from 'vue'
 
 import { getStructures, getConnectionById } from '@/services/universalService'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 import { CHECK_LOWER_CONSTRAINTS, STRUCTURE_CONSTANTS } from '@/constants/structureConstants'
 
 import Add from '@/assets/Add.svg'
@@ -77,7 +76,7 @@ const structures = ref<Structure[]>([])
 const upperStructures = ref<Structure[]>([])
 const totalCompanies = ref(0)
 const companiesPerPage = ref(4)
-const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
+const currentPage = ref(__DEFAULT_CURRENT_PAGE__)
 const loading = ref(true)
 const notificationStore = useNotificationStore()
 const modalRef = ref()
@@ -203,7 +202,7 @@ const handleOpenModal = (
   isDelete?: boolean
 ) => {
   if (!hasPermission) {
-    notificationStore.addInfoNotification(DEFAULT_CONSTANTS.UNAUTHORIZED_MESSAGE)
+    notificationStore.addInfoNotification('Jūs neturite leidimo atlikti šį veiksmą')
     return
   }
   modalRef.value.open(ViewComponent, props, isDelete || false)
