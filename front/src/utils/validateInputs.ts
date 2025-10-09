@@ -39,9 +39,10 @@ export function validateSurname(surname: string): string {
 
 export function validatePhone(phone: string): string {
   if (!phone) return ''
-  if (phone.length > 15) return 'Telefono numeris negali būti ilgesnis nei 15 simbolių'
-  const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/
-  if (!phoneRegex.test(phone)) return 'Neteisingas telefono numerio formatas: +370/0 ***********'
+  if (phone.length > 12) return 'Telefono numeris negali būti ilgesnis nei 12 simbolių'
+  const phoneRegex = /^(\+370|0)[0-9]{8}$/
+  if (!phoneRegex.test(phone))
+    return 'Neteisingas telefono numerio formatas: +370xxxxxxxx arba 0xxxxxxxx'
   return ''
 }
 

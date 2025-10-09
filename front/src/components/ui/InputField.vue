@@ -5,6 +5,7 @@
         >Vardas<span class="text-red-600 ml-1">*</span></label
       >
       <input
+        maxlength="100"
         v-model="name"
         type="text"
         placeholder="Įveskite vardą..."
@@ -19,6 +20,7 @@
         >Pavardė<span class="text-red-600 ml-1">*</span></label
       >
       <input
+        maxlength="100"
         v-model="surname"
         type="text"
         placeholder="Įveskite pavardę..."
@@ -33,6 +35,7 @@
         >Pozicija<span class="text-red-600 ml-1">*</span></label
       >
       <input
+        maxlength="100"
         v-model="position"
         type="text"
         placeholder="Įveskite poziciją..."
@@ -52,6 +55,7 @@
           <img :src="Email" class="w-6 h-6 text-gray-400" alt="Email" />
         </div>
         <input
+          maxlength="100"
           v-model="email"
           type="email"
           placeholder="Įveskite el. paštą..."
@@ -69,6 +73,7 @@
           <img :src="Phone" class="w-6 h-6 text-gray-400" alt="Phone" />
         </div>
         <input
+          maxlength="12"
           v-model="phone"
           type="tel"
           placeholder="Įveskite telefono numerį..."

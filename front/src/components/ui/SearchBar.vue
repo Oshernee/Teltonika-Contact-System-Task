@@ -55,7 +55,6 @@
 import { ref } from 'vue'
 import debounce from 'debounce'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 import { UNALLOWED_CHARACTERS } from '@/constants/unallowedCharacters'
 
 import searchIcon from '@/assets/Search.svg'
@@ -103,7 +102,7 @@ const selectItemCountPerPage = (item: number | string) => {
   if (item === 'ALL') {
     selectedCount.value = 'ALL'
     showDropdown.value = false
-    emit('changeCount', DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES)
+    emit('changeCount', __SHOW_ALL_EMPLOYEES__)
     return
   }
   selectedCount.value = item
