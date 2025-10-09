@@ -1,7 +1,7 @@
 <template>
   <div class="w-[800px]">
     <div class="p-6">
-      <h1 class="text-3xl">Redaguoti naują {{ props.constants.type_accusative }}:</h1>
+      <h1 class="text-3xl">Redaguoti {{ props.constants.type_accusative }}:</h1>
     </div>
 
     <div class="grid grid-cols-2 gap-6 px-6 pb-6">

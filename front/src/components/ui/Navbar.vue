@@ -110,25 +110,36 @@ const isLoggedIn = ref(false)
 const isLoading = ref(true)
 const isAdmin = ref(false)
 
+let isRefreshing = false
+
 watch(
   () => route.path,
   async () => {
-    isLoggedIn.value = await userStore.isLoggedIn()
-    if (!isLoggedIn.value) {
-      await userStore.refreshUser()
+    if (isRefreshing) {
+      return
     }
-    isLoading.value = true
-    if (
-      route.path === '/login' ||
-      route.path === '/password-recovery' ||
-      route.path.startsWith('/confirm-password-reset/')
-    ) {
-      isInLogin.value = true
-    } else {
-      isInLogin.value = false
+
+    try {
+      isRefreshing = true
+      isLoading.value = true
+
+      isLoggedIn.value = await userStore.isLoggedIn()
+
+      if (
+        route.path === '/login' ||
+        route.path === '/password-recovery' ||
+        route.path.startsWith('/confirm-password-reset/')
+      ) {
+        isInLogin.value = true
+      } else {
+        isInLogin.value = false
+      }
+
+      isAdmin.value = userStore.isAdmin()
+    } finally {
+      isLoading.value = false
+      isRefreshing = false
     }
-    isAdmin.value = userStore.isAdmin()
-    isLoading.value = false
   },
   { immediate: true }
 )

@@ -89,9 +89,11 @@ export function validateOfficeStreetNumber(street_number: string): string {
   if (!street_number) return 'Namo numeris yra privalomas'
   if (street_number.length < 1) return 'Namo numeris turi būti bent 1 simbolio ilgio'
   if (street_number.length > 10) return 'Namo numeris negali būti ilgesnis nei 10 simbolių'
-  const streetNumberRegex = /^[a-zA-Z0-9\s'-]+$/
+  const hasNumber = /\d/
+  if (!hasNumber.test(street_number)) return 'Namo numeryje turi būti bent vienas skaičius'
+  const streetNumberRegex = /^[0-9\s-]+$/
   if (!streetNumberRegex.test(street_number))
-    return 'Namo numeryje gali būti tik raidės, skaičiai, tarpai, apostrofai ir brūkšneliai'
+    return 'Namo numeryje gali būti tik skaičiai, tarpai ir brūkšneliai'
   return ''
 }
 
