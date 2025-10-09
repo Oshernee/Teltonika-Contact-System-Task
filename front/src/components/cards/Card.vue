@@ -66,14 +66,12 @@ import Delete from '@/assets/Delete.svg'
 
 import { getPhotoUrl } from '@/utils/photoUtils'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
-
 const router = useRouter()
 
 const emit = defineEmits(['openEditModal', 'openDeleteModal'])
 
 const imageAPI = computed(() => {
-  return DEFAULT_CONSTANTS.EMPLOYEE_IMAGE_API + props.employee.id
+  return __EMPLOYEE_IMAGE_API__ + props.employee.id
 })
 
 const props = defineProps<{

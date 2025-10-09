@@ -1,4 +1,5 @@
 <template>
+  <LoadingCard v-if="loading" class="w-full h-full justify-center items-center" />
   <div
     v-if="employee"
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start"
@@ -26,7 +27,7 @@
     </div>
     <ContactInformationCard :employee="employee" />
   </div>
-  <div v-else class="flex flex-col justify-center items-center pt-48">
+  <div v-if="!loading && !employee" class="flex flex-col justify-center items-center pt-48">
     <UnableToLoadCard />
   </div>
 </template>
@@ -37,7 +38,6 @@ import { onMounted, ref } from 'vue'
 import { getSingleEmployee } from '@/services/employeeService'
 import { useRouter } from 'vue-router'
 import { useNotificationStore } from '@/stores/Notification'
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 
 import Profile from '@/assets/Profile.svg'
 
@@ -48,8 +48,8 @@ import type { Employee } from '@/types/employees'
 import ReturnButton from '@/components/ui/ReturnButton.vue'
 import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import ContactInformationCard from '@/components/cards/ContactInformationCard.vue'
+import LoadingCard from '@/components/cards/LoadingCard.vue'
 
-const constants = DEFAULT_CONSTANTS
 const employee = ref<Employee | null>(null)
 const notificationStore = useNotificationStore()
 const loading = ref(true)
@@ -62,20 +62,16 @@ const props = defineProps<{
 }>()
 
 onMounted(async () => {
-  try {
-    employee.value = await fetchEmployeeById(props.id)
-
-    if (employee.value?.photo) {
-      photo.value = await getPhotoUrl(
-        employee.value.photo,
-        constants.EMPLOYEE_IMAGE_API + employee.value.id
-      )
-    }
-  } catch (error) {
-    console.error('Error loading employee:', error)
-  } finally {
-    loading.value = false // Always set loading to false
+  employee.value = await fetchEmployeeById(props.id)
+  if (!employee.value?.photo) {
+    loading.value = false
+    return
   }
+  photo.value = await getPhotoUrl(
+    employee.value?.photo,
+    __EMPLOYEE_IMAGE_API__ + employee.value?.id
+  )
+  loading.value = false
 })
 const fetchEmployeeById = async (id: string) => {
   try {

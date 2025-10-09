@@ -96,8 +96,6 @@ import { computed, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/Auth'
 import { getPhotoUrl } from '@/utils/photoUtils'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
-
 import NavbarIcon from '@/assets/NavbarIcon.svg'
 
 const userStore = useUserStore()
@@ -147,7 +145,7 @@ watch(
 const isDropdownOpen = ref(false)
 
 const imageAPI = computed(() => {
-  return DEFAULT_CONSTANTS.USER_IMAGE_API + userStore.user?.id
+  return __USER_IMAGE_API__ + userStore.user?.id
 })
 
 const toggleDropdown = (state: boolean) => {
