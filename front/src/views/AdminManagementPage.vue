@@ -13,7 +13,7 @@
       </button>
       Sukurti naują admin paskyrą
     </div>
-    <div v-else class="w-full text-center text-2xl text-text font-bold">
+    <div class="w-full text-center text-2xl pt-8 text-text font-bold">
       <UserTable
         :users="users"
         :permissions="{
@@ -21,7 +21,7 @@
           delete: permissions.delete_permissions,
         }"
         @open-edit-user-modal="handleUserEditModal($event)"
-        @open-edit-permission-modal="handlePermissionsEditModal($event)"
+        @open-edit-permissions-modal="handlePermissionsEditModal($event)"
         @open-delete-modal="handleDeleteModal($event)"
       />
     </div>
@@ -59,7 +59,7 @@ import LoadingCard from '@/components/ui/LoadingCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import UserTable from '@/components/tables/UserTable.vue'
 
-import { getUsers } from '@/services/userService'
+import { getUserPermissions, getUsers } from '@/services/userService'
 
 const users = ref<User[]>([])
 const totalUsers = ref(0)
@@ -107,11 +107,15 @@ function handleAddModal() {
 }
 
 function handleUserEditModal(user: User) {
-  handleOpenModal(EditUserForm, permissions.value.edit_permissions, { user }, true)
+  handleOpenModal(EditUserForm, permissions.value.edit_permissions, { user })
 }
 
-function handlePermissionsEditModal(user: User) {
-  handleOpenModal(EditPermissionsForm, permissions.value.edit_permissions, { user }, true)
+async function handlePermissionsEditModal(user: User) {
+  const userPermissions = await getUserPermissions(user.permissions_id)
+  handleOpenModal(EditPermissionsForm, permissions.value.edit_permissions, {
+    user,
+    permissions: userPermissions,
+  })
 }
 
 function handleDeleteModal(user: User) {

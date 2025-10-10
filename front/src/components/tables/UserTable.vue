@@ -4,7 +4,7 @@
       <thead class="bg-gray-50">
         <tr>
           <th
-            class="px-6 py-3 text-left text-md font-medium text-black tracking-wider border-b border-gray-200 w-[65%]"
+            class="px-6 py-3 text-left text-md font-medium text-black tracking-wider border-b border-gray-200 w-[45%]"
           >
             Vardas
           </th>
@@ -15,7 +15,7 @@
           </th>
           <th
             v-if="props.permissions.edit || props.permissions.delete"
-            class="px-6 py-3 text-center text-md font-medium text-black tracking-wider border-b border-gray-200"
+            class="px-6 py-3 text-center text-md font-medium text-black tracking-wider border-b border-gray-200 w-[100%]"
           >
             Veiksmas
           </th>
@@ -40,7 +40,7 @@
             <button
               v-if="props.permissions.edit"
               @click.stop="emit('openEditPermissionsModal', user)"
-              class="bg-accent px-16"
+              class="bg-accent w-[40%] px-16"
               :class="buttonClass"
             >
               Keisti leidimus
@@ -48,7 +48,7 @@
             <button
               v-if="props.permissions.edit"
               @click.stop="emit('openEditUserModal', user)"
-              class="bg-accent px-16"
+              class="bg-accent w-[35%] px-12"
               :class="buttonClass"
             >
               Modifikuoti
@@ -56,7 +56,7 @@
             <button
               v-if="props.permissions.delete"
               @click.stop="emit('openDeleteModal', user)"
-              class="bg-primary px-8"
+              class="bg-primary w-[25%] px-8"
               :class="buttonClass"
             >
               Ištrinti
@@ -73,7 +73,7 @@ import { defineProps } from 'vue'
 import type { User } from '@/types/users'
 
 const buttonClass =
-  'h-12 mr-2 rounded-full justify-center items-center flex text-white hover:opacity-90 text-lg'
+  'h-12 mr-2 rounded-full justify-center items-center flex text-white hover:opacity-90 text-lg whitespace-nowrap'
 
 const props = defineProps<{
   users: User[]

@@ -67,3 +67,23 @@ export const getUsers = async (currentPage: number, itemsPerPage: number): Promi
     throw error
   }
 }
+
+export const updateUserPermissions = async (id: string, permissions: Partial<UserPermission>) => {
+  try {
+    const updatedPermissions = await pb
+      .collection('user_permissions')
+      .update<UserPermission>(id, permissions)
+    return updatedPermissions
+  } catch (error) {
+    throw error
+  }
+}
+
+export const deleteUser = async (id: string, permissions_id: string) => {
+  try {
+    await pb.collection('users').delete(id)
+    await pb.collection('user_permissions').delete(permissions_id)
+  } catch (error) {
+    throw error
+  }
+}
