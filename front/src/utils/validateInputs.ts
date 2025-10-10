@@ -65,3 +65,55 @@ export function validateStructureName(name: string): string {
     return 'Pavadinime gali būti tik raidės, skaičiai, tarpai, apostrofai, brūkšneliai ir taškai'
   return ''
 }
+
+export function validateOfficeName(name: string): string {
+  if (!name) return ''
+  if (name.length < 2 && name !== '') return 'Pavadinimas turi būti bent 2 simbolių ilgio'
+  if (name.length > 255) return 'Pavadinimas negali būti ilgesnis nei 255 simboliai'
+  const nameRegex = /^[a-zA-ZÀ-ž0-9\s'-.]+$/
+  if (!nameRegex.test(name))
+    return 'Pavadinime gali būti tik raidės, skaičiai, tarpai, apostrofai, brūkšneliai ir taškai'
+  return ''
+}
+
+export function validateOfficeStreet(street: string): string {
+  if (!street) return 'Gatvė yra privaloma'
+  if (street.length < 2) return 'Gatvė turi būti bent 2 simbolių ilgio'
+  if (street.length > 100) return 'Gatvė negali būti ilgesnė nei 100 simbolių'
+  const streetRegex = /^[a-zA-ZÀ-ž0-9\s'-.]+$/
+  if (!streetRegex.test(street))
+    return 'Gatvėje gali būti tik raidės, skaičiai, tarpai, apostrofai, brūkšneliai ir taškai'
+  return ''
+}
+
+export function validateOfficeStreetNumber(street_number: string): string {
+  if (!street_number) return 'Namo numeris yra privalomas'
+  if (street_number.length < 1) return 'Namo numeris turi būti bent 1 simbolio ilgio'
+  if (street_number.length > 10) return 'Namo numeris negali būti ilgesnis nei 10 simbolių'
+  const hasNumber = /\d/
+  if (!hasNumber.test(street_number)) return 'Namo numeryje turi būti bent vienas skaičius'
+  const streetNumberRegex = /^[0-9\s-]+$/
+  if (!streetNumberRegex.test(street_number))
+    return 'Namo numeryje gali būti tik skaičiai, tarpai ir brūkšneliai'
+  return ''
+}
+
+export function validateOfficeCity(city: string): string {
+  if (!city) return 'Miestas yra privalomas'
+  if (city.length < 2) return 'Miestas turi būti bent 2 simbolių ilgio'
+  if (city.length > 100) return 'Miestas negali būti ilgesnis nei 100 simbolių'
+  const cityRegex = /^[a-zA-ZÀ-ž\s'-.]+$/
+  if (!cityRegex.test(city))
+    return 'Mieste gali būti tik raidės, tarpai, apostrofai, brūkšneliai ir taškai'
+  return ''
+}
+
+export function validateOfficeCountry(country: string): string {
+  if (!country) return 'Šalis yra privaloma'
+  if (country.length < 2) return 'Šalis turi būti bent 2 simbolių ilgio'
+  if (country.length > 100) return 'Šalis negali būti ilgesnė nei 100 simbolių'
+  const countryRegex = /^[a-zA-ZÀ-ž\s'-.]+$/
+  if (!countryRegex.test(country))
+    return 'Šalyje gali būti tik raidės, tarpai, apostrofai, brūkšneliai ir taškai'
+  return ''
+}
