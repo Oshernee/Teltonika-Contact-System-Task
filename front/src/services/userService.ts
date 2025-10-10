@@ -68,6 +68,15 @@ export const getUsers = async (currentPage: number, itemsPerPage: number): Promi
   }
 }
 
+export const updateUser = async (id: string, userData: Partial<User>) => {
+  try {
+    const updatedUser = await pb.collection('users').update<User>(id, userData)
+    return updatedUser
+  } catch (error) {
+    throw error
+  }
+}
+
 export const updateUserPermissions = async (id: string, permissions: Partial<UserPermission>) => {
   try {
     const updatedPermissions = await pb
