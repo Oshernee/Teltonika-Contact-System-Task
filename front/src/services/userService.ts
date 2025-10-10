@@ -50,3 +50,20 @@ export const ChangePassword = async (newPassword: string, token: string) => {
     throw error
   }
 }
+
+export const getUsers = async (currentPage: number, itemsPerPage: number): Promise<any> => {
+  try {
+    const records = await pb
+      .collection('users')
+      .getList<User>(currentPage, itemsPerPage, { sort: '-created' })
+
+    if (currentPage > records.totalPages && records.totalPages > 0) {
+      currentPage = records.totalPages
+      return getUsers(currentPage, itemsPerPage)
+    }
+
+    return [records.items, records.totalItems, currentPage]
+  } catch (error) {
+    throw error
+  }
+}
