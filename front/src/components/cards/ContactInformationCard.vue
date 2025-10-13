@@ -28,11 +28,11 @@
       </div>
       <div class="px-6 py-8 rounded-lg">
         <div class="w-full border-b border-gray-200 pb-4 mb-6">
-          <h4 class="text-2xl font-medium text-black">Kompanijos detalės:</h4>
+          <h4 class="text-2xl font-medium text-black">Įmonės detalės:</h4>
         </div>
         <div class="space-y-6 text-xl overflow-auto">
           <div>
-            <span class="text-text">Kompanija: </span>
+            <span class="text-text">Įmonė: </span>
             <span class="text-gray-900">{{ employee.expand.company_id.name }}</span>
           </div>
           <div>

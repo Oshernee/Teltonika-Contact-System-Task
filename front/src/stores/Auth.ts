@@ -17,7 +17,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const clearUser = () => {
-    unsubscribeFromPermissionChanges(user.value?.permissions_id || '')
+    unsubscribeFromPermissionChanges()
     user.value = null
     accessToken.value = null
     permissions.value = undefined
