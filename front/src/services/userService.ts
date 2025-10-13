@@ -51,6 +51,30 @@ export const ChangePassword = async (newPassword: string, token: string) => {
   }
 }
 
+export const ChangeNewPassword = async (newPassword: string) => {
+  try {
+    const response = await pb.collection('users').update<User>(pb.authStore.model?.id || '', {
+      password: newPassword,
+      passwordConfirm: newPassword,
+      first_login: false,
+    })
+    return response
+  } catch (error) {
+    throw error
+  }
+}
+
+export const isEmailTaken = async (email: string): Promise<boolean> => {
+  try {
+    console.log('Checking email:', email) // Debugging line
+    const records = await pb.collection('users').getList<User>(1, 1, { filter: `email="${email}"` })
+    console.log('Records found:', records.totalItems) // Debugging line
+    return records.totalItems > 0
+  } catch (error) {
+    throw error
+  }
+}
+
 export const getUsers = async (currentPage: number, itemsPerPage: number): Promise<any> => {
   try {
     const records = await pb
@@ -97,6 +121,13 @@ export const addUser = async (userData: Partial<User>, permissionData: Partial<U
       permissions_id: newPermissions.id,
       first_login: true,
     })
+
+    await pb.collection('users').requestVerification(userData.email || '', {
+      name: userData.name,
+      email: userData.email,
+      password: password,
+    })
+
     return password
   } catch (error) {
     throw error

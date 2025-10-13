@@ -10,7 +10,7 @@ import StructureManagementPage from '@/views/StructureManagementPage.vue'
 import SingleContactPage from '@/views/SingleContactPage.vue'
 import RecoveryPage from '@/views/RecoveryPage.vue'
 import PasswordResetPage from '@/views/PasswordResetPage.vue'
-import ChangePassword from '@/views/ChangePassword.vue'
+import ChangePassword from '@/views/ChangePasswordPage.vue'
 
 import { useUserStore } from '@/stores/Auth'
 
@@ -123,6 +123,11 @@ router.beforeEach(async (to, from, next) => {
     'NotFound',
     'ChangePassword',
   ]
+
+  if (to.name === 'ChangePassword' && !userStore.user?.first_login) {
+    next({ name: 'Home' })
+    return
+  }
 
   if (to.name === 'ConfirmPasswordReset' && from.name !== undefined) {
     next({ name: 'Home' })

@@ -28,11 +28,13 @@ import type { User } from '@/types/users'
 import { deleteUser } from '@/services/userService'
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
+import { useRouter } from 'vue-router'
 
 const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
+const router = useRouter()
 
 const props = defineProps<{
   user: User
@@ -42,6 +44,7 @@ const handleDelete = async () => {
   await userStore.refreshUser()
   if (userStore.permissions?.delete_permissions !== true) {
     notificationStore.addErrorNotification('Jūs neturite teisių ištrinti paskyrą', '')
+    router.push('/')
     emit('close')
     return
   }

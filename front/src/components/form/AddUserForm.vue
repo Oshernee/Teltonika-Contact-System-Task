@@ -1,6 +1,6 @@
 <template>
   <div class="w-[900px] h-[600px] p-6 space-y-6 flex flex-row gap-8 items-start relative">
-    <div>
+    <div class="w-[50%]">
       <div>
         <h2 class="text-3xl pb-8">Pridėti naują admin paskyrą:</h2>
       </div>
@@ -57,9 +57,6 @@
           }}
           <button v-if="image" @click="image = null" class="text-red-500 text-sm ml-2">x</button>
         </p>
-        <div class="text-red-500 text-sm" v-if="errorMessages.image">
-          {{ errorMessages.image }}
-        </div>
       </div>
     </div>
     <div>
@@ -114,13 +111,14 @@
 </template>
 
 <script setup lang="ts">
-import { addUser } from '@/services/userService'
+import { addUser, isEmailTaken } from '@/services/userService'
 import { useNotificationStore } from '@/stores/Notification'
 import { validateEmail, validateUserName } from '@/utils/validateInputs'
 import { handleImageUpload } from '@/utils/photoUtils'
 import { useUserStore } from '@/stores/Auth'
 import Checkbox from '@/components/ui/Checkbox.vue'
 import Email from '@/assets/Email.svg'
+import { useRouter } from 'vue-router'
 
 import { ref, reactive } from 'vue'
 
@@ -133,13 +131,14 @@ const image = ref<File | null>(null)
 const sending = ref(false)
 const valuesChanged = ref(false)
 
-let name = ref()
-let email = ref()
+let name = ref('')
+let email = ref('')
+
+const router = useRouter()
 
 const errorMessages = reactive<Record<string, string>>({
   name: '',
   email: '',
-  image: '',
 })
 
 const permissions = ref({
@@ -158,7 +157,7 @@ function trimWhiteSpace(str: string): string {
 }
 
 const validateFields = () => {
-  const trimmedName = trimWhiteSpace(name.value || '')
+  const trimmedName = trimWhiteSpace(name.value)
   const trimmedEmail = trimWhiteSpace(email.value)
 
   errorMessages.name = validateUserName(trimmedName)
@@ -190,9 +189,17 @@ const handleUpdate = async () => {
   const trimmedEmail = trimWhiteSpace(email.value || '')
 
   try {
+    const emailStatus = await isEmailTaken(trimWhiteSpace(email.value))
+    if (emailStatus) {
+      errorMessages.email = 'Šis el. paštas jau yra užregistruotas'
+      sending.value = false
+      return
+    }
+
     await userStore.refreshUser()
     if (userStore.user?.name !== 'Admin') {
       notificationStore.addErrorNotification('Jūs neturite teisių pridėti paskyros', '')
+      router.push('/')
       emit('close')
       sending.value = false
       return
@@ -204,14 +211,19 @@ const handleUpdate = async () => {
         email: trimmedEmail,
         avatar: image.value,
       },
-      permissions.value,
+      permissions.value
     )
 
     notificationStore.addSuccessNotification('Paskyra sėkmingai pridėta')
     emit('update')
     emit('updateCurrent', password)
   } catch (error) {
-    notificationStore.addErrorNotification('Įvyko klaida pridedant paskyrą', error)
+    if (error.status === 400) {
+      errorMessages.email = 'Šis el. paštas jau yra užregistruotas'
+      notificationStore.addErrorNotification('Neteisingi duomenys', error)
+    } else {
+      notificationStore.addErrorNotification('Įvyko klaida pridedant paskyrą', error)
+    }
   } finally {
     sending.value = false
   }

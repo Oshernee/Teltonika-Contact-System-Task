@@ -3,7 +3,7 @@
     <div class="flex min-h-screen min-w-full justify-center items-center pt-10">
       <form
         class="bg-white p-8 rounded shadow-md w-[500px] flex flex-col items-center"
-        @submit.prevent="submitPasswordChange(password[0], token)"
+        @submit.prevent="submitPasswordChange(password[0])"
       >
         <h1 class="text-4xl mb-12 text-gray-800 font-medium">Slaptažodžio keitimas:</h1>
         <div class="mb-8 w-full max-w-[400px] space-y-6">
@@ -71,7 +71,7 @@
           class="w-full max-w-[400px] bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           type="submit"
         >
-          SIŲSTI
+          PAKEISTI
         </button>
       </form>
     </div>
@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { ChangePassword } from '@/services/userService'
+import { ChangeNewPassword } from '@/services/userService'
 
 import SeePassword from '@/assets/SeePassword.svg'
 import HidePassword from '@/assets/HidePassword.svg'
@@ -92,7 +92,7 @@ import { validatePassword } from '@/utils/validateInputs'
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
 
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const password = ref(['', ''])
 const passwordError = ref(['', ''])
@@ -101,12 +101,10 @@ const showPassword = ref([false, false])
 
 const notificationStore = useNotificationStore()
 
-const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
-const token = route.params.token as string
 
-const submitPasswordChange = async (newPassword: string, token: string) => {
+const submitPasswordChange = async (newPassword: string) => {
   if (password.value[0] !== password.value[1]) {
     passwordError.value[1] = 'Slaptažodžiai nesutampa'
     return
@@ -118,7 +116,7 @@ const submitPasswordChange = async (newPassword: string, token: string) => {
   }
 
   try {
-    await ChangePassword(newPassword, token)
+    await ChangeNewPassword(newPassword)
     notificationStore.addSuccessNotification('Slaptažodis sėkmingai pakeistas!')
     userStore.clearUser()
     router.push('/login')

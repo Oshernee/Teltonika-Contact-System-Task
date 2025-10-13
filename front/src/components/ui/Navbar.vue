@@ -119,6 +119,7 @@ watch(
     }
     isLoading.value = true
     if (
+      route.path === '/change-password' ||
       route.path === '/login' ||
       route.path === '/password-recovery' ||
       route.path.startsWith('/confirm-password-reset/')

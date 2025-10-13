@@ -74,12 +74,13 @@
 
 <script setup lang="ts">
 import type { User } from '@/types/users'
-import { updateUser } from '@/services/userService'
+import { updateUser, isEmailTaken } from '@/services/userService'
 import { useNotificationStore } from '@/stores/Notification'
 import { validateEmail, validateUserName } from '@/utils/validateInputs'
 import { handleImageUpload } from '@/utils/photoUtils'
 import { useUserStore } from '@/stores/Auth'
 import Email from '@/assets/Email.svg'
+import { useRouter } from 'vue-router'
 
 import { ref, reactive } from 'vue'
 
@@ -87,6 +88,7 @@ const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
+const router = useRouter()
 
 const props = defineProps<{
   user: User
@@ -152,9 +154,17 @@ const handleUpdate = async () => {
   }
 
   try {
+    const emailStatus = await isEmailTaken(trimWhiteSpace(email.value))
+    if (emailStatus) {
+      errorMessages.email = 'Šis el. paštas jau yra užregistruotas'
+      sending.value = false
+      return
+    }
+
     await userStore.refreshUser()
     if (userStore.permissions?.edit_permissions !== true) {
       notificationStore.addErrorNotification('Jūs neturite teisių redaguoti paskyrą', '')
+      router.push('/')
       emit('close')
       sending.value = false
       return
@@ -163,13 +173,19 @@ const handleUpdate = async () => {
     await updateUser(props.user.id, {
       name: trimmedName,
       email: trimmedEmail,
+      avatar: image.value,
     })
 
     notificationStore.addSuccessNotification('Paskyra sėkmingai atnaujinta')
     emit('update')
     emit('close')
   } catch (error) {
-    notificationStore.addErrorNotification('Įvyko klaida atnaujinant paskyrą', error)
+    if (error.status === 400) {
+      errorMessages.email = 'Šis el. paštas jau yra užregistruotas'
+      notificationStore.addErrorNotification('Neteisingi duomenys', error)
+    } else {
+      notificationStore.addErrorNotification('Įvyko klaida redaguojant paskyrą', error)
+    }
   } finally {
     sending.value = false
   }

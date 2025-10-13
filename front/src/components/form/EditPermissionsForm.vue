@@ -57,6 +57,7 @@ import type { UserPermission } from '@/types/user_permissions'
 import { updateUserPermissions } from '@/services/userService'
 import { useNotificationStore } from '@/stores/Notification'
 import { useUserStore } from '@/stores/Auth'
+import { useRouter } from 'vue-router'
 
 import Checkbox from '@/components/ui/Checkbox.vue'
 import { ref } from 'vue'
@@ -65,6 +66,7 @@ const emit = defineEmits(['update', 'close', 'updateCurrent', 'delete'])
 
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
+const router = useRouter()
 
 const props = defineProps<{
   user: User
@@ -85,17 +87,18 @@ const permissions = ref({
 const handleUpdate = async () => {
   await userStore.refreshUser()
   if (userStore.permissions?.edit_permissions !== true) {
-    notificationStore.addErrorNotification('Jūs neturite teisių redaguoti paskyrą', '')
+    notificationStore.addErrorNotification('Jūs neturite teisių redaguoti paskyros leidimų', '')
+    router.push('/')
     emit('close')
     return
   }
   try {
     await updateUserPermissions(props.user.permissions_id, permissions.value)
-    notificationStore.addSuccessNotification('Paskyra sėkmingai atnaujinta')
+    notificationStore.addSuccessNotification('Paskyros leidimai sėkmingai atnaujinti')
     emit('update')
     emit('close')
   } catch (error) {
-    notificationStore.addErrorNotification('Įvyko klaida atnaujinant paskyrą', error)
+    notificationStore.addErrorNotification('Įvyko klaida atnaujinant paskyros leidimus', error)
   }
 }
 </script>

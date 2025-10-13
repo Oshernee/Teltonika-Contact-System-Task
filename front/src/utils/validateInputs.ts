@@ -7,6 +7,7 @@ export function validateEmail(email: string): string {
 }
 
 export function validateUserName(username: string): string {
+  if (!username) return ''
   if (username.length < 3) return 'Vartotojo vardas turi būti bent 3 simbolių ilgio'
   if (username.length > 50) return 'Vartotojo vardas negali būti ilgesnis nei 50 simbolių'
   const usernameRegex = /^[a-zA-Z0-9._-]+$/
