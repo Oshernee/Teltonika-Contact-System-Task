@@ -122,12 +122,6 @@ export const addUser = async (userData: Partial<User>, permissionData: Partial<U
       first_login: true,
     })
 
-    await pb.collection('users').requestVerification(userData.email || '', {
-      name: userData.name,
-      email: userData.email,
-      password: password,
-    })
-
     return password
   } catch (error) {
     throw error
