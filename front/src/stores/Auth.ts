@@ -76,6 +76,7 @@ export const useUserStore = defineStore('user', () => {
 
   const savePermissions = (perms: UserPermission) => {
     permissions.value = perms
+    console.log('Permissions saved:', permissions.value)
   }
 
   return {
