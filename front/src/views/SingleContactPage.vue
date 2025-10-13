@@ -1,4 +1,5 @@
 <template>
+  <LoadingCard v-if="loading" class="w-full h-full justify-center items-center" />
   <div
     v-if="employee"
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start"
@@ -6,10 +7,10 @@
     <text class="text-[56px] text-text font-thin">Detalesnė kontaktų informacija</text>
     <ReturnButton />
     <div class="flex flex-row items-center py-8 px-4">
-      <div class="w-24 h-24 rounded-full flex items-center justify-center mr-3">
+      <div v-if="!loading" class="w-24 h-24 rounded-full flex items-center justify-center mr-3">
         <img
           v-if="employee.photo"
-          :src="getPhotoUrl(employee.photo)"
+          :src="photo"
           :alt="employee.name + ' ' + employee.surname"
           class="w-24 h-24 rounded-full object-cover"
         />
@@ -26,7 +27,7 @@
     </div>
     <ContactInformationCard :employee="employee" />
   </div>
-  <div v-else class="flex flex-col justify-center items-center pt-48">
+  <div v-if="!loading && !employee" class="flex flex-col justify-center items-center pt-48">
     <UnableToLoadCard />
   </div>
 </template>
@@ -47,9 +48,12 @@ import type { Employee } from '@/types/employees'
 import ReturnButton from '@/components/ui/ReturnButton.vue'
 import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import ContactInformationCard from '@/components/cards/ContactInformationCard.vue'
+import LoadingCard from '@/components/cards/LoadingCard.vue'
 
 const employee = ref<Employee | null>(null)
 const notificationStore = useNotificationStore()
+const loading = ref(true)
+const photo = ref<string | undefined>(undefined)
 
 const router = useRouter()
 
@@ -59,6 +63,15 @@ const props = defineProps<{
 
 onMounted(async () => {
   employee.value = await fetchEmployeeById(props.id)
+  if (!employee.value?.photo) {
+    loading.value = false
+    return
+  }
+  photo.value = await getPhotoUrl(
+    employee.value?.photo,
+    __EMPLOYEE_IMAGE_API__ + employee.value?.id
+  )
+  loading.value = false
 })
 
 const fetchEmployeeById = async (id: string) => {

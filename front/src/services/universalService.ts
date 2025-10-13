@@ -1,4 +1,5 @@
 import type { FilterLevel } from '@/types/filter'
+import axios from 'axios'
 import pb from '@/services/globalInstance'
 
 export async function getIdByName(collectionName: string, name: string): Promise<string> {
@@ -17,16 +18,29 @@ export async function getIdByName(collectionName: string, name: string): Promise
 
 export async function getLowerFilteredItems(filterLevel: FilterLevel, id: string): Promise<any[]> {
   try {
-    const links = await pb
-      .collection(filterLevel.linkCollection)
-      .getFullList(200, { filter: `${filterLevel.linkField}="${id}"`, sort: '-created' })
-    const targetData = await pb
-      .collection(filterLevel.targetCollection)
-      .getFullList(200, { sort: '-created' })
-    const filteredItems = targetData.filter((item) =>
-      links.some((link) => link[filterLevel.targetField] === item.id)
-    )
+    // 'base_url/api/collections/{filterLevel.targetCollection}/records/{id}?expand={filterLevel.linkCollection}({filterLevel.linkField}).{filterLevel.targetField}'
+
+    const filteredItems = await axios
+      .get(
+        `base_url/api/collections/${filterLevel.targetCollection}/records/${id}?expand=${filterLevel.linkCollection}(${filterLevel.linkField}).${filterLevel.targetField}`
+      )
+      .then((response) => {
+        if (!response.data.expand) {
+          return []
+        }
+        return response.data.expand[`${filterLevel.linkCollection}(${filterLevel.linkField})`].map(
+          (item: any) => item.expand[filterLevel.targetField]
+        )
+      })
     return filteredItems
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteRecordById(collectionName: string, id: string): Promise<void> {
+  try {
+    await pb.collection(collectionName).delete(id)
   } catch (error) {
     throw error
   }

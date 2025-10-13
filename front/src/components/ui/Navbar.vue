@@ -1,6 +1,6 @@
 <template>
   <nav v-if="!isInLogin" class="top-0 left-0 right-0 bg-secondary h-28 text-2xl">
-    <div v-if="!loginStatus && !isLoading" class="flex items-center justify-end h-full mr-12">
+    <div v-if="!isLoggedIn && !isLoading" class="flex items-center justify-end h-full mr-12">
       <RouterLink to="/login" class="no-underline">
         <button
           class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
@@ -10,7 +10,7 @@
       </RouterLink>
     </div>
     <div
-      v-else-if="loginStatus && !isLoading"
+      v-else-if="isLoggedIn && !isLoading"
       class="flex items-center justify-center h-full mr-12 gap-20"
     >
       <RouterLink to="/" class="no-underline">
@@ -96,8 +96,6 @@ import { computed, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/Auth'
 import { getPhotoUrl } from '@/utils/photoUtils'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
-
 import NavbarIcon from '@/assets/NavbarIcon.svg'
 
 const userStore = useUserStore()
@@ -106,13 +104,17 @@ const route = useRoute()
 const router = useRouter()
 
 const isInLogin = ref(false)
-const loginStatus = computed(() => userStore.accessToken !== null)
+const isLoggedIn = ref(false)
 const isLoading = ref(true)
 const isAdmin = ref(false)
 
 watch(
   () => route.path,
   async () => {
+    isLoggedIn.value = await userStore.isLoggedIn()
+    if (!isLoggedIn.value) {
+      await userStore.refreshUser()
+    }
     isLoading.value = true
     if (
       route.path === '/login' ||
@@ -132,7 +134,7 @@ watch(
 const isDropdownOpen = ref(false)
 
 const imageAPI = computed(() => {
-  return DEFAULT_CONSTANTS.USER_IMAGE_API + userStore.user?.id
+  return __USER_IMAGE_API__ + userStore.user?.id
 })
 
 const toggleDropdown = (state: boolean) => {
@@ -144,6 +146,7 @@ const handleProfile = () => {
 }
 
 const handleLogout = () => {
+  isLoggedIn.value = false
   userStore.clearUser()
   router.push('/')
   isDropdownOpen.value = false
