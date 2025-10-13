@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[500px] h-[750px] p-6 space-y-6 flex flex-col items-center relative">
+  <div class="w-[450px] h-[650px] p-6 space-y-6 flex flex-col items-center relative">
     <div>
       <h2 class="text-3xl">Redaguoti paskyros teises:</h2>
     </div>

@@ -7,11 +7,11 @@
       >
         <button
           v-if="!showClose"
-          class="absolute top-4 right-4 text-white text-3xl bg-secondary rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-80"
+          class="absolute top-4 right-4 text-white text-3xl bg-secondary rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-80 cursor-pointer z-10"
           @click="close()"
           aria-label="Close modal"
         >
-          ×
+          <span class="leading-none pb-1">×</span>
         </button>
         <section class="p-6 text-black">
           <component
@@ -44,7 +44,7 @@ const emit = defineEmits<{
   update: []
   cancel: []
   delete: []
-  updateCurrent: []
+  updateCurrent: [password: string]
   modalEvent: [eventName: string, data: any]
 }>()
 
@@ -66,8 +66,8 @@ const updatePages = () => {
   emit('update')
 }
 
-const updateCurrent = () => {
-  emit('updateCurrent')
+const updateCurrent = (password: string) => {
+  emit('updateCurrent', password)
 }
 
 const redirectToMain = () => {

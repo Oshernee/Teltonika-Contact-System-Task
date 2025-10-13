@@ -10,6 +10,7 @@ import StructureManagementPage from '@/views/StructureManagementPage.vue'
 import SingleContactPage from '@/views/SingleContactPage.vue'
 import RecoveryPage from '@/views/RecoveryPage.vue'
 import PasswordResetPage from '@/views/PasswordResetPage.vue'
+import ChangePassword from '@/views/ChangePassword.vue'
 
 import { useUserStore } from '@/stores/Auth'
 
@@ -91,6 +92,11 @@ const routes = [
     component: SingleContactPage,
   },
   {
+    path: '/change-password',
+    name: 'ChangePassword',
+    component: ChangePassword,
+  },
+  {
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFound,
@@ -115,6 +121,7 @@ router.beforeEach(async (to, from, next) => {
     'SingleContact',
     'ConfirmPasswordReset',
     'NotFound',
+    'ChangePassword',
   ]
 
   if (to.name === 'ConfirmPasswordReset' && from.name !== undefined) {

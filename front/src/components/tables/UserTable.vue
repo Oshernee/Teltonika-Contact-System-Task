@@ -35,7 +35,7 @@
           </td>
           <td
             class="px-6 py-4 flex gap-2 w-full justify-center"
-            v-if="props.permissions.edit || props.permissions.delete"
+            v-if="(props.permissions.edit || props.permissions.delete) && user.id !== userId"
           >
             <button
               v-if="props.permissions.edit"
@@ -62,6 +62,12 @@
               Ištrinti
             </button>
           </td>
+          <td
+            v-else
+            class="px-6 py-4 whitespace-nowrap text-md text-center text-gray-900 font-light"
+          >
+            Jūs negalite modifikuoti savo paskyros.
+          </td>
         </tr>
       </tbody>
     </table>
@@ -69,8 +75,12 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { computed, defineProps } from 'vue'
 import type { User } from '@/types/users'
+import { useUserStore } from '@/stores/Auth'
+
+const userStore = useUserStore()
+const userId = computed(() => userStore.user?.id)
 
 const buttonClass =
   'h-12 mr-2 rounded-full justify-center items-center flex text-white hover:opacity-90 text-lg whitespace-nowrap'

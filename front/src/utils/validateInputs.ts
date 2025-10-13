@@ -6,6 +6,15 @@ export function validateEmail(email: string): string {
   return ''
 }
 
+export function validateUserName(username: string): string {
+  if (username.length < 3) return 'Vartotojo vardas turi būti bent 3 simbolių ilgio'
+  if (username.length > 50) return 'Vartotojo vardas negali būti ilgesnis nei 50 simbolių'
+  const usernameRegex = /^[a-zA-Z0-9._-]+$/
+  if (!usernameRegex.test(username))
+    return 'Vartotojo vardas gali turėti tik raides, skaičius, taškus, brūkšnelius ir pabraukimus'
+  return ''
+}
+
 export function validatePassword(password: string): string {
   if (!password) return 'Slaptažodis yra privalomas'
   if (password.length < 8) return 'Slaptažodis turi būti bent 8 simbolių ilgio'

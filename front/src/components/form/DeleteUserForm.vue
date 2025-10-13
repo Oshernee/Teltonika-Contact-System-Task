@@ -46,11 +46,7 @@ const handleDelete = async () => {
     return
   }
   try {
-    const permissionId = userStore.getPermissionId()
-    if (!permissionId) {
-      notificationStore.addErrorNotification('Nepavyko gauti leidimų ID', '')
-      return
-    }
+    const permissionId = props.user.permissions_id
 
     await deleteUser(props.user.id, permissionId)
     notificationStore.addSuccessNotification('Paskyra sėkmingai ištrinta')

@@ -68,6 +68,41 @@ export const getUsers = async (currentPage: number, itemsPerPage: number): Promi
   }
 }
 
+export const addUser = async (userData: Partial<User>, permissionData: Partial<UserPermission>) => {
+  try {
+    const newPermissions = await pb.collection('user_permissions').create<UserPermission>({
+      edit_employees: permissionData.edit_employees || false,
+      delete_employees: permissionData.delete_employees || false,
+      edit_companies: permissionData.edit_companies || false,
+      delete_companies: permissionData.delete_companies || false,
+      edit_offices: permissionData.edit_offices || false,
+      delete_offices: permissionData.delete_offices || false,
+      edit_structure: permissionData.edit_structure || false,
+      delete_structure: permissionData.delete_structure || false,
+      read_permissions: true,
+      edit_permissions: false,
+      delete_permissions: false,
+    })
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let password = ''
+    for (let i = 0; i < 16; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+
+    await pb.collection('users').create({
+      ...userData,
+      password: password,
+      passwordConfirm: password,
+      permissions_id: newPermissions.id,
+      first_login: true,
+    })
+    return password
+  } catch (error) {
+    throw error
+  }
+}
+
 export const updateUser = async (id: string, userData: Partial<User>) => {
   try {
     const updatedUser = await pb.collection('users').update<User>(id, userData)

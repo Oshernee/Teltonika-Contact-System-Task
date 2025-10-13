@@ -36,7 +36,7 @@
   <div v-else class="w-full h-full flex justify-center items-center">
     <LoadingCard class="w-full h-full justify-center items-center" />
   </div>
-  <Modal ref="modalRef" @update="fetchUsers" />
+  <Modal ref="modalRef" @update="fetchUsers" @update-current="handleTempPasswordModal" />
 </template>
 
 <script setup lang="ts">
@@ -52,6 +52,7 @@ import { useUserStore } from '@/stores/Auth'
 import { useNotificationStore } from '@/stores/Notification'
 
 import AddUserForm from '@/components/form/AddUserForm.vue'
+import TempPasswordForm from '@/components/form/TempPasswordForm.vue'
 import EditUserForm from '@/components/form/EditUserForm.vue'
 import EditPermissionsForm from '@/components/form/EditPermissionsForm.vue'
 import DeleteUserForm from '@/components/form/DeleteUserForm.vue'
@@ -106,6 +107,10 @@ function handleAddModal() {
   handleOpenModal(AddUserForm, permissions.value.edit_permissions, {})
 }
 
+function handleTempPasswordModal(password: string) {
+  handleOpenModal(TempPasswordForm, true, { password })
+}
+
 function handleUserEditModal(user: User) {
   handleOpenModal(EditUserForm, permissions.value.edit_permissions, { user })
 }
@@ -126,7 +131,7 @@ const handleOpenModal = (
   ViewComponent: any,
   permissions: boolean,
   props: {},
-  isDelete?: boolean
+  isDelete?: boolean,
 ) => {
   if (!permissions) {
     notificationStore.addInfoNotification(DEFAULT_CONSTANTS.UNAUTHORIZED_MESSAGE)
