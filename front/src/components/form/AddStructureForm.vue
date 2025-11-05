@@ -8,6 +8,7 @@
       <div>
         <h1 class="text-xl mb-2">{{ props.constants.type_genitive }} pavadinimas:</h1>
         <input
+          maxlength="255"
           :placeholder="'Įveskite ' + props.constants.type_genitive.toLowerCase() + ' pavadinimą'"
           type="text"
           class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -75,7 +76,7 @@ const props = defineProps<{
 }>()
 
 const validateFields = async () => {
-  nameError.value = validateStructureName(name)
+  nameError.value = validateStructureName(name.trim())
   if (nameError.value) {
     return false
   }

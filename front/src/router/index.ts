@@ -139,7 +139,17 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  if (to.name === 'admin' && isAuthenticated) {
+  if (from.name === 'Login' && to.name !== 'Home' && to.name !== 'HomeAlias') {
+    next({ name: 'Home' })
+    return
+  }
+
+  if (!isAuthenticated.value && !publicRoutes.includes(to.name as string)) {
+    next({ name: 'Login' })
+    return
+  }
+
+  if (to.name === 'Admin' && isAuthenticated) {
     try {
       const userStore = useUserStore()
       if (userStore.user?.name !== 'Admin') {

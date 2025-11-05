@@ -96,8 +96,6 @@ import { computed, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/Auth'
 import { getPhotoUrl } from '@/utils/photoUtils'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
-
 import NavbarIcon from '@/assets/NavbarIcon.svg'
 
 const userStore = useUserStore()
@@ -110,26 +108,36 @@ const isLoggedIn = ref(false)
 const isLoading = ref(true)
 const isAdmin = ref(false)
 
+let isRefreshing = false
+
 watch(
   () => route.path,
   async () => {
-    isLoggedIn.value = await userStore.isLoggedIn()
-    if (!isLoggedIn.value) {
-      await userStore.refreshUser()
+    if (isRefreshing) {
+      return
     }
-    isLoading.value = true
-    if (
-      route.path === '/change-password' ||
-      route.path === '/login' ||
-      route.path === '/password-recovery' ||
-      route.path.startsWith('/confirm-password-reset/')
-    ) {
-      isInLogin.value = true
-    } else {
-      isInLogin.value = false
+
+    try {
+      isRefreshing = true
+      isLoading.value = true
+
+      isLoggedIn.value = await userStore.isLoggedIn()
+
+      if (
+        route.path === '/login' ||
+        route.path === '/password-recovery' ||
+        route.path.startsWith('/confirm-password-reset/')
+      ) {
+        isInLogin.value = true
+      } else {
+        isInLogin.value = false
+      }
+
+      isAdmin.value = userStore.isAdmin()
+    } finally {
+      isLoading.value = false
+      isRefreshing = false
     }
-    isAdmin.value = userStore.isAdmin()
-    isLoading.value = false
   },
   { immediate: true }
 )
@@ -137,7 +145,7 @@ watch(
 const isDropdownOpen = ref(false)
 
 const imageAPI = computed(() => {
-  return DEFAULT_CONSTANTS.USER_IMAGE_API + userStore.user?.id
+  return __USER_IMAGE_API__ + userStore.user?.id
 })
 
 const toggleDropdown = (state: boolean) => {

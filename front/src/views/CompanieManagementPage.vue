@@ -1,4 +1,5 @@
 <template>
+  <LoadingCard v-if="loading" class="w-full h-full justify-center items-center" />
   <div
     v-if="!loading"
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start gap-4 min-h-[85vh]"
@@ -41,8 +42,8 @@
       class="w-full pb-8"
     />
   </div>
-  <div v-else class="w-full h-full flex justify-center items-center">
-    <LoadingCard class="w-full h-full justify-center items-center" />
+  <div v-if="!loading && !companies.length" class="flex flex-col justify-center items-center pt-48">
+    <UnableToLoadCard />
   </div>
   <Modal ref="modalRef" @update="fetchCompanies" />
 </template>
@@ -52,7 +53,6 @@ import { ref, onMounted, computed } from 'vue'
 
 import { getStructures } from '@/services/universalService'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 import { STRUCTURE_CONSTANTS } from '@/constants/structureConstants'
 import { FILTER_LEVELS } from '@/constants/filteringConstants'
 
@@ -68,13 +68,14 @@ import AddCompanyForm from '@/components/form/AddCompanyForm.vue'
 import EditCompanyForm from '@/components/form/EditCompanyForm.vue'
 import DeleteCompanyForm from '@/components/form/DeleteCompanyForm.vue'
 import LoadingCard from '@/components/ui/LoadingCard.vue'
+import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
 import CompaniesTable from '@/components/tables/CompaniesTable.vue'
 
 const companies = ref<Structure[]>([])
 const totalCompanies = ref(0)
 const companiesPerPage = ref(4)
-const currentPage = ref(DEFAULT_CONSTANTS.DEFAULT_CURRENT_PAGE)
+const currentPage = ref(__DEFAULT_CURRENT_PAGE__)
 const constants = STRUCTURE_CONSTANTS.companies
 const loading = ref(true)
 const notificationStore = useNotificationStore()
@@ -137,7 +138,7 @@ const handleOpenModal = (
   isDelete?: boolean
 ) => {
   if (!permissions) {
-    notificationStore.addInfoNotification(DEFAULT_CONSTANTS.UNAUTHORIZED_MESSAGE)
+    notificationStore.addInfoNotification('Jūs neturite leidimo atlikti šį veiksmą')
     return
   }
   modalRef.value.open(ViewComponent, props, isDelete || false)
