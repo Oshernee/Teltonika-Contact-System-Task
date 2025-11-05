@@ -56,6 +56,7 @@ export const useUserStore = defineStore('user', () => {
   const refreshUser = async () => {
     const pocketbase_auth = localStorage.getItem('pocketbase_auth')
     if (!pocketbase_auth) {
+      clearUser()
       return
     }
 
