@@ -52,6 +52,16 @@ export function validatePosition(position: string): string {
   if (position.length > 100) return 'Pozicija negali būti ilgesnė nei 100 simbolių'
   const positionRegex = /^[a-zA-ZÀ-ž\s'-.]+$/
   if (!positionRegex.test(position))
-    return 'Pozicijoje gali būti tik raidės, tarpai, apostrofai ir brūkšneliai'
+    return 'Pozicijoje gali būti tik raidės, tarpai, apostrofai, brūkšneliai ir taškai'
+  return ''
+}
+
+export function validateStructureName(name: string): string {
+  if (!name) return 'Pavadinimas yra privalomas'
+  if (name.length < 2) return 'Pavadinimas turi būti bent 2 simbolių ilgio'
+  if (name.length > 255) return 'Pavadinimas negali būti ilgesnis nei 255 simboliai'
+  const nameRegex = /^[a-zA-ZÀ-ž0-9\s'-.]+$/
+  if (!nameRegex.test(name))
+    return 'Pavadinime gali būti tik raidės, skaičiai, tarpai, apostrofai, brūkšneliai ir taškai'
   return ''
 }

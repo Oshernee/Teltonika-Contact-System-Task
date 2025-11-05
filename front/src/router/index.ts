@@ -61,8 +61,6 @@ const routes = [
   },
   {
     path: '/structures',
-    //name: 'Structures',
-    //component: StructureManagementPage,
     children: [
       {
         path: 'offices',
