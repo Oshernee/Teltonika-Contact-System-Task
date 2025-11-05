@@ -7,4 +7,5 @@ export interface User {
   avatar?: File | null
   created_at: string
   updated_at: string
+  first_login?: boolean
 }

@@ -80,6 +80,10 @@ export const useUserStore = defineStore('user', () => {
     console.log('Permissions saved:', permissions.value)
   }
 
+  const getPermissionId = () => {
+    return permissions.value?.id
+  }
+
   return {
     setUser,
     isLoggedIn,
@@ -88,6 +92,7 @@ export const useUserStore = defineStore('user', () => {
     savePermissions,
     refreshUser,
     isAdmin,
+    getPermissionId,
     user,
     accessToken,
     permissions,

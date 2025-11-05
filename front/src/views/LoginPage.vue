@@ -122,6 +122,10 @@ const Login = async (email: string, password: string) => {
     userStore.savePermissions(permissions)
     subscribeToPermissionChanges(user.permissions_id)
     notificationStore.addSuccessNotification('Sėkmingai prisijungta')
+    if (user.first_login) {
+      router.push('/change-password')
+      return
+    }
     router.push('/')
   } catch (error) {
     notificationStore.addErrorNotification('Prisijungti nepavyko, bandykite dar kartą', error)
