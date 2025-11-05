@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative"
+    class="relative min-w-[10vh]"
     :disabled="props.isDisabled"
     :class="{ 'opacity-75 pointer-events-none': props.isDisabled }"
   >
@@ -9,7 +9,7 @@
       @click="toggleDropdown"
       class="h-[36px] w-full px-4 rounded-lg bg-white border border-gray-300 flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
-      <span class="text-text">{{ props.selected }}</span>
+      <span class="text-text truncate">{{ props.selected }}</span>
       <svg
         class="w-4 h-4 text-gray-500 transition-transform"
         :class="{ 'rotate-180': showDropdown }"
@@ -54,6 +54,7 @@ const props = defineProps<{
     id: string
     name: string
   }[]
+  isNecessary?: boolean
 }>()
 
 const emit = defineEmits<{

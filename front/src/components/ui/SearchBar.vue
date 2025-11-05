@@ -9,7 +9,7 @@
       <input
         class="input w-[574px] h-[56px] pl-10 pr-4 rounded-lg bg-background border border-gray-300 text-text placeholder-gray-500"
         type="text"
-        placeholder="Search"
+        placeholder="Paieška"
         v-on:input="handleInput"
       />
     </div>
@@ -41,6 +41,13 @@
       <img v-if="isCard" :src="toCard" alt="Search" />
       <img v-else-if="!isCard" :src="toTable" alt="Search" />
     </button>
+    <button
+      v-if="props.permissions"
+      class="w-[56px] h-[56px] bg-accent rounded-lg flex items-center justify-center hover:bg-accent-dark"
+      @click="emit('openAddModal')"
+    >
+      <img :src="Add" alt="Add" class="w-8 h-8" />
+    </button>
   </div>
 </template>
 
@@ -48,19 +55,23 @@
 import { ref } from 'vue'
 import debounce from 'debounce'
 
-import { DEFAULT_CONSTANTS } from '@/constants/defaultConstants'
 import { UNALLOWED_CHARACTERS } from '@/constants/unallowedCharacters'
 
 import searchIcon from '@/assets/Search.svg'
 import paginationCount from '@/assets/PaginationCount.svg'
 import toCard from '@/assets/ToCard.svg'
 import toTable from '@/assets/ToTable.svg'
+import Add from '@/assets/Add.svg'
 
 const showDropdown = ref(false)
 const selectedCount = ref<number | string | null>(null)
 const isCard = ref(true)
 
-const emit = defineEmits(['changeView', 'changeCount', 'input-changed'])
+const props = defineProps<{
+  permissions?: boolean
+}>()
+
+const emit = defineEmits(['changeView', 'changeCount', 'input-changed', 'openAddModal'])
 
 const debouncedEmit = debounce((value: string) => {
   emit('input-changed', value)
@@ -91,7 +102,7 @@ const selectItemCountPerPage = (item: number | string) => {
   if (item === 'ALL') {
     selectedCount.value = 'ALL'
     showDropdown.value = false
-    emit('changeCount', DEFAULT_CONSTANTS.SHOW_ALL_EMPLOYEES)
+    emit('changeCount', __SHOW_ALL_EMPLOYEES__)
     return
   }
   selectedCount.value = item

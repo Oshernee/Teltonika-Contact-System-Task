@@ -112,48 +112,26 @@ onMounted(() => {
 })
 
 // Fetch functions for each filter level
+const fetchData = async (
+  id: string,
+  level: string,
+  itemSelected: TargetKey,
+  dataKey: TargetKey
+) => {
+  try {
+    const data = await getLowerFilteredItems(FILTER_LEVELS[level], id)
+    items[dataKey] = data
+  } catch (error) {
+    notificationStore.addErrorNotification(ERROR_MESSAGES[itemSelected], error)
+  }
+}
+
 const fetchCompanies = async () => {
   try {
     const companiesData = await getCompanies()
     items.company = companiesData
   } catch (error) {
     notificationStore.addErrorNotification(ERROR_MESSAGES.company, error)
-  }
-}
-
-const fetchOffices = async (companyId: string) => {
-  try {
-    const officesData = await getLowerFilteredItems(FILTER_LEVELS.offices, companyId)
-    items.office = officesData
-  } catch (error) {
-    notificationStore.addErrorNotification(ERROR_MESSAGES.office, error)
-  }
-}
-
-const fetchDivisions = async (officeId: string) => {
-  try {
-    const divisionsData = await getLowerFilteredItems(FILTER_LEVELS.divisions, officeId)
-    items.division = divisionsData
-  } catch (error) {
-    notificationStore.addErrorNotification(ERROR_MESSAGES.division, error)
-  }
-}
-
-const fetchDepartments = async (divisionId: string) => {
-  try {
-    const departmentsData = await getLowerFilteredItems(FILTER_LEVELS.departments, divisionId)
-    items.department = departmentsData
-  } catch (error) {
-    notificationStore.addErrorNotification(ERROR_MESSAGES.department, error)
-  }
-}
-
-const fetchGroups = async (departmentId: string) => {
-  try {
-    const groupsData = await getLowerFilteredItems(FILTER_LEVELS.groups, departmentId)
-    items.group = groupsData
-  } catch (error) {
-    notificationStore.addErrorNotification(ERROR_MESSAGES.group, error)
   }
 }
 
@@ -185,7 +163,7 @@ const handleFilterSelection = (
 const handleCompanySelected = (id: string, name: string) => {
   const success = handleFilterSelection(id, name, 'company', 'office')
   if (success && id !== '') {
-    fetchOffices(id)
+    fetchData(id, 'offices', 'company', 'office')
   }
 
   handleOfficeSelected('', PLACEHOLDERS.office)
@@ -194,7 +172,7 @@ const handleCompanySelected = (id: string, name: string) => {
 const handleOfficeSelected = (id: string, name: string) => {
   const success = handleFilterSelection(id, name, 'office', 'division')
   if (success && id !== '') {
-    fetchDivisions(id)
+    fetchData(id, 'divisions', 'office', 'division')
   }
 
   handleDivisionSelected('', PLACEHOLDERS.division)
@@ -203,7 +181,7 @@ const handleOfficeSelected = (id: string, name: string) => {
 const handleDivisionSelected = (id: string, name: string) => {
   const success = handleFilterSelection(id, name, 'division', 'department')
   if (success && id !== '') {
-    fetchDepartments(id)
+    fetchData(id, 'departments', 'division', 'department')
   }
 
   handleDepartmentSelected('', PLACEHOLDERS.department)
@@ -212,7 +190,7 @@ const handleDivisionSelected = (id: string, name: string) => {
 const handleDepartmentSelected = (id: string, name: string) => {
   const success = handleFilterSelection(id, name, 'department', 'group')
   if (success && id !== '') {
-    fetchGroups(id)
+    fetchData(id, 'groups', 'department', 'group')
   }
 
   handleGroupSelected('', PLACEHOLDERS.group)

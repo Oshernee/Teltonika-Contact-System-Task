@@ -17,9 +17,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const clearUser = () => {
-    unsubscribeFromPermissionChanges()
+    unsubscribeFromPermissionChanges(user.value?.permissions_id || '')
     user.value = null
     accessToken.value = null
+    permissions.value = undefined
     localStorage.removeItem('pocketbase_auth')
   }
 
@@ -54,18 +55,24 @@ export const useUserStore = defineStore('user', () => {
 
   const refreshUser = async () => {
     const pocketbase_auth = localStorage.getItem('pocketbase_auth')
-    if (pocketbase_auth) {
-      try {
-        const { user, token: newToken } = await refreshUserInformation()
-        setUser(user, newToken)
-        return
-      } catch (error) {
+    if (!pocketbase_auth) {
+      clearUser()
+      return
+    }
+
+    try {
+      const { user, token: newToken, permissions: newPermissions } = await refreshUserInformation()
+      setUser(user, newToken)
+      savePermissions(newPermissions)
+      return
+    } catch (error) {
+      console.log('Error refreshing user information:')
+      console.log(error)
+
+      if (error?.status === 401 || error?.status === 403) {
         clearUser()
       }
-    } else {
-      clearUser()
     }
-    return
   }
 
   const savePermissions = (perms: UserPermission) => {
