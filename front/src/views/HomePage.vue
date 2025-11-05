@@ -1,4 +1,5 @@
 <template>
+  <LoadingCard v-if="loading" class="w-full h-full justify-center items-center" />
   <div
     v-if="!loading"
     class="mx-16 my-4 bg-white text-left font-extralight flex flex-col items-start gap-4"
@@ -44,8 +45,8 @@
       :total-pages="Math.ceil(totalEmployees / employeesPerPage)"
     />
   </div>
-  <div v-else class="w-full h-full flex justify-center items-center">
-    <LoadingCard class="w-full h-full justify-center items-center" />
+  <div v-if="!loading && !employees.length" class="flex flex-col justify-center items-center pt-48">
+    <UnableToLoadCard />
   </div>
   <Modal ref="modalRef" @update="fetchEmployees" />
 </template>
@@ -54,8 +55,6 @@
 import { ref, onMounted, computed } from 'vue'
 
 import { getEmployees } from '@/services/employeeService'
-
-import { MESSAGE_CONSTANTS } from '@/constants/messageConstants'
 
 import SearchBar from '@/components/ui/SearchBar.vue'
 import Filtering from '@/components/ui/Filtering.vue'
@@ -66,7 +65,8 @@ import Modal from '@/components/ui/Modal.vue'
 import AddEmployeeForm from '@/components/form/AddEmployeeForm.vue'
 import EditEmployeeForm from '@/components/form/EditEmployeeForm.vue'
 import DeleteEmployeeForm from '@/components/form/DeleteEmployeeForm.vue'
-import LoadingCard from '@/components/cards/LoadingCard.vue'
+import LoadingCard from '@/components/ui/LoadingCard.vue'
+import UnableToLoadCard from '@/components/cards/UnableToLoadCard.vue'
 
 import { useUserStore } from '@/stores/Auth'
 import { useNotificationStore } from '@/stores/Notification'
@@ -162,7 +162,7 @@ const handleOpenModal = (
   isDelete?: boolean
 ) => {
   if (!permissions) {
-    notificationStore.addInfoNotification(MESSAGE_CONSTANTS.UNAUTHORIZED_MESSAGE)
+    notificationStore.addInfoNotification('Jūs neturite leidimo atlikti šį veiksmą')
     return
   }
   modalRef.value.open(ViewComponent, props, isDelete || false)

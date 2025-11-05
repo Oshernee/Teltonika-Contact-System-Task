@@ -14,6 +14,7 @@
                 <img :src="Password" class="w-6 h-6 text-gray-400" alt="Password" />
               </div>
               <input
+                maxlength="72"
                 class="w-full pl-10 pr-10 py-3 bg-gray-100 border-0 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500"
                 :type="showPassword[0] ? 'text' : 'password'"
                 id="password-0"
@@ -44,6 +45,7 @@
                 <img :src="Password" class="w-6 h-6 text-gray-400" alt="Password" />
               </div>
               <input
+                maxlength="72"
                 class="w-full pl-10 pr-10 py-3 bg-gray-100 border-0 rounded text-gray-700 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500"
                 :type="showPassword[1] ? 'text' : 'password'"
                 id="password-1"

@@ -5,7 +5,7 @@ export const subscribeToPermissionChanges = (id: string) => {
   const userStore = useUserStore()
   pb.collection('user_permissions').subscribe(id, (e) => {
     if (e.action === 'update') {
-      userStore.savePermissions(e.record.permissions)
+      userStore.savePermissions(e.record)
     }
   })
 }
