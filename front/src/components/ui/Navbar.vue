@@ -1,0 +1,165 @@
+<template>
+  <nav v-if="!isInLogin" class="top-0 left-0 right-0 bg-secondary h-28 text-2xl">
+    <div v-if="!isLoggedIn && !isLoading" class="flex items-center justify-end h-full mr-12">
+      <RouterLink to="/login" class="no-underline">
+        <button
+          class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
+        >
+          Prisijungti
+        </button>
+      </RouterLink>
+    </div>
+    <div
+      v-else-if="isLoggedIn && !isLoading"
+      class="flex items-center justify-center h-full mr-12 gap-20"
+    >
+      <RouterLink to="/" class="no-underline">
+        <button
+          class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
+        >
+          Kontaktai
+        </button>
+      </RouterLink>
+      <RouterLink to="/companies" class="no-underline">
+        <button
+          class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
+        >
+          Įmonės
+        </button>
+      </RouterLink>
+      <RouterLink to="/structures/offices" class="no-underline">
+        <button
+          class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
+        >
+          Struktūra
+        </button>
+      </RouterLink>
+      <RouterLink v-if="isAdmin && !isLoading" to="/admin" class="no-underline">
+        <button
+          class="px-4 py-2 text-white rounded hover:bg-accent transition-colors font-semibold"
+        >
+          Paskyros
+        </button>
+      </RouterLink>
+      <div
+        class="absolute right-4 top-6 justify-end h-[166px] w-[192px]"
+        @mouseleave="toggleDropdown(false)"
+      >
+        <div class="absolute justify-end h-[166px] w-[192px]">
+          <div
+            class="flex justify-end text-white rounded-full transition-colors text-2xl pr-2 font-normal"
+          >
+            <img
+              @mouseover="toggleDropdown(true)"
+              v-if="userStore.user?.avatar"
+              :src="getPhotoUrl(userStore.user?.avatar, imageAPI)"
+              alt="Profile"
+              class="w-16 h-16 rounded-full object-cover hover:opacity-75"
+            />
+            <img
+              @mouseover="toggleDropdown(true)"
+              v-else
+              :src="NavbarIcon"
+              alt="Profile"
+              class="w-20 h-20 rounded-full object-cover hover:opacity-75"
+            />
+          </div>
+
+          <div
+            v-if="isDropdownOpen"
+            class="absolute right-0 mt-6 w-48 bg-white rounded-md shadow-lg z-10 border"
+          >
+            <RouterLink to="/password-recovery" class="no-underline">
+              <button
+                @click="handleProfile"
+                class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors rounded-t-md text-sm"
+              >
+                Pakeisti slaptažodį
+              </button>
+            </RouterLink>
+            <button
+              @click="handleLogout"
+              class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors rounded-b-md text-sm"
+            >
+              Atsijungti
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<script setup lang="ts">
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { computed, ref, watch } from 'vue'
+import { useUserStore } from '@/stores/Auth'
+import { getPhotoUrl } from '@/utils/photoUtils'
+
+import NavbarIcon from '@/assets/NavbarIcon.svg'
+
+const userStore = useUserStore()
+
+const route = useRoute()
+const router = useRouter()
+
+const isInLogin = ref(false)
+const isLoggedIn = ref(false)
+const isLoading = ref(true)
+const isAdmin = ref(false)
+
+let isRefreshing = false
+
+watch(
+  () => route.path,
+  async () => {
+    if (isRefreshing) {
+      return
+    }
+
+    try {
+      isRefreshing = true
+      isLoading.value = true
+
+      isLoggedIn.value = await userStore.isLoggedIn()
+
+      if (
+        route.path === '/login' ||
+        route.path === '/password-recovery' ||
+        route.path.startsWith('/confirm-password-reset/')
+      ) {
+        isInLogin.value = true
+      } else {
+        isInLogin.value = false
+      }
+
+      isAdmin.value = userStore.isAdmin()
+    } finally {
+      isLoading.value = false
+      isRefreshing = false
+    }
+  },
+  { immediate: true }
+)
+
+const isDropdownOpen = ref(false)
+
+const imageAPI = computed(() => {
+  return __USER_IMAGE_API__ + userStore.user?.id
+})
+
+const toggleDropdown = (state: boolean) => {
+  isDropdownOpen.value = state
+}
+
+const handleProfile = () => {
+  isDropdownOpen.value = false
+}
+
+const handleLogout = () => {
+  isLoggedIn.value = false
+  userStore.clearUser()
+  router.push('/')
+  isDropdownOpen.value = false
+}
+</script>
